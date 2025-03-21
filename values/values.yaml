@@ -1,0 +1,116 @@
+global:
+  namespace: naavre
+
+  ingress:
+    domain: example.org
+    commonAnnotations: {}
+    tls:
+      enabled: false
+
+  secrets:
+    k8sSecretCreator:
+      apiToken:
+    keycloak:
+      adminPassword:
+      naavreClientSecret:
+      users: []
+      postgresql:
+        password:
+    vrepaas:
+      vreapi:
+        secretKey:
+        auth:
+          superuser:
+            email: "admin@example.org"
+            username: admin
+            password:
+          apiUser:
+            username: user
+            password:
+            apiToken:
+      vreapp:
+        secretKey:
+      postgresql:
+        password:
+
+  common:
+    velero:
+      podAnnotations:
+        backup.velero.io/backup-volumes: pvc-volume,emptydir-volume
+
+  externalServices:
+    notebookSearch:
+      apiEndpoint:
+      apiToken:
+    argoWorkflows:
+      useExternal: false
+      namespace: nil
+      url: nil
+      token: nil
+    keycloak:
+      useExternal: false
+      url: nil
+      realm: nil
+      client_id: nil
+      client_secret: nil
+
+argoWorkflows:
+  enabled: true
+  workflowTTL: 86400
+  crds:
+    install: true
+  ingress:
+    basePath: /argowf
+
+jupyterhub:
+  enabled: true
+  ingress:
+    basePath: /jupyter
+  singleuser:
+    extraEnv:
+      BASE_IMAGE_TAGS_URL: "https://github.com/QCDIS/NaaVRE-flavors/releases/download/v0.20.2/base_image_tags.json"
+      MODULE_MAPPING_URL: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+    lifecycleHooks:
+      postStart:
+        exec:
+          command: ["sh", "-c", "/tmp/init_script.sh"]
+  hub:
+    extraConfig: {}
+    initContainers: []
+    extraVolumes: []
+    extraVolumeMounts: []
+  vlabs:
+    - slug: openlab
+      title: "NaaVRE Open Lab"
+      description: "Open experimentation with virtual labs"
+      image:
+        name: qcdis/n-a-a-vre
+        tag: v2.6.0
+      GitHubRepoNaaVRECells:
+        url:
+        token:
+
+k8sSecretCreator:
+  enabled: true
+  ingress:
+    basePath: /k8s-secret-creator
+
+keycloak:
+  enabled: true
+  ingress:
+    basePath: /auth
+
+vrepaas:
+  enabled: true
+
+  vreapi:
+    image:
+      tag: latest
+    ingress:
+      basePath: /vre-api
+
+  vreapp:
+    image:
+      tag: latest
+    ingress:
+      basePath: /vreapp

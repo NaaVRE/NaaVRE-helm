@@ -1,0 +1,59 @@
+global:
+  namespace: naavre
+
+  ingress:
+    domain: example.com
+    commonAnnotations: {}
+    tls:
+      enabled: false
+
+  secrets:
+    k8sSecretCreator:
+      apiToken: <a random token>
+    keycloak:
+      adminPassword: nil
+      naavreClientSecret: nil
+      postgresql:
+        password: nil
+    vrepaas:
+      vreapi:
+        secretKey: <a random secret>
+        auth:
+          superuser:
+            email: "admin@example.com"
+            username: admin
+            password: <a random password>
+          apiUser:
+            username: user
+            password: <a random password>
+            apiToken: <a random token>
+      vreapp:
+        secretKey: <a random secret>
+      postgresql:
+        password: <a random password>
+
+  externalServices:
+    notebookSearch:
+      apiEndpoint: "<Notebook search API endpoint URL>"
+      apiToken: <API token>
+    keycloak:
+      useExternal: true
+      url: "https://sso.example.org/auth"
+      realm: vre
+      client_id: naavre
+      client_secret: <OIDC client secret>
+
+keycloak:
+  enabled: false
+
+jupyterhub:
+  vlabs:
+    - slug: openlab
+      title: "NaaVRE Open Lab"
+      description: "Open experimentation with virtual labs"
+      image:
+        name: qcdis/n-a-a-vre
+        tag: v2.6.0
+      GitHubRepoNaaVRECells:
+        url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells>"
+        token: "<Token generated following the instructions from the template>"

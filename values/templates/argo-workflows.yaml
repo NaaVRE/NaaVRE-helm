@@ -1,0 +1,98 @@
+argo-workflows:
+  enabled: {{ .Values.argoWorkflows.enabled }}
+
+  crds:
+    install: {{ .Values.argoWorkflows.crds.install }}
+
+  singleNamespace: true
+  executor:
+    resources:
+      requests:
+        cpu: 900m
+        memory: 512Mi
+      limits:
+        cpu: 1800m
+        memory: 1024Mi
+  controller:
+    resources:
+      requests:
+        cpu: 900m
+        memory: 512Mi
+      limits:
+        cpu: 1800m
+        memory: 1024Mi
+    containerRuntimeExecutor: emissary
+    parallelism: 8
+    resourceRateLimit:
+      limit: 8
+      burst: 5
+    workflowDefaults:
+      spec:
+        # must complete in 2d
+        activeDeadlineSeconds: 172800
+        # keep workflows for {{ .Values.argoWorkflows.workflowTTL }} seconds
+        ttlStrategy:
+          secondsAfterCompletion: {{ .Values.argoWorkflows.workflowTTL }}
+          secondsAfterFailure: {{ .Values.argoWorkflows.workflowTTL }}
+          secondsAfterSuccess: {{ .Values.argoWorkflows.workflowTTL }}
+          # podGC:
+          #   strategy: OnWorkflowCompletion
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 10
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: workflows.argoproj.io/completed
+                        operator: In
+                        values:
+                          - false
+                  topologyKey: kubernetes.io/hostname
+  server:
+    resources:
+      requests:
+        ephemeral-storage: 512Mi
+    extraArgs:
+      - --auth-mode=sso
+      - --auth-mode=client
+    enabled: true
+    baseHref: "/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/"
+    serviceType: ClusterIP
+    sso:
+      enabled: true
+      {{- if .Values.global.externalServices.keycloak.useExternal }}
+      issuer: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}"
+      {{- else}}
+      issuer: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre"
+      {{- end }}
+      sessionExpiry: 240h
+      clientId:
+        name: argo-sso
+        key: client-id
+      clientSecret:
+        name: argo-sso
+        key: client-secret
+      redirectUrl: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/oauth2/callback"
+      rbac:
+        enabled: false
+      insecureSkipVerify: false
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      {{- with .Values.global.ingress.commonAnnotations }}
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      hosts:
+        - {{ .Values.global.ingress.domain }}
+      paths:
+        - /{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}(/|$)(.*)
+      pathType: ImplementationSpecific
+      {{- if .Values.global.ingress.tls.enabled }}
+      tls:
+        - hosts:
+            - "{{ .Values.global.ingress.domain }}"
+          secretName: "{{ .Values.global.ingress.domain }}-tls"
+      {{- end }}

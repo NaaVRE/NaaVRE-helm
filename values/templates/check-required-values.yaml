@@ -1,0 +1,13 @@
+{{- /* Check that all values are filled. */}}
+{{- /* This ensures that all values left empty in values.yaml are provided. See values-example-basic.yaml */}}
+{{- define "checkRequiredValues" -}}
+{{- range $key, $value := $.map -}}
+{{- $fullPath := printf "%s.%s" $.path $key }}
+{{- if kindIs "map" $value }}
+{{- include "checkRequiredValues" (dict "path" $fullPath "map" $value) }}
+{{- else }}
+{{- $_ := required (printf "Value required for key: %s" $fullPath) $value }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- include "checkRequiredValues" (dict "path" "" "map" .Values ) }}

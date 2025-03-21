@@ -1,0 +1,10 @@
+global:
+  secrets:
+    keycloak:
+      {{- if .Values.global.externalServices.keycloak.useExternal }}
+      client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
+      client_secret: "{{ .Values.global.externalServices.keycloak.client_secret }}"
+      {{- else }}
+      client_id: "naavre"
+      client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+      {{- end }}

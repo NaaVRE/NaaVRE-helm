@@ -1,0 +1,145 @@
+jupyterhub:
+  enabled: {{ .Values.jupyterhub.enabled }}
+
+  fullnameOverride: "jupyter"
+
+  hub:
+    concurrentSpawnLimit: 10
+    consecutiveFailureLimit: 16
+    activeServerLimit: 16
+    namedServerLimitPerUser: 1
+    shutdownOnLogout: true
+    baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
+    config:
+      GenericOAuthenticator:
+        login_service: keycloak
+        username_claim: preferred_username
+        userdata_params:
+          state: state
+        claim_groups_key: groups
+        manage_groups: True
+        allowed_groups:
+          - users
+        admin_groups:
+          - admins
+        oauth_callback_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}/hub/oauth_callback"
+        {{- if .Values.global.externalServices.keycloak.useExternal }}
+        client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
+        client_secret: "{{ .Values.global.externalServices.keycloak.client_secret }}"
+        authorize_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/auth"
+        token_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/token"
+        userdata_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/userinfo"
+        {{- else }}
+        client_id: naavre
+        client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+        authorize_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/auth"
+        token_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/token"
+        userdata_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/userinfo"
+        {{- end }}
+      JupyterHub:
+        authenticator_class: generic-oauth
+    {{- with .Values.jupyterhub.hub.initContainers }}
+    initContainers:
+      {{- toYaml . | nindent 6}}
+    {{- end}}
+    {{- with .Values.jupyterhub.hub.extraVolumes }}
+    extraVolumes:
+      {{- toYaml . | nindent 6}}
+    {{- end}}
+    {{- with .Values.jupyterhub.hub.extraVolumeMounts }}
+    extraVolumeMounts:
+      {{- toYaml . | nindent 6}}
+    {{- end}}
+    extraConfig:
+      {{- with .Values.jupyterhub.hub.extraConfig }}
+      {{- toYaml . | nindent 6}}
+      {{- end}}
+      custom_kubespawner.py: |
+        # Workaround for jupyterhub/kubespawner#877
+        # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5
+        from kubespawner import KubeSpawner
+        class CustomKubeSpawner(KubeSpawner):
+            def get_pvc_manifest(self):
+                self.pvc_name = self._expand_user_properties(self.pvc_name_template)
+                self.pod_name = self._expand_user_properties(self.pod_name_template)
+                return super().get_pvc_manifest()
+                return super().get_pod_manifest()
+        c.JupyterHub.spawner_class = CustomKubeSpawner
+
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - "{{ .Values.global.ingress.domain }}"
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  proxy:
+    service:
+      type: ClusterIP
+
+  singleuser:
+    defaultUrl: "/lab"
+    startTimeout: 600
+    extraAnnotations:
+      {{- toYaml .Values.global.common.velero.podAnnotations | nindent 6 }}
+    extraFiles:
+      jupyter_notebook_config.json:
+        mountPath: /etc/jupyter/jupyter_notebook_config.json
+        data:
+          ServerApp:
+            iopub_data_rate_limit: 1.0e10
+            iopub_msg_rate_limitFloat: 3000
+    memory:
+      limit: 2G
+      guarantee: 1G
+    storage:
+      capacity: 10Gi
+    cpu:
+      limit: 1.25
+      guarantee: 1.1
+
+    extraEnv:
+      API_ENDPOINT: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.vrepaas.vreapi.ingress.basePath }}"
+      ARGO_WF_SPEC_SERVICEACCOUNT: argo-executor
+      BASE_IMAGE_TAGS_URL: "{{ .Values.jupyterhub.singleuser.extraEnv.BASE_IMAGE_TAGS_URL }}"
+      JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+      JUPYTER_ALLOW_INSECURE_WRITES: "1" # This is needed because the default mount for csi is --file-mode 0666. If we set it to 0600 we get error in the postStart hook
+      MODULE_MAPPING_URL: "{{ .Values.jupyterhub.singleuser.extraEnv.MODULE_MAPPING_URL }}"
+      NAAVRE_API_TOKEN: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.apiToken }}"
+      PROJ_LIB: /venv/share/proj
+      SEARCH_API_ENDPOINT: "{{ .Values.global.externalServices.notebookSearch.apiEndpoint }}"
+      SEARCH_API_TOKEN: "{{ .Values.global.externalServices.notebookSearch.apiToken }}"
+
+    {{- with .Values.jupyterhub.singleuser.lifecycleHooks }}
+    lifecycleHooks:
+      {{- toYaml . | nindent 6}}
+    {{- end}}
+
+    profileList:
+      {{- range .Values.jupyterhub.vlabs }}
+      - display_name: "{{ .slug }}"
+        kubespawner_override:
+          image: "{{ .image.name }}:{{ .image.tag }}"
+          pullPolicy: IfNotPresent
+          pvc_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
+          pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
+          environment:
+            CELL_GITHUB: "{{ .GitHubRepoNaaVRECells.url }}"
+            CELL_GITHUB_TOKEN: "{{ .GitHubRepoNaaVRECells.token }}"
+            VLAB_DESCRIPTION: "{{ .description }}"
+            VLAB_SLUG: "{{ .slug }}"
+            VLAB_TITLE: "{{ .title }}"
+          {{- if .cmd | default "" }}
+          cmd:
+            {{- toYaml .cmd | nindent 12 }}
+          {{- end }}
+      {{- end }}

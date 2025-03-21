@@ -1,0 +1,6 @@
+.idea/
+
+naavre/charts/*.tgz
+values/rendered/
+root-values/*
+!root-values/README.md

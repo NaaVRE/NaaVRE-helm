@@ -1,0 +1,81 @@
+vrepaas:
+  enabled: {{ .Values.vrepaas.enabled }}
+
+  global:
+    environment: production
+
+    base_paths:
+      test:
+        vreapi: "/{{ trimAll "/" .Values.vrepaas.vreapi.ingress.basePath }}"
+        vreapp: "/{{ trimAll "/" .Values.vrepaas.vreapp.ingress.basePath }}"
+      production:
+        vreapi: "/{{ trimAll "/" .Values.vrepaas.vreapi.ingress.basePath }}"
+        vreapp: "/{{ trimAll "/" .Values.vrepaas.vreapp.ingress.basePath }}"
+
+    ingress:
+      {{- with .Values.global.ingress.commonAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      host: "{{ .Values.global.ingress.domain }}"
+      {{- if .Values.global.ingress.tls.enabled }}
+      tls:
+        - hosts:
+            - "{{ .Values.global.ingress.domain }}"
+          secretName: "{{ .Values.global.ingress.domain }}-tls"
+      {{- end }}
+
+    postgresql:
+      auth:
+        password: "{{ .Values.global.secrets.vrepaas.postgresql.password }}"
+
+    keycloak:
+      {{- if .Values.global.externalServices.keycloak.useExternal }}
+      url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}"
+      realm: "{{ .Values.global.externalServices.keycloak.realm }}"
+      client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
+      client_secret_key: "{{ .Values.global.externalServices.keycloak.client_secret }}"
+      {{- else}}
+      url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}"
+      realm: "vre"
+      client_id: "naavre"
+      client_secret_key: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+      {{- end}}
+
+    argo:
+      {{- if .Values.global.externalServices.argoWorkflows.useExternal }}
+      namespace: "{{ .Values.global.externalServices.argoWorkflows.namespace }}"
+      url: "{{ .Values.global.externalServices.argoWorkflows.url }}"
+      token: "{{ .Values.global.externalServices.argoWorkflows.token }}"
+      {{- else}}
+      namespace: "{{ .Values.global.namespace }}"
+      url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}"
+      serviceAccountTokenSecretKeyRef:
+        name: argo-vreapi.service-account-token
+        key: token
+      {{- end}}
+
+    k8s_secret_creator:
+      url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
+      token: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"
+
+  postgresql:
+    annotations:
+      {{- toYaml .Values.global.common.velero.podAnnotations | nindent 6 }}
+
+  vreapi:
+    image:
+      tag: "{{ .Values.vrepaas.vreapi.image.tag }}"
+    secret_key: "{{ .Values.global.secrets.vrepaas.vreapi.secretKey }}"
+    auth:
+      superuser_email: "{{ .Values.global.secrets.vrepaas.vreapi.auth.superuser.email }}"
+      superuser_username: "{{ .Values.global.secrets.vrepaas.vreapi.auth.superuser.username }}"
+      superuser_password: "{{ .Values.global.secrets.vrepaas.vreapi.auth.superuser.password }}"
+      username: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.username }}"
+      password: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.password }}"
+      token: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.apiToken }}"
+
+  vreapp:
+    image:
+      tag: "{{ .Values.vrepaas.vreapp.image.tag }}"
+    secret_key: "{{ .Values.global.secrets.vrepaas.vreapp.secretKey }}"

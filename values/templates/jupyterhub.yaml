@@ -1,7 +1,6 @@
 jupyterhub:
   enabled: {{ .Values.jupyterhub.enabled }}
-
-  fullnameOverride: "jupyter"
+  fullnameOverride: "{{ include "values.fullname" . }}-jupyter"
 
   hub:
     concurrentSpawnLimit: 10
@@ -11,6 +10,8 @@ jupyterhub:
     shutdownOnLogout: true
     baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
     config:
+      Authenticator:
+        enable_auth_state: true
       GenericOAuthenticator:
         login_service: keycloak
         username_claim: preferred_username
@@ -54,6 +55,16 @@ jupyterhub:
       {{- with .Values.jupyterhub.hub.extraConfig }}
       {{- toYaml . | nindent 6}}
       {{- end}}
+      generic_env_oauthenticator.py: |
+        from oauthenticator.generic import GenericOAuthenticator
+        class GenericEnvOAuthenticator(GenericOAuthenticator):
+            async def pre_spawn_start(self, user, spawner):
+                auth_state = await user.get_auth_state()
+                if not auth_state:
+                    return
+                spawner.environment['OAUTH_ACCESS_TOKEN'] = auth_state.get('access_token')
+                spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
+        c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
       custom_kubespawner.py: |
         # Workaround for jupyterhub/kubespawner#877
         # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5
@@ -107,17 +118,9 @@ jupyterhub:
       limit: 1.25
       guarantee: 1.1
 
-    extraEnv:
-      API_ENDPOINT: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.vrepaas.vreapi.ingress.basePath }}"
-      ARGO_WF_SPEC_SERVICEACCOUNT: argo-executor
-      BASE_IMAGE_TAGS_URL: "{{ .Values.jupyterhub.singleuser.extraEnv.BASE_IMAGE_TAGS_URL }}"
-      JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
-      JUPYTER_ALLOW_INSECURE_WRITES: "1" # This is needed because the default mount for csi is --file-mode 0666. If we set it to 0600 we get error in the postStart hook
-      MODULE_MAPPING_URL: "{{ .Values.jupyterhub.singleuser.extraEnv.MODULE_MAPPING_URL }}"
-      NAAVRE_API_TOKEN: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.apiToken }}"
-      PROJ_LIB: /venv/share/proj
-      SEARCH_API_ENDPOINT: "{{ .Values.global.externalServices.notebookSearch.apiEndpoint }}"
-      SEARCH_API_TOKEN: "{{ .Values.global.externalServices.notebookSearch.apiToken }}"
+{{/*    extraEnv:*/}}
+{{/*      JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"*/}}
+{{/*      PROJ_LIB: /venv/share/proj*/}}
 
     {{- with .Values.jupyterhub.singleuser.lifecycleHooks }}
     lifecycleHooks:
@@ -132,12 +135,22 @@ jupyterhub:
           pullPolicy: IfNotPresent
           pvc_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
           pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
-          environment:
-            CELL_GITHUB: "{{ .GitHubRepoNaaVRECells.url }}"
-            CELL_GITHUB_TOKEN: "{{ .GitHubRepoNaaVRECells.token }}"
-            VLAB_DESCRIPTION: "{{ .description }}"
-            VLAB_SLUG: "{{ .slug }}"
-            VLAB_TITLE: "{{ .title }}"
+          extraFiles:
+            overrides.json:
+              mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
+              data: |
+                {
+                  "@naavre/containerizer-jupyterlab:plugin": {
+                    "virtualLab": "{{ .slug }}",
+                    "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
+                    "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+                  },
+                  "@naavre/workflow-jupyterlab:plugin": {
+                    "virtualLab": "{{ .slug }}",
+                    "workflowServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreWorkflowService.ingress.basePath) }}",
+                    "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+                  }
+                }
           {{- if .cmd | default "" }}
           cmd:
             {{- toYaml .cmd | nindent 12 }}

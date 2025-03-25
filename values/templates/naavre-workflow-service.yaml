@@ -1,0 +1,56 @@
+naavre-workflow-service:
+  enabled: {{ .Values.naavreWorkflowService.enabled }}
+  fullnameOverride: "{{ include "values.fullname" . }}-naavre-workflow-service"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/{{ trimAll "/" (.Values.naavreWorkflowService.ingress.basePath) }}($|/)"
+            pathType: ImplementationSpecific
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  conf:
+    rootPath: "/{{ trimAll "/" (.Values.naavreWorkflowService.ingress.basePath) }}"
+    virtual_labs_configuration:
+      rawJson: |
+        {
+          "vl_configurations": [
+            {{- $last := sub (len .Values.jupyterhub.vlabs) 1}}
+            {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+            {
+              "name": "{{ $vlab.slug }}",
+              "wf_engine_config": {
+                "name": "argo",
+                {{- if $.Values.global.externalServices.argoWorkflows.useExternal }}
+                "namespace": "{{ $.Values.global.externalServices.argoWorkflows.namespace }}",
+                "api_endpoint": "{{ $.Values.global.externalServices.argoWorkflows.url }}/",
+                "access_token": "{{ $.Values.global.externalServices.argoWorkflows.token }}",
+                "service_account": "{{ $.Values.global.externalServices.argoWorkflows.executor_service_account }}",
+                {{- else}}
+                "namespace": "{{ $.Values.global.namespace }}",
+                "api_endpoint": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.argoWorkflows.ingress.basePath }}/",
+                "access_token": "TOKEN",
+                "service_account": "executor",
+                {{- end}}
+                "workdir_storage_size": "1Gi"
+              }
+            }{{ if ne $index $last }},{{ end }}
+            {{- end }}
+          ]
+        }
+
+  env:
+    OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
+    CONFIG_FILE_URL: "/configuration.json"

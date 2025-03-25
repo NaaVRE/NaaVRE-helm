@@ -8,18 +8,20 @@ This is not directly supported by Helm, so deployment is done in two steps:
 - **Step 1:** render values for the sub-charts, using the `values` chart
   - copy the example root values
     ```shell
-    cp ./values/values-example-basic.yaml ./root-values/values-my-deployment.yaml
+    cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
     ```
   - fill in your values
     ```shell
-    vim ./root-values/values-my-deployment.yaml
+    vim ./values/values-deploy-my-deployment.yaml
     ```
   - render the `values` chart
     ```shell
-    helm template values/ --output-dir values/rendered -f ./root-values/values-my-deployment.yaml
+    helm template naavre values/ --output-dir values/rendered -f ./values/values-deploy-my-deployment.yaml
     ```
-    > Note: never edit files in `values/rendered`. Instead, change `./root-values/values-my-deployment.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
+    > Note: never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-deployment.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
 
+> [!CAUTION]
+> Values files (`./values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
 
 - **Step 2:** Deploy the sub-charts, using the `naavre` chart and the previously-rendered values.
   - get subcharts
@@ -38,42 +40,6 @@ helm -n naavre uninstall naavre
 ```
 
 ## Advanced setups
-
-### Run a command before starting Jupyter Lab
-
-This shows how to run a command before starting a user's Jupyter Lab instance in the singleuser pod. This is useful to, e.g., add cells to the local cell catalogue (`~/NaaVRE/NaaVRE_db.json`). Unlike kubernetes' `postStart` lifecycle hook which is asynchronous, this method makes it possible to run commands before calling the container's entrypoint.
-
-```yaml
-jupyterhub:
-  singleuser:
-    lifecycleHooks: null
-  vlabs:
-    - slug: example-lab
-      title: "Example"
-      description: "Example"
-      image:
-        name: qcdis/n-a-a-vre
-        tag: v2.6.0
-      GitHubRepoNaaVRECells:
-        url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells>"
-        token: "<Token generated following the instructions from the template>"
-      cmd:
-        - "sh"
-        - "-c"
-        - |
-          /tmp/init_script.sh
-          echo "this runs before starting Jupyter Lab"
-          # ... modify 
-          /usr/local/bin/start-jupyter-venv.sh
-```
-
-In this example, the synchronous command runs after `/tmp/init_script.sh` which initializes user's database (`~/NaaVRE/NaaVRE_db.json`), and before `/usr/local/bin/start-jupyter-venv.sh` which starts Jupyter Lab.
-These scripts should be explicitly included in `jupyterhub.vlabs[*].cmd` as shown here.
-If the command does require the database to be initialized, `/tmp/init_script.sh` can be omitted.
-
-> [!IMPORTANT]
-> If `/tmp/init_script.sh` is included in the synchronous command, the lifecycle hooks must be disabled by explicitly setting `jupyterhub.singleuser.lifecycleHooks: null` (otherwise, the script runs twice which can corrupt the user's database).
-> In this case, all virtual labs must have a `cmd` that includes `/tmp/init_script.sh`.
 
 ### TLS certificates with cert-manager
 

@@ -1,6 +1,9 @@
 .idea/
 
 naavre/charts/*.tgz
+
 values/rendered/
-root-values/*
-!root-values/README.md
+values/*.yaml
+!values/Chart.yaml
+!values/values.yaml
+!values/values-example-*.yaml

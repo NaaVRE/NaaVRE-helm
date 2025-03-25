@@ -1,5 +1,6 @@
 argo-workflows:
   enabled: {{ .Values.argoWorkflows.enabled }}
+  nameOverride: "{{ include "values.fullname" . }}-argo"
 
   crds:
     install: {{ .Values.argoWorkflows.crds.install }}

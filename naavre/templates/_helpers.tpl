@@ -49,14 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "naavre.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "naavre.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "naavre.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}

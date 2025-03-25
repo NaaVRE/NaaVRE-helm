@@ -1,0 +1,64 @@
+1. Get the application URL by running these commands:
+
+{{- if index .Values "argo-workflows" "enabled" }}
+{{- $argoIngress := index .Values "argo-workflows" "server" "ingress" }}
+{{- range $host := $argoIngress.hosts }}
+{{- range $path := $argoIngress.paths }}
+http{{ if $argoIngress.tls }}s{{ end }}://{{ $host }}{{ $path | replace "(/|$)" "" | replace "(.*)" ""}}/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.jupyterhub.enabled }}
+{{- $jupyterIngress := .Values.jupyterhub.ingress }}
+{{- range $host := $jupyterIngress.hosts }}
+http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}{{ $.Values.jupyterhub.hub.baseUrl | replace "(/|$)" "" | replace "(.*)" "" }}/
+{{- end }}
+{{- end }}
+
+{{- if index .Values "k8s-secret-creator" "enabled" }}
+{{- $kscIngress := index .Values "k8s-secret-creator" "ingress" }}
+{{- range $host := $kscIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $kscIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/1.0.0/ui/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.keycloak.enabled }}
+{{- $keycloakIngress := .Values.keycloak.ingress }}
+http{{ if $keycloakIngress.tls }}s{{ end }}://{{ $keycloakIngress.hostname }}{{ $keycloakIngress.path | replace "($|/)" "" | replace "(.*)" "" }}
+{{- end }}
+
+{{- if index .Values "naavre-catalogue-service" "enabled" }}
+{{- $naavreCatSvcIngress := index .Values "naavre-catalogue-service" "ingress" }}
+{{- range $host := $naavreCatSvcIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavreCatSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if index .Values "naavre-containerizer-service" "enabled" }}
+{{- $naavreContSvcIngress := index .Values "naavre-containerizer-service" "ingress" }}
+{{- range $host := $naavreContSvcIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/docs/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if index .Values "naavre-workflow-service" "enabled" }}
+{{- $naavreWfSvcIngress := index .Values "naavre-workflow-service" "ingress" }}
+{{- range $host := $naavreWfSvcIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavreWfSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/docs/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.vrepaas.enabled }}
+{{- $paasIngress := .Values.vrepaas.global.ingress }}
+http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}{{- (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapi | replace "($|/)" "" | replace "(.*)" "" }}/api/
+http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}{{- (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapp | replace "($|/)" "" | replace "(.*)" "" }}/
+{{- end }}

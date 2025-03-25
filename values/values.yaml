@@ -1,3 +1,6 @@
+nameOverride: ""
+fullnameOverride: ""
+
 global:
   namespace: naavre
 
@@ -14,6 +17,10 @@ global:
       adminPassword:
       naavreClientSecret:
       users: []
+      postgresql:
+        password:
+    naavreCatalogueService:
+      secretKey:
       postgresql:
         password:
     vrepaas:
@@ -39,14 +46,19 @@ global:
         backup.velero.io/backup-volumes: pvc-volume,emptydir-volume
 
   externalServices:
-    notebookSearch:
-      apiEndpoint:
-      apiToken:
+    # The PaaS as well as all VLs must use the same Argo Workflows instance
+    # (either part of the current deployment or external). While the
+    # NaaVRE-workflow-service supports per-VL Argo configuration, the PaaS
+    # does not. To retain a consistent behaviour, it is not possible to set
+    # per-VL Argo configuration with this chart. In the future, per-VL Argo
+    # configuration support should be added to the PaaS.
+    # TODO: support per-VL Argo Workflows configuration
     argoWorkflows:
       useExternal: false
       namespace: nil
       url: nil
       token: nil
+      executor_service_account: nil
     keycloak:
       useExternal: false
       url: nil
@@ -67,13 +79,7 @@ jupyterhub:
   ingress:
     basePath: /jupyter
   singleuser:
-    extraEnv:
-      BASE_IMAGE_TAGS_URL: "https://github.com/QCDIS/NaaVRE-flavors/releases/download/v0.20.2/base_image_tags.json"
-      MODULE_MAPPING_URL: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
-    lifecycleHooks:
-      postStart:
-        exec:
-          command: ["sh", "-c", "/tmp/init_script.sh"]
+    lifecycleHooks: {}
   hub:
     extraConfig: {}
     initContainers: []
@@ -84,11 +90,14 @@ jupyterhub:
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
       image:
-        name: qcdis/n-a-a-vre
-        tag: v2.6.0
-      GitHubRepoNaaVRECells:
-        url:
-        token:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.0.1
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.1/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url:
+        cell_github_token:
+        registry_url:
 
 k8sSecretCreator:
   enabled: true
@@ -99,6 +108,21 @@ keycloak:
   enabled: true
   ingress:
     basePath: /auth
+
+naavreCatalogueService:
+  enabled: true
+  ingress:
+    basePath: /naavre-catalogue-service
+
+naavreContainerizerService:
+  enabled: true
+  ingress:
+    basePath: /naavre-containerizer-service
+
+naavreWorkflowService:
+  enabled: true
+  ingress:
+    basePath: /naavre-workflow-service
 
 vrepaas:
   enabled: true

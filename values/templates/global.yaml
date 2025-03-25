@@ -8,3 +8,6 @@ global:
       client_id: "naavre"
       client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
       {{- end }}
+
+  vlabs:
+    {{- toYaml .Values.jupyterhub.vlabs | nindent 4 }}

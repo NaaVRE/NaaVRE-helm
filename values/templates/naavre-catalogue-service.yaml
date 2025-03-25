@@ -1,0 +1,41 @@
+naavre-catalogue-service:
+  enabled: {{ .Values.naavreCatalogueService.enabled }}
+  nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-service"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}($|/)"
+            pathType: ImplementationSpecific
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  conf:
+    base_path: "/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}"
+    oidc_configuration_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
+    django:
+      secret_key: "{{ .Values.global.secrets.naavreCatalogueService.secretKey }}"
+
+  # FIXME: the catalogue db should set to {release}-naavre-catalogue-db.
+  # While the name of the pod can be changed with postgresql.fullnameoverride:
+  # postgresql:
+  #   fullnameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"
+  # The service expects it to be at {release}-postgresql, which is hard-coded
+  # in the NaaVRE-catalogue-service helm chart through DB_HOST. This should
+  # be changed to allow customizing the db name.
+
+  global:
+    postgresql:
+      auth:
+        password: "{{ .Values.global.secrets.naavreCatalogueService.postgresql.password }}"

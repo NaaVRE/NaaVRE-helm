@@ -11,8 +11,17 @@ dependencies:
 - name: keycloak
   repository: https://charts.bitnami.com/bitnami
   version: 16.1.7
+- name: naavre-catalogue-service
+  repository: oci://ghcr.io/naavre/charts
+  version: v0.1.2
+- name: naavre-containerizer-service
+  repository: oci://ghcr.io/naavre/charts
+  version: v0.3.1
+- name: naavre-workflow-service
+  repository: oci://ghcr.io/naavre/charts
+  version: v0.1.1
 - name: vrepaas
   repository: oci://ghcr.io/qcdis/charts
   version: 0.5.8
-digest: sha256:f0dd51c237e3579eee0f3c178e7370bf02ad04a4ce24663b7e66fb803a87ce01
-generated: "2025-02-07T14:37:39.650594212+01:00"
+digest: sha256:61d0b078c475ebbc1128fba90f6cd3ef2928b81b23d88fba5c8243c99746107b
+generated: "2025-03-21T15:34:04.917238399+01:00"

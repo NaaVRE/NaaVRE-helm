@@ -1,0 +1,47 @@
+naavre-containerizer-service:
+  enabled: {{ .Values.naavreContainerizerService.enabled }}
+  fullnameOverride: "{{ include "values.fullname" . }}-naavre-containerizer-service"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}($|/)"
+            pathType: ImplementationSpecific
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  conf:
+    rootPath: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}"
+    virtual_labs_configuration:
+      rawJson: |
+        {
+          "vl_configurations": [
+            {{- $last := sub (len .Values.jupyterhub.vlabs) 1}}
+            {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+            {
+              "name": "{{ $vlab.slug }}",
+              "base_image_tags_url": "{{ $vlab.configuration.base_image_tags_url }}",
+              "module_mapping_url": "{{ $vlab.configuration.module_mapping_url }}",
+              "cell_github_url": "{{ $vlab.configuration.cell_github_url }}",
+              "cell_github_token": "{{ $vlab.configuration.cell_github_token }}",
+              "registry_url": "{{ $vlab.configuration.registry_url }}"
+            }{{ if ne $index $last }},{{ end }}
+            {{- end }}
+          ]
+        }
+
+
+  env:
+    OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
+    CONFIG_FILE_URL: "/configuration.json"

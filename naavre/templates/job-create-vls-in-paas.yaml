@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
   annotations:
@@ -11,7 +11,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: "create-vls-in-paas"
+      serviceAccountName: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
       containers:
         - name: executor
           image: bitnami/kubectl:latest
@@ -29,52 +29,46 @@ spec:
       volumes:
         - name: django-script
           configMap:
-            name: "create-vls-in-paas"
+            name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
       restartPolicy: Never
   backoffLimit: 3
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
 data:
   django_script.py: |
     from virtual_labs.models import VirtualLab
     {{- $baseUrl := .Values.jupyterhub.hub.baseUrl }}
     {{- $hosts := .Values.jupyterhub.ingress.hosts }}
-    {{- range .Values.jupyterhub.singleuser.profileList }}
-    {{- $slug := .kubespawner_override.environment.VLAB_SLUG }}
-    {{- $title := .kubespawner_override.environment.VLAB_TITLE }}
-    {{- $description := .kubespawner_override.environment.VLAB_DESCRIPTION }}
-    {{- $image := .kubespawner_override.image }}
-    print("Checking for vlab {{ $slug }}")
-    if not VirtualLab.objects.filter(slug='{{ $slug }}').exists():
-        print("Creating vlab {{ $slug }}")
+    {{- range .Values.global.vlabs }}
+    print("Checking for vlab {{ .slug }}")
+    if not VirtualLab.objects.filter(slug='{{ .slug }}').exists():
+        print("Creating vlab {{ .slug }}")
         VirtualLab.objects.create(
-            slug='{{ $slug }}',
-            title='{{ $title }}',
-            description='{{ $description }}',
-            # This does not work because the vreapp adds a trailing slash
-            # base_url='{{ trimAll "/" $baseUrl }}/?profile={{ $slug }}',
-            base_url='{{ trimAll "/" $baseUrl }}',
+            slug='{{ .slug }}',
+            title='{{ .title }}',
+            description='{{ .description }}',
+            base_url='{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
             fqdn='{{ index $hosts 0 }}',
             ingress_ssl_port='443' ,
-            image_name='{{ (split ":" $image)._0 }}',
-            image_tag='{{ (split ":" $image)._1 }}',
+            image_name='{{ .image.name }}',
+            image_tag='{{ .image.tag }}',
             )
     {{- end }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 rules:
@@ -88,14 +82,14 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: "create-vls-in-paas"
+    name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
 roleRef:
   kind: Role
-  name: "create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
   apiGroup: rbac.authorization.k8s.io
 {{- end }}

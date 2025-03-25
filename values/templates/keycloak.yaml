@@ -1,5 +1,6 @@
 keycloak:
   enabled: {{ .Values.keycloak.enabled }}
+  nameOverride: "{{ include "values.fullname" . }}-keycloak"
 
   httpRelativePath: "/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/"
   production: true
@@ -33,7 +34,7 @@ keycloak:
     tls: {{ .Values.global.ingress.tls.enabled }}
 
   postgresql:
-    nameOverride: postgresql-keycloak
+    nameOverride: "{{ include "values.fullname" . }}-keycloak-db"
     enabled: true
     auth:
       password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"

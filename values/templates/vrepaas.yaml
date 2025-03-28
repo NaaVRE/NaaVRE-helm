@@ -59,16 +59,8 @@ vrepaas:
       url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
       token: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"
 
-  postgresql:
-    # FIXME: the catalogue db should set to {release}-naavre-catalogue-db.
-    # Similarly to the naavre-catalogue-service, VREPaaS-helm-charts needs to
-    # be updated to allow setting DB_HOST to the customized db name
-    fullnameOverride: "{{ include "values.fullname" . }}-paas-db"
-    annotations:
-      {{- toYaml .Values.global.common.velero.podAnnotations | nindent 6 }}
-
   vreapi:
-    fullnameOverride: "{{ include "values.fullname" . }}-paas-api"
+    nameOverride: "{{ include "values.fullname" . }}-vreapi"
     image:
       tag: "{{ .Values.vrepaas.vreapi.image.tag }}"
     secret_key: "{{ .Values.global.secrets.vrepaas.vreapi.secretKey }}"
@@ -80,8 +72,14 @@ vrepaas:
       password: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.password }}"
       token: "{{ .Values.global.secrets.vrepaas.vreapi.auth.apiUser.apiToken }}"
 
+    postgresql:
+      nameOverride: "{{ include "values.fullname" . }}-vreapi-db"
+      annotations:
+        {{- toYaml .Values.global.common.velero.podAnnotations | nindent 6 }}
+
+
   vreapp:
-    fullnameOverride: "{{ include "values.fullname" . }}-paas-ui"
+    nameOverride: "{{ include "values.fullname" . }}-vreapp"
     image:
       tag: "{{ .Values.vrepaas.vreapp.image.tag }}"
     secret_key: "{{ .Values.global.secrets.vrepaas.vreapp.secretKey }}"

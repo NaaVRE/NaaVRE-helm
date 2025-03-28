@@ -27,13 +27,8 @@ naavre-catalogue-service:
     django:
       secret_key: "{{ .Values.global.secrets.naavreCatalogueService.secretKey }}"
 
-  # FIXME: the catalogue db should set to {release}-naavre-catalogue-db.
-  # While the name of the pod can be changed with postgresql.fullnameoverride:
-  # postgresql:
-  #   fullnameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"
-  # The service expects it to be at {release}-postgresql, which is hard-coded
-  # in the NaaVRE-catalogue-service helm chart through DB_HOST. This should
-  # be changed to allow customizing the db name.
+  postgresql:
+    nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"
 
   global:
     postgresql:

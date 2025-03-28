@@ -18,7 +18,7 @@ spec:
           command: ["sh", "-c"]
           args:
             - |
-              POD_NAME=$(kubectl get pod -l app.kubernetes.io/name=vreapi -o jsonpath='{.items[0].metadata.name}');
+              POD_NAME=$(kubectl get pod -l app.kubernetes.io/component=vreapi -o jsonpath='{.items[0].metadata.name}');
               echo "Waiting for pod $POD_NAME"
               kubectl wait --for=condition=ready pod $POD_NAME --timeout=300s || exit 1
               kubectl exec -i $POD_NAME -- /opt/venv/bin/python manage.py shell < /mnt/django_script.py

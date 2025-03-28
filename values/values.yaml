@@ -96,6 +96,8 @@ jupyterhub:
         cell_github_url:
         cell_github_token:
         registry_url:
+      postStartShSnippet: |
+        echo "Pull some data"
 
 k8sSecretCreator:
   enabled: true

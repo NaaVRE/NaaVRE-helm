@@ -156,6 +156,9 @@ jupyterhub:
                       mkdir -p "$dir"
                       echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
                     done
+                    {{- if .postStartShSnippet }}
+                    {{- .postStartShSnippet | nindent 20 }}
+                    {{- end }}
           {{- if .cmd | default "" }}
           cmd:
             {{- toYaml .cmd | nindent 12 }}

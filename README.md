@@ -41,6 +41,22 @@ helm -n naavre uninstall naavre
 
 ## Advanced setups
 
+### Run a command after starting Jupyter Lab
+
+This shows how to run a command after starting a user's Jupyter Lab instance in the singleuser pod. This is useful to, e.g., clone a Git repository.
+For each virtual lab, you can provide a snippet that will be executed by
+`sh -c` in Kubernetes' `postStart` hook.
+
+```yaml
+jupyterhub:
+  vlabs:
+    - slug: openlab
+      ...
+      postStartShSnippet: |
+        echo "Pulling some data"
+        gitpuller https://github.com/user/repo.git main folder
+```
+
 ### TLS certificates with cert-manager
 
 This shows how to automatically provision TLS certificates with [cert-manager](https://cert-manager.io/).

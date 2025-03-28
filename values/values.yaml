@@ -21,6 +21,11 @@ global:
         password:
     naavreCatalogueService:
       secretKey:
+      auth:
+        superuser:
+          email: "admin@example.org"
+          username: admin
+          password:
       postgresql:
         password:
     vrepaas:

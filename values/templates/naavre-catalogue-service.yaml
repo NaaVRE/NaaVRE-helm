@@ -26,6 +26,9 @@ naavre-catalogue-service:
     oidc_configuration_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
     django:
       secret_key: "{{ .Values.global.secrets.naavreCatalogueService.secretKey }}"
+      superuser_email: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.email }}"
+      superuser_username: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.username }}"
+      superuser_password: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.password }}"
 
   postgresql:
     nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"

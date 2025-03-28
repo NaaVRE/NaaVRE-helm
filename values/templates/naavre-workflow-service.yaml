@@ -54,3 +54,5 @@ naavre-workflow-service:
   env:
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
     CONFIG_FILE_URL: "/configuration.json"
+    SECRETS_CREATOR_API_ENDPOINT: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
+    SECRETS_CREATOR_API_TOKEN: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"

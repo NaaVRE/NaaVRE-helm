@@ -78,8 +78,6 @@ jupyterhub:
   enabled: true
   ingress:
     basePath: /jupyter
-  singleuser:
-    lifecycleHooks: {}
   hub:
     extraConfig: {}
     initContainers: []

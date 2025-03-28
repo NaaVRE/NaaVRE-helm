@@ -102,6 +102,7 @@ jupyterhub:
     startTimeout: 600
     extraAnnotations:
       {{- toYaml .Values.global.common.velero.podAnnotations | nindent 6 }}
+
     extraFiles:
       jupyter_notebook_config.json:
         mountPath: /etc/jupyter/jupyter_notebook_config.json
@@ -109,6 +110,20 @@ jupyterhub:
           ServerApp:
             iopub_data_rate_limit: 1.0e10
             iopub_msg_rate_limitFloat: 3000
+      overrides.json:
+        mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
+        stringData: |
+          {
+            "@naavre/containerizer-jupyterlab:plugin": {
+              "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
+              "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+            },
+            "@naavre/workflow-jupyterlab:plugin": {
+              "workflowServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreWorkflowService.ingress.basePath) }}",
+              "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+            }
+          }
+
     memory:
       limit: 2G
       guarantee: 1G
@@ -118,14 +133,8 @@ jupyterhub:
       limit: 1.25
       guarantee: 1.1
 
-{{/*    extraEnv:*/}}
-{{/*      JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"*/}}
-{{/*      PROJ_LIB: /venv/share/proj*/}}
-
-    {{- with .Values.jupyterhub.singleuser.lifecycleHooks }}
-    lifecycleHooks:
-      {{- toYaml . | nindent 6}}
-    {{- end}}
+    extraEnv:
+      NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
 
     profileList:
       {{- range .Values.jupyterhub.vlabs }}
@@ -135,22 +144,18 @@ jupyterhub:
           pullPolicy: IfNotPresent
           pvc_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
           pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
-          extraFiles:
-            overrides.json:
-              mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
-              data: |
-                {
-                  "@naavre/containerizer-jupyterlab:plugin": {
-                    "virtualLab": "{{ .slug }}",
-                    "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
-                    "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
-                  },
-                  "@naavre/workflow-jupyterlab:plugin": {
-                    "virtualLab": "{{ .slug }}",
-                    "workflowServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreWorkflowService.ingress.basePath) }}",
-                    "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
-                  }
-                }
+          lifecycle_hooks:
+            postStart:
+              exec:
+                command:
+                  - "sh"
+                  - "-c"
+                  - |
+                    for ext in "containerizer" "workflow"; do
+                      dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
+                      mkdir -p "$dir"
+                      echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
+                    done
           {{- if .cmd | default "" }}
           cmd:
             {{- toYaml .cmd | nindent 12 }}

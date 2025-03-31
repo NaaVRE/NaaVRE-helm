@@ -1,0 +1,72 @@
+{{- if and (index .Values "argo-workflows" "enabled") (index .Values "naavre-workflow-service" "enabled") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "naavre.fullname" . }}-set-argo-token"
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade,post-rollback
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+spec:
+  template:
+    spec:
+      serviceAccountName: "{{ include "naavre.fullname" . }}-set-argo-token"
+      containers:
+        - name: executor
+          image: bitnami/kubectl:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              CM_NAME="{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}"
+              DEPLOY_NAME="{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}"
+              TOKEN=$(cat /mnt/service-account-token/token)
+              kubectl get cm $CM_NAME -o json | sed -e "s/++argo-vreapi.service-account-token++/$TOKEN/g" | kubectl apply -f -
+              kubectl rollout restart deployment/$DEPLOY_NAME
+          volumeMounts:
+            - mountPath: /mnt/service-account-token
+              name: service-account-token
+      volumes:
+        - name: service-account-token
+          secret:
+            secretName: argo-vreapi.service-account-token
+      restartPolicy: Never
+  backoffLimit: 3
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "{{ include "naavre.fullname" . }}-set-argo-token"
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: "{{ include "naavre.fullname" . }}-set-argo-token"
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ['']
+    resources: ['configmaps']
+    resourceNames: ['{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}']
+    verbs: ['get', 'patch']
+  - apiGroups: ['apps']
+    resources: ['deployments']
+    resourceNames: ['{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}']
+    verbs: ['get', 'patch']
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: "{{ include "naavre.fullname" . }}-set-argo-token"
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: "{{ include "naavre.fullname" . }}-set-argo-token"
+roleRef:
+  kind: Role
+  name: "{{ include "naavre.fullname" . }}-set-argo-token"
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

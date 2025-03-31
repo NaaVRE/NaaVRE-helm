@@ -7,3 +7,5 @@ values/*.yaml
 !values/Chart.yaml
 !values/values.yaml
 !values/values-example-*.yaml
+
+*.drawio.bkp

@@ -1,37 +1,53 @@
 # NaaVRE-helm
 
-## Deployment
+## Overview
 
-NaaVRE consists of several sub-charts, whose values need to be derived from a root values file.
-This is not directly supported by Helm, so deployment is done in two steps:
+NaaVRE consists of several components which have their own Helm charts (Keycloak, Argo, Jupyter Hub, VREPaaS, all NaaVRE-*-services and more).
+They are all sub-charts of the `naavre` chart.
+
+However, Helm requires to set values for all sub-charts manually.
+This is time-consuming, error-prone, and results in a lot of duplicate configurations (e.g. repeated domain names or internal tokens).
+
+To address this issue, we first render sub-chart values through the `values` chart.
+This allows us to render sub-chart values from a single file without duplicate configurations.
+
+The deployment is done in two steps:
 
 - **Step 1:** render values for the sub-charts, using the `values` chart
-  - copy the example root values
-    ```shell
-    cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
-    ```
-  - fill in your values
-    ```shell
-    vim ./values/values-deploy-my-deployment.yaml
-    ```
-  - render the `values` chart
-    ```shell
-    helm template naavre values/ --output-dir values/rendered -f ./values/values-deploy-my-deployment.yaml
-    ```
-    > Note: never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-deployment.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
+- **Step 2:** Deploy the sub-charts, using the `naavre` chart and the previously-rendered values.
+
+![Deployment overview](./docs/deployment-overview.drawio.png)
+
+## Deployment
+
+Create a new root values file and fill in your values. This can be done by copying one of the examples:
+
+```shell
+cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
+vim ./values/values-deploy-my-deployment.yaml
+```
 
 > [!CAUTION]
 > Values files (`./values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
 
-- **Step 2:** Deploy the sub-charts, using the `naavre` chart and the previously-rendered values.
-  - get subcharts
-  ```shell
-  helm dependency build naavre
-  ```
-  - deploy subcharts
-  ```shell
-  helm -n naavre upgrade --create-namespace --install naavre naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
-  ```
+Download the sub-charts:
+
+```shell
+helm dependency build naavre
+```
+
+Render the `values` chart (step 1) and deploy the `naavre` chart (step 2):
+
+```shell
+root_values="./values/values-deploy-my-deployment.yaml"
+release_name="naavre"
+namespace="naavre"
+helm template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
+helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+```
+
+> [!NOTE]
+> Never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-deployment.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
 
 ## Uninstall
 

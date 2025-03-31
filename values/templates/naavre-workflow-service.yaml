@@ -41,8 +41,8 @@ naavre-workflow-service:
                 {{- else}}
                 "namespace": "{{ $.Values.global.namespace }}",
                 "api_endpoint": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.argoWorkflows.ingress.basePath }}/",
-                "access_token": "TOKEN",
-                "service_account": "executor",
+                "access_token": "++argo-vreapi.service-account-token++",
+                "service_account": "argo-executor",
                 {{- end}}
                 "workdir_storage_size": "1Gi"
               }

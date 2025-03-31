@@ -1,8 +1,8 @@
-{{- if and .Values.jupyterhub.enabled .Values.vrepaas.enabled }}
+{{- if and .Values.jupyterhub.enabled (index .Values "naavre-catalogue-service" "enabled") }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
   annotations:
@@ -11,17 +11,18 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+      serviceAccountName: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
       containers:
         - name: executor
           image: bitnami/kubectl:latest
           command: ["sh", "-c"]
           args:
             - |
-              POD_NAME=$(kubectl get pod -l app.kubernetes.io/component=vreapi -o jsonpath='{.items[0].metadata.name}');
+              APP_NAME="{{ template "naavre-catalogue-service.name" (index .Subcharts "naavre-catalogue-service") }}"
+              POD_NAME=$(kubectl get pod -l app.kubernetes.io/name=$APP_NAME -o jsonpath='{.items[0].metadata.name}');
               echo "Waiting for pod $POD_NAME"
               kubectl wait --for=condition=ready pod $POD_NAME --timeout=300s || exit 1
-              kubectl exec -i $POD_NAME -- /opt/venv/bin/python manage.py shell < /mnt/django_script.py
+              kubectl exec -i $POD_NAME -- python /code/app/manage.py shell < /mnt/django_script.py
           volumeMounts:
             - mountPath: /mnt/django_script.py
               name: django-script
@@ -29,19 +30,20 @@ spec:
       volumes:
         - name: django-script
           configMap:
-            name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+            name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
       restartPolicy: Never
   backoffLimit: 3
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
 data:
   django_script.py: |
     from virtual_labs.models import VirtualLab
     {{- $baseUrl := .Values.jupyterhub.hub.baseUrl }}
     {{- $hosts := .Values.jupyterhub.ingress.hosts }}
+    {{- $tls := .Values.jupyterhub.ingress.tls }}
     {{- range .Values.global.vlabs }}
     print("Checking for vlab {{ .slug }}")
     if not VirtualLab.objects.filter(slug='{{ .slug }}').exists():
@@ -50,25 +52,22 @@ data:
             slug='{{ .slug }}',
             title='{{ .title }}',
             description='{{ .description }}',
-            base_url='{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
-            fqdn='{{ index $hosts 0 }}',
-            ingress_ssl_port='443' ,
-            image_name='{{ .image.name }}',
-            image_tag='{{ .image.tag }}',
+            deployment_url='http{{ if $tls }}s{{ end }}://{{ index $hosts 0 }}/{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
+            container_image='{{ .image.name }}:{{ .image.tag }}',
             )
     {{- end }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 rules:
@@ -82,14 +81,14 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
   labels:
     {{- include "naavre.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+    name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
 roleRef:
   kind: Role
-  name: "{{ include "naavre.fullname" . }}-create-vls-in-paas"
+  name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
   apiGroup: rbac.authorization.k8s.io
 {{- end }}

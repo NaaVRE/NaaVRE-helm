@@ -16,6 +16,10 @@ global:
             users:
                 - username: ENC[AES256_GCM,data:1B34Q03xIQ==,iv:bfgPd2+BT+kUz9jBW5YkGKbq6vB8FPxwmbfzvIeaVrQ=,tag:9Bz6ng22fW4m5+47ns1v6Q==,type:str]
                   password: ENC[AES256_GCM,data:8Ckuixk2MA3qTO8BCDrljRdqkIaJnYOfeBPdC39pcs0=,iv:OmCsXRbWJR4Q3Xx70ESZYwnHTH+ldUXQ3iWUW5jcFko=,tag:IfC3u7mmil7w1eBOo2SiZA==,type:str]
+                - username: ENC[AES256_GCM,data:ED6YnQ==,iv:tmQxFV0VVkbXv/fh4xkH/OtChvOmYlm/shvqnLiqGdE=,tag:zeCkFgX9Vsa+L/EKPtvueA==,type:str]
+                  password: ENC[AES256_GCM,data:aSayj+MWz0vq/la8nKhL2nI4BLjcJEEubV2ylKSrbIo=,iv:WIe+UVDVguUkrjqp4MueQjAwd7FfRwnzIxynqph/OhM=,tag:vblablJa6jhJ737VX7AW1w==,type:str]
+                - username: ENC[AES256_GCM,data:vbTNbZ17,iv:CSQcSh4AvB9diyGk6xo5kMDp2rnTFD9HuSnc4DS3DsA=,tag:V+40FAyYR93gbVIXcGHsKw==,type:str]
+                  password: ENC[AES256_GCM,data:fCtFZkL7CGN37eoWAXjRAUWFeEOxnSYZCOIvb/cPaT0=,iv:ZoPrAqLjMwWN585vLILIEKklX4yiSWl49EMg7u7oKYU=,tag:TI05qK1aQr+RzmE9UAavUQ==,type:str]
             postgresql:
                 password: ENC[AES256_GCM,data:aYA1A9qdQZ/71b22QNaUNGzGGA6CFavOUar38hZz4LM=,iv:d1F2Dem33D1PhRKdGFZ8/qzkJAYDMqGuJtRADY+8YbU=,tag:Pli/72g02KhGsTFrbg4ceA==,type:str]
         naavreCatalogueService:
@@ -72,8 +76,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-01T09:37:54Z"
-    mac: ENC[AES256_GCM,data:46Fk8wh0y3gBm2KnFPTzdeQMjQfrnqSH/h6INNY2uIctvtOqTWTJcN35I0YU/hq6aMVLce3KuhzuTl5kLFOIAdsw7ccVQi1cmwLLxK5r5GYFmOYHrMpA2xEqv1bfkbYk8zSYalHUv638O9mELYydT60m4s4Uepcw/I88Bv0a+Ak=,iv:GR1WBOm9n857y3iifCsjd6jG/QsaAqCCqxhNZM9bbXg=,tag:HID7G7ue9Ztz/ccsVlsCCg==,type:str]
+    lastmodified: "2025-04-01T10:09:18Z"
+    mac: ENC[AES256_GCM,data:2LJ5DBdGCXmyiLAibXrY+/HR/3CnL0HVxDs3KA3LwLPp4gBKxxGip8uolzb8+dvVFUr2+RdcGQiLMGT1KNxu2hR4Rjr8S3K9kx9KKXPqJMYB+B55/+bL/AvCtG08YsN7wiZNtR3QoQjLCt+vGvSq0HXwjeS55d745y/JSNTn61I=,iv:njlOM2gvPGFs/q3AQVj7uWOnVCRVgWpZCchiDA7mQWA=,tag:965q84bSTmvXK8qfTYK8MQ==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

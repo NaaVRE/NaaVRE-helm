@@ -8,5 +8,6 @@ values/*.yaml
 !values/values.yaml
 !values/values-example-*.yaml
 !values/values-*.sops.yaml
+*.dec
 
 *.drawio.bkp

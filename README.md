@@ -55,6 +55,56 @@ helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre
 helm -n naavre uninstall naavre
 ```
 
+## Secrets and deployment values
+
+Secrets and deployment values are managed with [SOPS](https://github.com/getsops/sops) and [helm-secrets](https://github.com/jkroepke/helm-secrets).
+
+### Initial setup
+
+-  Configure SOPS with VLIC's keys ([documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md); private)).
+   Don't forget to set the `AWS_PROFILE` environment variable for the project.
+-  Install `helm-secrets`
+   ```shell
+   helm plugin install https://github.com/jkroepke/helm-secrets
+   ```
+
+### Create a new encrypted values file
+
+- Create a new _unencrypted_ values file (same as in the [Deployment](#deployment) section):
+  ```shell
+  cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
+  ```
+
+- Encrypt it:
+  ```shell
+  helm secrets encrypt values/values-deploy-my-deployment.yaml > values/values-deploy-my-deployment.sops.yaml
+  ```
+
+- Remove the _unencrypted_ file:
+  ```shell
+  rm values/values-deploy-my-deployment.yaml
+  ```
+
+The encrypted file (`values-*.sops.yaml`) can safely commited to Git.
+
+### Edit an encrypted values file
+
+```shell
+helm secrets edit values/values-deploy-my-deployment.sops.yaml
+```
+
+Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
+
+### Deploy with encrypted values
+
+```shell
+root_values="./values/values-deploy-my-deployment.sops.yaml"
+release_name="naavre"
+namespace="naavre"
+helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
+helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+```
+
 ## Advanced setups
 
 ### Run a command after starting Jupyter Lab

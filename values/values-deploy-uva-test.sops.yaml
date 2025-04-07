@@ -62,9 +62,6 @@ jupyterhub:
             cell_github_token: ENC[AES256_GCM,data:Hb9raIHHPQcisaukzrqWv9ifeZoxoX0Yd68LWKfKgfSJGv2hr6HDyY5mS31cE6/bxGoMUG6c1TsMnn3rumIacx3hvrw2vJdlKMmN/doWqK7khvTMOXzsHtsK8aBD,iv:dslCsQ02XKzwmJLasaP1UxhdO8bCJsm2tMOyH7o6VVQ=,tag:Z+zSk6BrwApWwQxyqqpWoQ==,type:str]
             registry_url: ENC[AES256_GCM,data:nY1FOwTgGCz6mNRhd/PbT4THBcEFn/MWXw+LrWh/B6Ae,iv:WjFbompa2s0jhK6SAA8C6bBDhfhi3WMD8GB/syFtdIk=,tag:aAGfmV4jh/WEfNIoTI1bKQ==,type:str]
           postStartShSnippet: ENC[AES256_GCM,data:kNnefk6U0OeM3Umu+xcgGEwPGrZ9JA==,iv:OLRbhVoWPi2UxAcZNRmjY7JSrPPmJhviAQIQO6YHIwM=,tag:m0Cse3ok/gYlm9nc5SNDyQ==,type:str]
-naavreCatalogueService:
-    conf:
-        dev_mode: ENC[AES256_GCM,data:dBvSRw==,iv:OM40rtJr7ep7V/X4belasM89PBoXSn+WHaAPkSvX5mM=,tag:r3NT8gzZ5x09nJ02KXV7og==,type:bool]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -79,8 +76,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-07T11:13:46Z"
-    mac: ENC[AES256_GCM,data:vtW81HpM8Vfcsctne5CqBE47gEOor0pB+tnUB2x5UgPScPPGLDARoeTrU1LrZRvF6YbEpeX2dQ3hFgnmAhU2xhVuolgT9l9znhp4nY9/kgVi3j20BfJECqNfQODVSlGShQ+0RITkHpyx6JK3RQtw7PTb2mxcoCrrFfAK1GBjo9Q=,iv:b/oVnlxHopXwg98mwjiNXumLNNPUY0i7n7Mg2qTnwVU=,tag:UbsQnw3A7Y2gA9Nh5TDNiQ==,type:str]
+    lastmodified: "2025-04-01T10:09:18Z"
+    mac: ENC[AES256_GCM,data:2LJ5DBdGCXmyiLAibXrY+/HR/3CnL0HVxDs3KA3LwLPp4gBKxxGip8uolzb8+dvVFUr2+RdcGQiLMGT1KNxu2hR4Rjr8S3K9kx9KKXPqJMYB+B55/+bL/AvCtG08YsN7wiZNtR3QoQjLCt+vGvSq0HXwjeS55d745y/JSNTn61I=,iv:njlOM2gvPGFs/q3AQVj7uWOnVCRVgWpZCchiDA7mQWA=,tag:965q84bSTmvXK8qfTYK8MQ==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

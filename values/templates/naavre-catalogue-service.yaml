@@ -24,6 +24,7 @@ naavre-catalogue-service:
   conf:
     base_path: "/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}"
     oidc_configuration_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
+    dev_mode: "{{ .Values.naavreCatalogueService.conf.dev_mode }}"
     django:
       secret_key: "{{ .Values.global.secrets.naavreCatalogueService.secretKey }}"
       superuser_email: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.email }}"

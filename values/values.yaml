@@ -118,6 +118,8 @@ naavreCatalogueService:
   enabled: true
   ingress:
     basePath: /naavre-catalogue-service
+  conf:
+    dev_mode: false
 
 naavreContainerizerService:
   enabled: true

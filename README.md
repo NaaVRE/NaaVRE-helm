@@ -40,10 +40,11 @@ Render the `values` chart (step 1) and deploy the `naavre` chart (step 2):
 
 ```shell
 root_values="./values/values-deploy-my-deployment.yaml"
-release_name="naavre"
+context="minikube"
 namespace="naavre"
+release_name="naavre"
 helm template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
-helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 ```
 
 > [!NOTE]
@@ -99,10 +100,11 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 
 ```shell
 root_values="./values/values-deploy-my-deployment.sops.yaml"
-release_name="naavre"
+context="minikube"
 namespace="naavre"
+release_name="naavre"
 helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
-helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 ```
 
 ## Advanced setups

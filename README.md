@@ -105,6 +105,7 @@ namespace="naavre"
 release_name="naavre"
 helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+rm -r values/rendered/
 ```
 
 ## Advanced setups

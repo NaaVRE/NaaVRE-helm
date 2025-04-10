@@ -54,14 +54,14 @@ jupyterhub:
           description: ENC[AES256_GCM,data:F/gyHtTR8idvDSd9ntobz4abnDWoFzAekff/oYzvkxMQpK0Pf2o=,iv:TrL8FvPwvgiTDvvK8Uyg2bh26Ke6zKLXz+jeZWECBU4=,tag:GFeZg82eSFfOpyXhJyilsA==,type:str]
           image:
             name: ENC[AES256_GCM,data:pvhaPtoxepH1/pK+/tuwx97Waw8o8dJYkq22wXtH2E9w/8MWA/5qi73J5+tBptuy,iv:5I5y1SdAPmrxkExIxCsEMkj9vRKr3yjtAxfS7X70m2c=,tag:AHGlnKb22jqW9ZzQn37iVA==,type:str]
-            tag: ENC[AES256_GCM,data:3UEGv5cn,iv:LXvLk0+wwYcY5iDBW95yiQvnXsmcYwLpatE4jxwcEyI=,tag:Yuu+yqKlKV3rUwpmFfwW6A==,type:str]
+            tag: ENC[AES256_GCM,data:Adyd+Zq/,iv:IenpG3aP6JA0EwkmzTknZJ2Vw4SdhKTVQQrbO+EZa/A=,tag:d0fEK7wAqZefCn0vAvqOTg==,type:str]
           configuration:
             base_image_tags_url: ENC[AES256_GCM,data:RGz999z0WKy9TeC1MJPyfEEYhdGFB97eQ7xzTRXkCUxqHl1PhTfurnYpZ9AX1Tgp47hOM0hYUEHkcxJEJxdx20VrRmJ50CA1Uk1sIsR3TA==,iv:TdPgVqlpyWWH+dIrzGfVVcGVLKw1Y52kwyJ0+r7J48I=,tag:vVEqAsF/PM1uFIRq8MRyRA==,type:str]
             module_mapping_url: ENC[AES256_GCM,data:ss+al0sb3CKDoc91dgyuDjBuO1q2N5eiw6G0chbPgnG7nEfdC1WYei5J4M8jYAX+h775xzlSHwDgQqwazd30z2+PNoCuzh8Zv/4fgg==,iv:Xz6ii7bpAbZQL9xji9QQpOfu49kTfh8fPe09aO1GHB4=,tag:gtyGS25NPDo62BSpKs+KWA==,type:str]
             cell_github_url: ENC[AES256_GCM,data:I9wv3Lf3jLgaHjplHsX6s0caRhidfQVq53eFdidxfB7DxpJz13v9XvuBCKU=,iv:W/BZl2z71cvSBlvpWsi/yCJvtxM2XagbnRvbn6ceuuM=,tag:jVQRACx0cOP4veGmZ4xYDA==,type:str]
             cell_github_token: ENC[AES256_GCM,data:Hb9raIHHPQcisaukzrqWv9ifeZoxoX0Yd68LWKfKgfSJGv2hr6HDyY5mS31cE6/bxGoMUG6c1TsMnn3rumIacx3hvrw2vJdlKMmN/doWqK7khvTMOXzsHtsK8aBD,iv:dslCsQ02XKzwmJLasaP1UxhdO8bCJsm2tMOyH7o6VVQ=,tag:Z+zSk6BrwApWwQxyqqpWoQ==,type:str]
             registry_url: ENC[AES256_GCM,data:nY1FOwTgGCz6mNRhd/PbT4THBcEFn/MWXw+LrWh/B6Ae,iv:WjFbompa2s0jhK6SAA8C6bBDhfhi3WMD8GB/syFtdIk=,tag:aAGfmV4jh/WEfNIoTI1bKQ==,type:str]
-          postStartShSnippet: ENC[AES256_GCM,data:kNnefk6U0OeM3Umu+xcgGEwPGrZ9JA==,iv:OLRbhVoWPi2UxAcZNRmjY7JSrPPmJhviAQIQO6YHIwM=,tag:m0Cse3ok/gYlm9nc5SNDyQ==,type:str]
+          postStartShSnippet: ENC[AES256_GCM,data:vEqyEi6iZdcADKt1B+QVA+8Y0W3cY4Rdzwm6sMxdX3dkFQCRkpgl9uGn9CA8Ta4ye23FxuxXNYMx637Yc042j9nLoN0OQA2bxHJy3tHmGyi3HAv5bzhCMUfh/mABVxCwwEk9IOL/l5VoO1vDWlG1GnONK1D5ww6QUU9YNFKqcHx6Qw==,iv:J6k4OXIrBM3O8nBpCbG7y6S1b20FEjFQraODrc2MVWw=,tag:8ZodMnNDf6PuyZljx82HJA==,type:str]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -76,8 +76,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-01T10:09:18Z"
-    mac: ENC[AES256_GCM,data:2LJ5DBdGCXmyiLAibXrY+/HR/3CnL0HVxDs3KA3LwLPp4gBKxxGip8uolzb8+dvVFUr2+RdcGQiLMGT1KNxu2hR4Rjr8S3K9kx9KKXPqJMYB+B55/+bL/AvCtG08YsN7wiZNtR3QoQjLCt+vGvSq0HXwjeS55d745y/JSNTn61I=,iv:njlOM2gvPGFs/q3AQVj7uWOnVCRVgWpZCchiDA7mQWA=,tag:965q84bSTmvXK8qfTYK8MQ==,type:str]
+    lastmodified: "2025-04-10T11:35:56Z"
+    mac: ENC[AES256_GCM,data:CRrZYszPZcPSv0KJfQa/W4Vvu2nhr2qyz/HA8Rl3JZdfE77GLLQFj9MWihojWdjwiyXCd3deugLJyu4LU/WA0Ck9AD2GZSfBSO6v8hPgW4k9l2I6FmvmAAcMoCYu4Y/8usbsrZ+0QFFjZ/Lza3ieYCWJMISKsEoozXHlqH8/LZ8=,iv:xj1BgW+fPesyyqwREYVFjOz7npBOCFjMC8tR+NvBTrI=,tag:elFgEYmF06dDsKCycL/3Fg==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

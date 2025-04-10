@@ -125,6 +125,34 @@ jupyterhub:
         gitpuller https://github.com/user/repo.git main folder
 ```
 
+### Hide kernels from the launcher
+
+To hide kernels from the launcher, customize `CondaKernelSpecManager` in `/home/jovyan/.jupyter/jupyter_config.json` on the Jupyter `singleuser` pod.
+
+For instance, to hide the default kernel "Python [conda env:base]":
+
+```json
+{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}
+```
+
+or to hide the kernel "Python [conda env:vanilla]":
+
+```json
+{"CondaKernelSpecManager": {"env_filter": "/opt/conda/envs/vanilla"}}
+```
+
+This can be achieved through the virtual lab's `postStartShSnippet` (see [Run a command after starting Jupyter Lab](#run-a-command-after-starting-jupyter-lab)):
+
+```shell
+jupyterhub:
+  vlabs:
+    - slug: openlab
+      ...
+      postStartShSnippet: |
+        ... other tasks
+        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' >> /home/jovyan/.jupyter/jupyter_config.json
+```
+
 ### TLS certificates with cert-manager
 
 This shows how to automatically provision TLS certificates with [cert-manager](https://cert-manager.io/).

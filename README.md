@@ -150,7 +150,7 @@ jupyterhub:
       ...
       postStartShSnippet: |
         ... other tasks
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' >> /home/jovyan/.jupyter/jupyter_config.json
+        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
 ```
 
 ### TLS certificates with cert-manager

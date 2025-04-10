@@ -61,7 +61,7 @@ jupyterhub:
             cell_github_url: ENC[AES256_GCM,data:I9wv3Lf3jLgaHjplHsX6s0caRhidfQVq53eFdidxfB7DxpJz13v9XvuBCKU=,iv:W/BZl2z71cvSBlvpWsi/yCJvtxM2XagbnRvbn6ceuuM=,tag:jVQRACx0cOP4veGmZ4xYDA==,type:str]
             cell_github_token: ENC[AES256_GCM,data:Hb9raIHHPQcisaukzrqWv9ifeZoxoX0Yd68LWKfKgfSJGv2hr6HDyY5mS31cE6/bxGoMUG6c1TsMnn3rumIacx3hvrw2vJdlKMmN/doWqK7khvTMOXzsHtsK8aBD,iv:dslCsQ02XKzwmJLasaP1UxhdO8bCJsm2tMOyH7o6VVQ=,tag:Z+zSk6BrwApWwQxyqqpWoQ==,type:str]
             registry_url: ENC[AES256_GCM,data:nY1FOwTgGCz6mNRhd/PbT4THBcEFn/MWXw+LrWh/B6Ae,iv:WjFbompa2s0jhK6SAA8C6bBDhfhi3WMD8GB/syFtdIk=,tag:aAGfmV4jh/WEfNIoTI1bKQ==,type:str]
-          postStartShSnippet: ENC[AES256_GCM,data:vEqyEi6iZdcADKt1B+QVA+8Y0W3cY4Rdzwm6sMxdX3dkFQCRkpgl9uGn9CA8Ta4ye23FxuxXNYMx637Yc042j9nLoN0OQA2bxHJy3tHmGyi3HAv5bzhCMUfh/mABVxCwwEk9IOL/l5VoO1vDWlG1GnONK1D5ww6QUU9YNFKqcHx6Qw==,iv:J6k4OXIrBM3O8nBpCbG7y6S1b20FEjFQraODrc2MVWw=,tag:8ZodMnNDf6PuyZljx82HJA==,type:str]
+          postStartShSnippet: ENC[AES256_GCM,data:ak7kAY2xUF03Xp+MkixxzJFXpSosrXwSZJl/AilUxKSOOXxeX3JYcCbC0V+3UAT0bdy2Ovau5yxFOmLDCcPvT7r/tEdi/geRwrgMJ9eOKYnbavaoVvtID6gi4LW07KPlV9ZvrgPd0D5vf8kosS20EevcXo6TkmMnV76X7S1w3bZK,iv:MYtS19C86LvxUuztz1NwppEPZXhgh33qzfK0YSW8Xvw=,tag:j9Hmw9DZJhsMBB9wh3jlyQ==,type:str]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -76,8 +76,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-10T11:35:56Z"
-    mac: ENC[AES256_GCM,data:CRrZYszPZcPSv0KJfQa/W4Vvu2nhr2qyz/HA8Rl3JZdfE77GLLQFj9MWihojWdjwiyXCd3deugLJyu4LU/WA0Ck9AD2GZSfBSO6v8hPgW4k9l2I6FmvmAAcMoCYu4Y/8usbsrZ+0QFFjZ/Lza3ieYCWJMISKsEoozXHlqH8/LZ8=,iv:xj1BgW+fPesyyqwREYVFjOz7npBOCFjMC8tR+NvBTrI=,tag:elFgEYmF06dDsKCycL/3Fg==,type:str]
+    lastmodified: "2025-04-10T14:46:12Z"
+    mac: ENC[AES256_GCM,data:iSQSXKzD3gN6EDqJ4lDJY2RNhN1wYq7IyPY86iYotZ9WjaVibzBT1I01wD/l1ajh922CqTaOmT8AkIYJrSdm3j+AB/23SXtKY8N1amfxZlTRv6J4Qr/TntFtMPs9LX+xdmc6lMyf0AzTRlfOsom8FmIIliOq3e23NA42MXqOf2o=,iv:un9jO5/qPACWrKcIvYmTYlA4E+RLggrEi2RU/gHHFv4=,tag:tE1FtcgwQBZr/9CtYUll0Q==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

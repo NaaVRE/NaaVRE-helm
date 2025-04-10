@@ -119,7 +119,8 @@ For each virtual lab, you can provide a snippet that will be executed by
 ```yaml
 jupyterhub:
   vlabs:
-    - slug: openlab
+    openlab:
+      slug: openlab
       ...
       postStartShSnippet: |
         echo "Pulling some data"
@@ -147,7 +148,8 @@ This can be achieved through the virtual lab's `postStartShSnippet` (see [Run a 
 ```shell
 jupyterhub:
   vlabs:
-    - slug: openlab
+    openlab:
+      slug: openlab
       ...
       postStartShSnippet: |
         ... other tasks

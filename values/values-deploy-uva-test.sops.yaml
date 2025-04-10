@@ -49,19 +49,20 @@ global:
                 password: ENC[AES256_GCM,data:zEPEm2OoXsRblIrQZPdXiSlLi2EJr4gXoGBMI7phwvo=,iv:7H35QDTnjKvANeSg2eIOBZlPph6mHADhDQ2xT4YGsAQ=,tag:eIHT9XxHX/L9lJ9/V/X6Tw==,type:str]
 jupyterhub:
     vlabs:
-        - slug: ENC[AES256_GCM,data:SK2K+kyJtg==,iv:6DrohAcXOdN3QG5V9YkuB17+6pnqNIdtq64vhK9QeBI=,tag:ksDmOxkJPn+JSblQSf9vmw==,type:str]
-          title: ENC[AES256_GCM,data:g0Lvbco2br4JZdi2z2T0,iv:lpVgG45jLYTH9jlHP3glHuRyyrl1fyhf6Nq+fACnyzw=,tag:QM7txuYJ5LsDdamfcIK35A==,type:str]
-          description: ENC[AES256_GCM,data:F/gyHtTR8idvDSd9ntobz4abnDWoFzAekff/oYzvkxMQpK0Pf2o=,iv:TrL8FvPwvgiTDvvK8Uyg2bh26Ke6zKLXz+jeZWECBU4=,tag:GFeZg82eSFfOpyXhJyilsA==,type:str]
-          image:
-            name: ENC[AES256_GCM,data:pvhaPtoxepH1/pK+/tuwx97Waw8o8dJYkq22wXtH2E9w/8MWA/5qi73J5+tBptuy,iv:5I5y1SdAPmrxkExIxCsEMkj9vRKr3yjtAxfS7X70m2c=,tag:AHGlnKb22jqW9ZzQn37iVA==,type:str]
-            tag: ENC[AES256_GCM,data:Adyd+Zq/,iv:IenpG3aP6JA0EwkmzTknZJ2Vw4SdhKTVQQrbO+EZa/A=,tag:d0fEK7wAqZefCn0vAvqOTg==,type:str]
-          configuration:
-            base_image_tags_url: ENC[AES256_GCM,data:RGz999z0WKy9TeC1MJPyfEEYhdGFB97eQ7xzTRXkCUxqHl1PhTfurnYpZ9AX1Tgp47hOM0hYUEHkcxJEJxdx20VrRmJ50CA1Uk1sIsR3TA==,iv:TdPgVqlpyWWH+dIrzGfVVcGVLKw1Y52kwyJ0+r7J48I=,tag:vVEqAsF/PM1uFIRq8MRyRA==,type:str]
-            module_mapping_url: ENC[AES256_GCM,data:ss+al0sb3CKDoc91dgyuDjBuO1q2N5eiw6G0chbPgnG7nEfdC1WYei5J4M8jYAX+h775xzlSHwDgQqwazd30z2+PNoCuzh8Zv/4fgg==,iv:Xz6ii7bpAbZQL9xji9QQpOfu49kTfh8fPe09aO1GHB4=,tag:gtyGS25NPDo62BSpKs+KWA==,type:str]
-            cell_github_url: ENC[AES256_GCM,data:I9wv3Lf3jLgaHjplHsX6s0caRhidfQVq53eFdidxfB7DxpJz13v9XvuBCKU=,iv:W/BZl2z71cvSBlvpWsi/yCJvtxM2XagbnRvbn6ceuuM=,tag:jVQRACx0cOP4veGmZ4xYDA==,type:str]
-            cell_github_token: ENC[AES256_GCM,data:Hb9raIHHPQcisaukzrqWv9ifeZoxoX0Yd68LWKfKgfSJGv2hr6HDyY5mS31cE6/bxGoMUG6c1TsMnn3rumIacx3hvrw2vJdlKMmN/doWqK7khvTMOXzsHtsK8aBD,iv:dslCsQ02XKzwmJLasaP1UxhdO8bCJsm2tMOyH7o6VVQ=,tag:Z+zSk6BrwApWwQxyqqpWoQ==,type:str]
-            registry_url: ENC[AES256_GCM,data:nY1FOwTgGCz6mNRhd/PbT4THBcEFn/MWXw+LrWh/B6Ae,iv:WjFbompa2s0jhK6SAA8C6bBDhfhi3WMD8GB/syFtdIk=,tag:aAGfmV4jh/WEfNIoTI1bKQ==,type:str]
-          postStartShSnippet: ENC[AES256_GCM,data:ak7kAY2xUF03Xp+MkixxzJFXpSosrXwSZJl/AilUxKSOOXxeX3JYcCbC0V+3UAT0bdy2Ovau5yxFOmLDCcPvT7r/tEdi/geRwrgMJ9eOKYnbavaoVvtID6gi4LW07KPlV9ZvrgPd0D5vf8kosS20EevcXo6TkmMnV76X7S1w3bZK,iv:MYtS19C86LvxUuztz1NwppEPZXhgh33qzfK0YSW8Xvw=,tag:j9Hmw9DZJhsMBB9wh3jlyQ==,type:str]
+        openlab:
+            slug: ENC[AES256_GCM,data:iVEfVxj0vg==,iv:NbhY8JPoXesONa+/CW5+6Ksj0e/OOY/oV/AW8Zooz7E=,tag:blGPfFA0lyk0M6D8+NqXEA==,type:str]
+            title: ENC[AES256_GCM,data:RIF6GfstuM/ql5+xnmnO,iv:3ErEKNJl0xTdNjr7uR2UZ9Hw0GcGSsvWstDTPRm5fs0=,tag:aHBaBOSBFiN4wF59l3DCLg==,type:str]
+            description: ENC[AES256_GCM,data:vspFEW6gn0x2lyxJyHtjsb12SgPM0SeFcxSnMCDsuk0P0iIueMQ=,iv:s4lG9Y0mS/bL5LniQ7PJQH3LkTsWz32MSwXOzFaOyns=,tag:fczm5yHKSwVwDRjSd0VGeg==,type:str]
+            image:
+                name: ENC[AES256_GCM,data:8ibPveLxFHzQNoH89XyVll44Zn/THI/Gqgd3Nv2uUWd3nvBAIc9srhieuspbsjXh,iv:WgOFJsmbSIq70yugx7CIcULZydO2+S9h3UPUS9i/lDE=,tag:TcRmC7wP8RF4Dz4C/FOXGA==,type:str]
+                tag: ENC[AES256_GCM,data:DJZO4GS7,iv:mGFsNCNvWQi3zgIey3O3NZjYgV8a7OZmlbHZ8oZjras=,tag:FQbIGipu5XkhWAgT6vhzFw==,type:str]
+            configuration:
+                base_image_tags_url: ENC[AES256_GCM,data:YuGu+bqtRtcJLAicD4JvgVbN9v1+7ThdLfZAq2h08phfaDz2BdXgsXQUvd5zXRBPHYyH11KD9oOEZfd3osUUsFYa5Kk/wD27JtXeerbYkg==,iv:cbW66GtFWwuaiTkql5ZubpiAhHjGRmBTu1PKhh8SHYM=,tag:arNuf9phoQsbK/+FSdng3w==,type:str]
+                module_mapping_url: ENC[AES256_GCM,data:dVaCN5P4+ESws/FALkPl8152uPjg7jHwPl/76Rx0msr7wiwztnNapeF9KpUFOz5zbS12IIPsF16TmOl0vQBdDsinr16xyGqtCcsbzA==,iv:xb6y6W66t+0sOyX8aAsIKJnpsDNmCqjo/YiN6u3OB74=,tag:5O9DvQU2sdJMdcVr8MAL8g==,type:str]
+                cell_github_url: ENC[AES256_GCM,data:YeWMSpOee2jn8JRlx9V9FO8Pz7SPNEeZFExeaxQL/nD6uiWEUhyl2/QTBZ0=,iv:zc3C/MuOQlmVQ0nc5cmARH0t85HwKxwIKht8zBTM8Es=,tag:tqzbgtWt1sgf7dV6+4AxNg==,type:str]
+                cell_github_token: ENC[AES256_GCM,data:8/fQbGEJzdzKLBsbziigbDjpUSsezpunipd4Frf4Uczu2+rwsqCwqH3tikLnXgqG/ePlMfdeASO27RwydOKa6rsoKvauEQ+7Ujp+ofmaq0nvBkdmLWVopWxusZ2w,iv:xnAMaSiw+a4AhO7XJZL9u4neaoey5PU5KzS3a+vqxnM=,tag:kDKCbmTchgHYl8VPilJGUA==,type:str]
+                registry_url: ENC[AES256_GCM,data:OfAZgjsW+qmszHxKlsNsITrh+zXZiEu7YP7Ou8B0Jm9y,iv:fdF29f9hvXvuB3uydeBVzar3cqMQw6wO395DclthybE=,tag:DyThD1xefDSZyTaIf/VtOw==,type:str]
+            postStartShSnippet: ENC[AES256_GCM,data:KZIO4RbPEcw7dXb91lbbPdGikWfHhIkhSUZTy6jDCwCBq5ljJhKVSHM6FzUEpZdzjxfYXJQtSqSk9K1ovjGRINRXC4sS5EENHVMHWujzzRNFLfHNj3H3ae7Y8bxzTJ5P+S1ewD1Pu4x27R8B31qlDNJcQqBxV8Vm8mM2cQ7mliEc,iv:t09mFK8DSOuNXaEEG18KKhALu9xEKT15KH9RQU9AaOk=,tag:vhY6bktGutZ3BkjSYuPXVw==,type:str]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -76,8 +77,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-10T14:46:12Z"
-    mac: ENC[AES256_GCM,data:iSQSXKzD3gN6EDqJ4lDJY2RNhN1wYq7IyPY86iYotZ9WjaVibzBT1I01wD/l1ajh922CqTaOmT8AkIYJrSdm3j+AB/23SXtKY8N1amfxZlTRv6J4Qr/TntFtMPs9LX+xdmc6lMyf0AzTRlfOsom8FmIIliOq3e23NA42MXqOf2o=,iv:un9jO5/qPACWrKcIvYmTYlA4E+RLggrEi2RU/gHHFv4=,tag:tE1FtcgwQBZr/9CtYUll0Q==,type:str]
+    lastmodified: "2025-04-10T15:32:43Z"
+    mac: ENC[AES256_GCM,data:/eJ/8VcYYIRJIAKxitZnjoUAr2yNI9NJEePjioWCBxqOjhvilbBn6BE23fmhz1Bw/O3GUcPmc+jyMG/xkKeOzj/y9V6MjmiyXt4pwUWZC6QbyGI7bMl0ARpqMQbUuUYeVwxRbPbOwmRAagARqumUmKehPAX2rwf9LeSox4ISXzs=,iv:wrRHiP0zba5X0p0XJMd1YBAMay7A8zz9RsooAegxnEQ=,tag:Ah29t2UqQlYdsMHKqR9SJg==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

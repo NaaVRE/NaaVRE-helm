@@ -24,32 +24,28 @@ naavre-workflow-service:
   conf:
     rootPath: "/{{ trimAll "/" (.Values.naavreWorkflowService.ingress.basePath) }}"
     virtual_labs_configuration:
-      rawJson: |
-        {
-          "vl_configurations": [
-            {{- $last := sub (len .Values.jupyterhub.vlabs) 1}}
-            {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
-            {
-              "name": "{{ $vlab.slug }}",
-              "wf_engine_config": {
-                "name": "argo",
-                {{- if $.Values.global.externalServices.argoWorkflows.useExternal }}
-                "namespace": "{{ $.Values.global.externalServices.argoWorkflows.namespace }}",
-                "api_endpoint": "{{ $.Values.global.externalServices.argoWorkflows.url }}/",
-                "access_token": "{{ $.Values.global.externalServices.argoWorkflows.token }}",
-                "service_account": "{{ $.Values.global.externalServices.argoWorkflows.executor_service_account }}",
-                {{- else}}
-                "namespace": "{{ $.Values.global.namespace }}",
-                "api_endpoint": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.argoWorkflows.ingress.basePath }}/",
-                "access_token": "++argo-vreapi.service-account-token++",
-                "service_account": "argo-executor",
-                {{- end}}
-                "workdir_storage_size": "1Gi"
-              }
-            }{{ if ne $index $last }},{{ end }}
+      {{- define "workflow_service_vl_configuration" -}}
+      vl_configurations:
+        {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+        - name: "{{ $vlab.slug }}"
+          wf_engine_config:
+            name: "argo"
+            {{- if $.Values.global.externalServices.argoWorkflows.useExternal }}
+            namespace: "{{ $.Values.global.externalServices.argoWorkflows.namespace }}"
+            api_endpoint: "{{ $.Values.global.externalServices.argoWorkflows.url }}/"
+            access_token: "{{ $.Values.global.externalServices.argoWorkflows.token }}"
+            service_account: "{{ $.Values.global.externalServices.argoWorkflows.executor_service_account }}"
+            {{- else }}
+            namespace: "{{ $.Values.global.namespace }}"
+            api_endpoint: "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.argoWorkflows.ingress.basePath }}/"
+            access_token: "++argo-vreapi.service-account-token++"
+            service_account: "argo-executor"
             {{- end }}
-          ]
-        }
+            workdir_storage_size: "1Gi"
+        {{- end }}
+      {{- end }}
+      rawJson: |
+        {{- include "workflow_service_vl_configuration" . | fromYaml | toPrettyJson | nindent 8 }}
 
   env:
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"

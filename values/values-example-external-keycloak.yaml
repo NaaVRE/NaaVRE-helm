@@ -54,7 +54,8 @@ keycloak:
 
 jupyterhub:
   vlabs:
-    - slug: openlab
+    openlab:
+      slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
       image:

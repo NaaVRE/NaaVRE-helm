@@ -24,23 +24,19 @@ naavre-containerizer-service:
   conf:
     rootPath: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}"
     virtual_labs_configuration:
+      {{- define "containerizer_service_vl_configuration" -}}
+      vl_configurations:
+        {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+        - name: "{{ $vlab.slug }}"
+          base_image_tags_url: "{{ $vlab.configuration.base_image_tags_url }}"
+          module_mapping_url: "{{ $vlab.configuration.module_mapping_url }}"
+          cell_github_url: "{{ $vlab.configuration.cell_github_url }}"
+          cell_github_token: "{{ $vlab.configuration.cell_github_token }}"
+          registry_url: "{{ $vlab.configuration.registry_url }}"
+        {{- end }}
+      {{- end }}
       rawJson: |
-        {
-          "vl_configurations": [
-            {{- $last := sub (len .Values.jupyterhub.vlabs) 1}}
-            {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
-            {
-              "name": "{{ $vlab.slug }}",
-              "base_image_tags_url": "{{ $vlab.configuration.base_image_tags_url }}",
-              "module_mapping_url": "{{ $vlab.configuration.module_mapping_url }}",
-              "cell_github_url": "{{ $vlab.configuration.cell_github_url }}",
-              "cell_github_token": "{{ $vlab.configuration.cell_github_token }}",
-              "registry_url": "{{ $vlab.configuration.registry_url }}"
-            }{{ if ne $index $last }},{{ end }}
-            {{- end }}
-          ]
-        }
-
+        {{- include "containerizer_service_vl_configuration" . | fromYaml | toPrettyJson | nindent 8 }}
 
   env:
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"

@@ -89,8 +89,8 @@ argo-workflows:
       hosts:
         - {{ .Values.global.ingress.domain }}
       paths:
-        - /{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}(/|$)(.*)
-      pathType: ImplementationSpecific
+        - /{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/
+      pathType: Prefix
       {{- if .Values.global.ingress.tls.enabled }}
       tls:
         - hosts:

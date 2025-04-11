@@ -4,7 +4,7 @@
 {{- $argoIngress := index .Values "argo-workflows" "server" "ingress" }}
 {{- range $host := $argoIngress.hosts }}
 {{- range $path := $argoIngress.paths }}
-http{{ if $argoIngress.tls }}s{{ end }}://{{ $host }}{{ $path | replace "(/|$)" "" | replace "(.*)" ""}}/
+http{{ if $argoIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $path }}/
 {{- end }}
 {{- end }}
 {{- end }}
@@ -12,7 +12,7 @@ http{{ if $argoIngress.tls }}s{{ end }}://{{ $host }}{{ $path | replace "(/|$)" 
 {{- if .Values.jupyterhub.enabled }}
 {{- $jupyterIngress := .Values.jupyterhub.ingress }}
 {{- range $host := $jupyterIngress.hosts }}
-http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}{{ $.Values.jupyterhub.hub.baseUrl | replace "(/|$)" "" | replace "(.*)" "" }}/
+http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $.Values.jupyterhub.hub.baseUrl }}/
 {{- end }}
 {{- end }}
 
@@ -20,21 +20,21 @@ http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}{{ $.Values.jupyterhub.h
 {{- $kscIngress := index .Values "k8s-secret-creator" "ingress" }}
 {{- range $host := $kscIngress.hosts }}
 {{- range $path := $host.paths }}
-http{{ if $kscIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/1.0.0/ui/
+http{{ if $kscIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/1.0.0/ui/
 {{- end }}
 {{- end }}
 {{- end }}
 
 {{- if .Values.keycloak.enabled }}
 {{- $keycloakIngress := .Values.keycloak.ingress }}
-http{{ if $keycloakIngress.tls }}s{{ end }}://{{ $keycloakIngress.hostname }}{{ $keycloakIngress.path | replace "($|/)" "" | replace "(.*)" "" }}
+http{{ if $keycloakIngress.tls }}s{{ end }}://{{ $keycloakIngress.hostname }}/{{ trimAll "/" $keycloakIngress.path }}/
 {{- end }}
 
 {{- if index .Values "naavre-catalogue-service" "enabled" }}
 {{- $naavreCatSvcIngress := index .Values "naavre-catalogue-service" "ingress" }}
 {{- range $host := $naavreCatSvcIngress.hosts }}
 {{- range $path := $host.paths }}
-http{{ if $naavreCatSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/
+http{{ if $naavreCatSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/
 {{- end }}
 {{- end }}
 {{- end }}
@@ -43,7 +43,7 @@ http{{ if $naavreCatSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path 
 {{- $naavreContSvcIngress := index .Values "naavre-containerizer-service" "ingress" }}
 {{- range $host := $naavreContSvcIngress.hosts }}
 {{- range $path := $host.paths }}
-http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/docs/
+http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/docs/
 {{- end }}
 {{- end }}
 {{- end }}
@@ -52,13 +52,13 @@ http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path
 {{- $naavreWfSvcIngress := index .Values "naavre-workflow-service" "ingress" }}
 {{- range $host := $naavreWfSvcIngress.hosts }}
 {{- range $path := $host.paths }}
-http{{ if $naavreWfSvcIngress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path | replace "($|/)" "" | replace "(.*)" "" }}/docs/
+http{{ if $naavreWfSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/docs/
 {{- end }}
 {{- end }}
 {{- end }}
 
 {{- if .Values.vrepaas.enabled }}
 {{- $paasIngress := .Values.vrepaas.global.ingress }}
-http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}{{- (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapi | replace "($|/)" "" | replace "(.*)" "" }}/api/
-http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}{{- (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapp | replace "($|/)" "" | replace "(.*)" "" }}/
+http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}/{{- trimAll "/" (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapi }}/api/
+http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}/{{- trimAll "/" (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapp }}/
 {{- end }}

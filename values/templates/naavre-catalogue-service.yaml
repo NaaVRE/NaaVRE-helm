@@ -12,8 +12,8 @@ naavre-catalogue-service:
     hosts:
       - host: "{{ .Values.global.ingress.domain }}"
         paths:
-          - path: "/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}($|/)"
-            pathType: ImplementationSpecific
+          - path: "/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}/"
+            pathType: Prefix
     {{- if .Values.global.ingress.tls.enabled }}
     tls:
       - hosts:

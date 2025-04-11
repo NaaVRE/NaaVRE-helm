@@ -12,8 +12,8 @@ naavre-containerizer-service:
     hosts:
       - host: "{{ .Values.global.ingress.domain }}"
         paths:
-          - path: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}($|/)"
-            pathType: ImplementationSpecific
+          - path: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}/"
+            pathType: Prefix
     {{- if .Values.global.ingress.tls.enabled }}
     tls:
       - hosts:

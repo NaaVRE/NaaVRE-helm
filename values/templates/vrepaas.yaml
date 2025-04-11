@@ -56,8 +56,13 @@ vrepaas:
       {{- end}}
 
     k8s_secret_creator:
+      {{- if .Values.global.externalServices.k8sSecretCreator.useExternal }}
+      url: "{{ .Values.global.externalServices.k8sSecretCreator.url }}"
+      token: "{{ .Values.global.externalServices.k8sSecretCreator.token }}"
+      {{- else }}
       url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
       token: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"
+      {{- end }}
 
   vreapi:
     nameOverride: "{{ include "values.fullname" . }}-vreapi"

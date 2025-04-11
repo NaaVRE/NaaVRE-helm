@@ -52,8 +52,15 @@ global:
       url: "https://example.org/argowf"
       token: "Bearer <API token>"
       executor_service_account: "executor"
+    k8sSecretCreator:
+      useExternal: true
+      url: "https://example.org/k8s-secret-creator/1.0.0/"
+      token: "<API token>"
 
 argoWorkflows:
+  enabled: false
+
+k8sSecretCreator:
   enabled: false
 
 jupyterhub:

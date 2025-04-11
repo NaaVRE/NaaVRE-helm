@@ -64,6 +64,10 @@ global:
       url: nil
       token: nil
       executor_service_account: nil
+    k8sSecretCreator:
+      useExternal: false
+      url: nil
+      token: nil
     keycloak:
       useExternal: false
       url: nil

@@ -88,6 +88,8 @@ Secrets and deployment values are managed with [SOPS](https://github.com/getsops
 
 The encrypted file (`values-*.sops.yaml`) can safely commited to Git.
 
+You can also create an unencrypted file `values-deploy-my-deployment-public.yaml` to store non-secret values. (This file needs to be explicitly white-listed in `.gitignore`.)
+
 ### Edit an encrypted values file
 
 ```shell
@@ -100,10 +102,11 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 
 ```shell
 root_values="./values/values-deploy-my-deployment.sops.yaml"
+root_values_public="./values/values-deploy-my-deployment-public.yaml"
 context="minikube"
 namespace="naavre"
 release_name="naavre"
-helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
+helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values_public" -f "$root_values" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 rm -r values/rendered/
 ```

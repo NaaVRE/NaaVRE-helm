@@ -1,11 +1,4 @@
 global:
-    namespace: ENC[AES256_GCM,data:MeW4ol+ivy+57w==,iv:F5u8F0ACiR8lDNVI2CbFLgBZYEpKbNqQa7QCsbqHpuw=,tag:hgGyJbAVnNBPBGDrELENzA==,type:str]
-    ingress:
-        domain: ENC[AES256_GCM,data:jBQJKocoowN+NGJBWh64QDtUxHFJdNM=,iv:ZU9MIKC22r6o7Ojcuzh9/2fZiOECf+Mwe4pQ91cfULs=,tag:AHOs/LGY4gSQOpf4KtKqBw==,type:str]
-        commonAnnotations:
-            cert-manager.io/cluster-issuer: ENC[AES256_GCM,data:NbS3HHk9XEqVZuyXu64h/A==,iv:VN0jemuC/ucIXXe6RbX0qjTFUuMiKoZy3ZWyPO8UzPA=,tag:UYy/CLQoZX7YdbgNLa19Nw==,type:str]
-        tls:
-            enabled: ENC[AES256_GCM,data:UArpWw==,iv:aF3gOw5mEcqko5tsX4r4iz70Qk9GeVzMnw008xL6eRw=,tag:2tR/dC1+hPJqrN/73bIwzw==,type:bool]
     secrets:
         k8sSecretCreator:
             apiToken: ENC[AES256_GCM,data:oUhU2n6G1KF+rTS4y5PClGNNUY76kxoLRAT9uDui5QU=,iv:NrEJpUz9+W0Z6K26gcX4Hg5HXNz+z4Y3bqlHHDvYGgM=,tag:WubR1EqWy2xfgEfMCPNaTg==,type:str]
@@ -50,19 +43,8 @@ global:
 jupyterhub:
     vlabs:
         openlab:
-            slug: ENC[AES256_GCM,data:iVEfVxj0vg==,iv:NbhY8JPoXesONa+/CW5+6Ksj0e/OOY/oV/AW8Zooz7E=,tag:blGPfFA0lyk0M6D8+NqXEA==,type:str]
-            title: ENC[AES256_GCM,data:RIF6GfstuM/ql5+xnmnO,iv:3ErEKNJl0xTdNjr7uR2UZ9Hw0GcGSsvWstDTPRm5fs0=,tag:aHBaBOSBFiN4wF59l3DCLg==,type:str]
-            description: ENC[AES256_GCM,data:vspFEW6gn0x2lyxJyHtjsb12SgPM0SeFcxSnMCDsuk0P0iIueMQ=,iv:s4lG9Y0mS/bL5LniQ7PJQH3LkTsWz32MSwXOzFaOyns=,tag:fczm5yHKSwVwDRjSd0VGeg==,type:str]
-            image:
-                name: ENC[AES256_GCM,data:8ibPveLxFHzQNoH89XyVll44Zn/THI/Gqgd3Nv2uUWd3nvBAIc9srhieuspbsjXh,iv:WgOFJsmbSIq70yugx7CIcULZydO2+S9h3UPUS9i/lDE=,tag:TcRmC7wP8RF4Dz4C/FOXGA==,type:str]
-                tag: ENC[AES256_GCM,data:DJZO4GS7,iv:mGFsNCNvWQi3zgIey3O3NZjYgV8a7OZmlbHZ8oZjras=,tag:FQbIGipu5XkhWAgT6vhzFw==,type:str]
             configuration:
-                base_image_tags_url: ENC[AES256_GCM,data:YuGu+bqtRtcJLAicD4JvgVbN9v1+7ThdLfZAq2h08phfaDz2BdXgsXQUvd5zXRBPHYyH11KD9oOEZfd3osUUsFYa5Kk/wD27JtXeerbYkg==,iv:cbW66GtFWwuaiTkql5ZubpiAhHjGRmBTu1PKhh8SHYM=,tag:arNuf9phoQsbK/+FSdng3w==,type:str]
-                module_mapping_url: ENC[AES256_GCM,data:dVaCN5P4+ESws/FALkPl8152uPjg7jHwPl/76Rx0msr7wiwztnNapeF9KpUFOz5zbS12IIPsF16TmOl0vQBdDsinr16xyGqtCcsbzA==,iv:xb6y6W66t+0sOyX8aAsIKJnpsDNmCqjo/YiN6u3OB74=,tag:5O9DvQU2sdJMdcVr8MAL8g==,type:str]
-                cell_github_url: ENC[AES256_GCM,data:YeWMSpOee2jn8JRlx9V9FO8Pz7SPNEeZFExeaxQL/nD6uiWEUhyl2/QTBZ0=,iv:zc3C/MuOQlmVQ0nc5cmARH0t85HwKxwIKht8zBTM8Es=,tag:tqzbgtWt1sgf7dV6+4AxNg==,type:str]
                 cell_github_token: ENC[AES256_GCM,data:8/fQbGEJzdzKLBsbziigbDjpUSsezpunipd4Frf4Uczu2+rwsqCwqH3tikLnXgqG/ePlMfdeASO27RwydOKa6rsoKvauEQ+7Ujp+ofmaq0nvBkdmLWVopWxusZ2w,iv:xnAMaSiw+a4AhO7XJZL9u4neaoey5PU5KzS3a+vqxnM=,tag:kDKCbmTchgHYl8VPilJGUA==,type:str]
-                registry_url: ENC[AES256_GCM,data:OfAZgjsW+qmszHxKlsNsITrh+zXZiEu7YP7Ou8B0Jm9y,iv:fdF29f9hvXvuB3uydeBVzar3cqMQw6wO395DclthybE=,tag:DyThD1xefDSZyTaIf/VtOw==,type:str]
-            postStartShSnippet: ENC[AES256_GCM,data:KZIO4RbPEcw7dXb91lbbPdGikWfHhIkhSUZTy6jDCwCBq5ljJhKVSHM6FzUEpZdzjxfYXJQtSqSk9K1ovjGRINRXC4sS5EENHVMHWujzzRNFLfHNj3H3ae7Y8bxzTJ5P+S1ewD1Pu4x27R8B31qlDNJcQqBxV8Vm8mM2cQ7mliEc,iv:t09mFK8DSOuNXaEEG18KKhALu9xEKT15KH9RQU9AaOk=,tag:vhY6bktGutZ3BkjSYuPXVw==,type:str]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -77,8 +59,8 @@ sops:
     azure_kv: []
     hc_vault: []
     age: []
-    lastmodified: "2025-04-10T15:32:43Z"
-    mac: ENC[AES256_GCM,data:/eJ/8VcYYIRJIAKxitZnjoUAr2yNI9NJEePjioWCBxqOjhvilbBn6BE23fmhz1Bw/O3GUcPmc+jyMG/xkKeOzj/y9V6MjmiyXt4pwUWZC6QbyGI7bMl0ARpqMQbUuUYeVwxRbPbOwmRAagARqumUmKehPAX2rwf9LeSox4ISXzs=,iv:wrRHiP0zba5X0p0XJMd1YBAMay7A8zz9RsooAegxnEQ=,tag:Ah29t2UqQlYdsMHKqR9SJg==,type:str]
+    lastmodified: "2025-04-11T07:40:39Z"
+    mac: ENC[AES256_GCM,data:9oQPdH5FmId4g5s7jgwwvPJUhjXakGfAc8sN87cnrwL27r4ZNCsFauSd3NXh1mqBMb0eZq5r7twD7ZPZpGtMvjhufkH1fKl/2cPNp0hmn9eA1/wevG7GImxG45KQqFgFLSEJXBAn88w1sUKoWtb6QZtNEQX+Xp+E4oDRv7Ipbcc=,iv:vnYnK8xyj0ArFiAtVKvFFLxSO6NF1bp6thzrmv76a/4=,tag:eVZSoPdefFy+z2OsSxqsEQ==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-

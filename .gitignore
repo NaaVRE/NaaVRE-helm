@@ -11,3 +11,5 @@ values/*.yaml
 *.dec
 
 *.drawio.bkp
+
+!values/values-deploy-uva-test-public.yaml

@@ -48,7 +48,11 @@ naavre-workflow-service:
         {{- include "workflow_service_vl_configuration" . | fromYaml | toPrettyJson | nindent 8 }}
 
   env:
+    {{- if .Values.global.externalServices.keycloak.useExternal }}
+    OIDC_CONFIGURATION_URL: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/.well-known/openid-configuration"
+    {{- else }}
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
+    {{- end }}
     CONFIG_FILE_URL: "/configuration.json"
     {{- if .Values.global.externalServices.k8sSecretCreator.useExternal }}
     SECRETS_CREATOR_API_ENDPOINT: "{{ .Values.global.externalServices.k8sSecretCreator.url }}"

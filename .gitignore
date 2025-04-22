@@ -12,4 +12,4 @@ values/*.yaml
 
 *.drawio.bkp
 
-!values/values-deploy-uva-test-public.yaml
+!values/values-deploy-k8s-test-1-public.yaml

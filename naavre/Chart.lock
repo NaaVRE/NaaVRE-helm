@@ -13,15 +13,15 @@ dependencies:
   version: 16.1.7
 - name: naavre-catalogue-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.1.5
+  version: v0.1.6
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.3.2
+  version: v0.3.3
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.1.1
+  version: v0.1.2
 - name: vrepaas
   repository: oci://ghcr.io/qcdis/charts
   version: 0.6.0
-digest: sha256:bd8244628a4070ca4a8e287dc39fc2ed04c1fd70378db7c5f9dcfa8f43cc2b49
-generated: "2025-04-10T16:42:11.648536067+02:00"
+digest: sha256:5fc5e49a74499fbd687b70ca887641068012dc105e7861120d7228e2b190d15c
+generated: "2025-04-22T14:54:29.729532183+02:00"

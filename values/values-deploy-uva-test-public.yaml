@@ -22,5 +22,6 @@ jupyterhub:
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
         registry_url: ghcr.io/qcdis/naavre-cells-test-2
+        log_queries: true
       postStartShSnippet: |
         echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

@@ -163,4 +163,6 @@ jupyterhub:
           cmd:
             {{- toYaml .cmd | nindent 12 }}
           {{- end }}
+          environment:
+            NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
       {{- end }}

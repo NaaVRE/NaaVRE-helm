@@ -106,6 +106,7 @@ jupyterhub:
         cell_github_url:
         cell_github_token:
         registry_url:
+        log_queries: true
       postStartShSnippet: |
         echo "Pull some data"
 

@@ -23,8 +23,8 @@ The deployment is done in two steps:
 Create a new root values file and fill in your values. This can be done by copying one of the examples:
 
 ```shell
-cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
-vim ./values/values-deploy-my-deployment.yaml
+cp ./values/values-example-basic.yaml ./values/values-deploy-my-k8s-context.yaml
+vim ./values/values-deploy-my-k8s-context.yaml
 ```
 
 > [!CAUTION]
@@ -39,16 +39,15 @@ helm dependency build naavre
 Render the `values` chart (step 1) and deploy the `naavre` chart (step 2):
 
 ```shell
-root_values="./values/values-deploy-my-deployment.yaml"
 context="minikube"
 namespace="naavre"
 release_name="naavre"
-helm template "$release_name" values/ --output-dir values/rendered -f "$root_values" && \
+helm template "$release_name" values/ --output-dir values/rendered -f "./values/values-deploy-$context.yaml" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 ```
 
 > [!NOTE]
-> Never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-deployment.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
+> Never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-k8s-context.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
 
 ## Uninstall
 
@@ -73,27 +72,27 @@ Secrets and deployment values are managed with [SOPS](https://github.com/getsops
 
 - Create a new _unencrypted_ values file (same as in the [Deployment](#deployment) section):
   ```shell
-  cp ./values/values-example-basic.yaml ./values/values-deploy-my-deployment.yaml
+  cp ./values/values-example-basic.yaml ./values/values-deploy-my-k8s-context.yaml
   ```
 
 - Encrypt it:
   ```shell
-  helm secrets encrypt values/values-deploy-my-deployment.yaml > values/values-deploy-my-deployment.sops.yaml
+  helm secrets encrypt values/values-deploy-my-k8s-context.yaml > values/values-deploy-my-k8s-context.sops.yaml
   ```
 
 - Remove the _unencrypted_ file:
   ```shell
-  rm values/values-deploy-my-deployment.yaml
+  rm values/values-deploy-my-k8s-context.yaml
   ```
 
 The encrypted file (`values-*.sops.yaml`) can safely commited to Git.
 
-You can also create an unencrypted file `values-deploy-my-deployment-public.yaml` to store non-secret values. (This file needs to be explicitly white-listed in `.gitignore`.)
+You can also create an unencrypted file `values-deploy-my-k8s-context-public.yaml` to store non-secret values. (This file needs to be explicitly white-listed in `.gitignore`.)
 
 ### Edit an encrypted values file
 
 ```shell
-helm secrets edit values/values-deploy-my-deployment.sops.yaml
+helm secrets edit values/values-deploy-my-k8s-context.sops.yaml
 ```
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
@@ -101,12 +100,10 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 ### Deploy with encrypted values
 
 ```shell
-root_values="./values/values-deploy-my-deployment.sops.yaml"
-root_values_public="./values/values-deploy-my-deployment-public.yaml"
 context="minikube"
 namespace="naavre"
 release_name="naavre"
-helm secrets template "$release_name" values/ --output-dir values/rendered -f "$root_values_public" -f "$root_values" && \
+helm secrets template "$release_name" values/ --output-dir values/rendered -f "./values/values-deploy-$context-public.yaml" -f "./values/values-deploy-$context.sops.yaml" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 rm -r values/rendered/
 ```

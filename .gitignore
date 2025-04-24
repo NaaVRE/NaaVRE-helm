@@ -12,4 +12,5 @@ values/*.yaml
 
 *.drawio.bkp
 
+!values/values-deploy-k8s-staging-1-public.yaml
 !values/values-deploy-k8s-test-1-public.yaml

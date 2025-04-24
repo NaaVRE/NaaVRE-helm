@@ -1,0 +1,50 @@
+global:
+  namespace: new-naavre
+
+  ingress:
+    domain: new.demo.naavre.net
+    commonAnnotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls:
+      enabled: true
+
+  externalServices:
+    argoWorkflows:
+      useExternal: true
+      namespace: argo
+      url: https://staging.demo.naavre.net/argowf
+      executor_service_account: executor
+    k8sSecretCreator:
+      useExternal: true
+      url: https://staging.demo.naavre.net/k8s-secret-creator/1.0.0/
+    keycloak:
+      useExternal: true
+      url: https://lifewatch.lab.uvalight.net/auth/
+      realm: vre
+
+argoWorkflows:
+  enabled: false
+
+k8sSecretCreator:
+  enabled: false
+
+keycloak:
+  enabled: false
+
+jupyterhub:
+  vlabs:
+    openlab:
+      slug: openlab
+      title: NaaVRE Open Lab
+      description: Open experimentation with virtual labs
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.0.4
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.4/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-openlab
+        registry_url: ghcr.io/naavre/cells-vl-openlab
+        log_queries: true
+      postStartShSnippet: |
+        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

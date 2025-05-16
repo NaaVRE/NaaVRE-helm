@@ -57,8 +57,11 @@ http{{ if $naavreWfSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/"
 {{- end }}
 {{- end }}
 
-{{- if .Values.vrepaas.enabled }}
-{{- $paasIngress := .Values.vrepaas.global.ingress }}
-http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}/{{- trimAll "/" (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapi }}/api/
-http{{ if $paasIngress.tls }}s{{ end }}://{{ $paasIngress.host }}/{{- trimAll "/" (index .Values.vrepaas.global.base_paths .Values.vrepaas.global.environment).vreapp }}/
+{{- if index .Values "naavre-paas-frontend" "enabled" }}
+{{- $naavrePaaSFrontIngress := index .Values "naavre-paas-frontend" "ingress" }}
+{{- range $host := $naavrePaaSFrontIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavrePaaSFrontIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}
+{{- end }}
+{{- end }}
 {{- end }}

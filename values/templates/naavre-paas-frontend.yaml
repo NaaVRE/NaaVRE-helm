@@ -1,0 +1,36 @@
+naavre-paas-frontend:
+  enabled: {{ .Values.naavrePaasFrontend.enabled }}
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/vreapp"
+            pathType: Prefix
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  conf:
+    oidc:
+      {{- if .Values.global.externalServices.keycloak.useExternal }}
+      clientId: "{{ .Values.global.externalServices.keycloak.client_id }}"
+      clientSecret: "{{ .Values.global.externalServices.keycloak.client_secret }}"
+      issuerUrl: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}"
+      {{- else }}
+      clientId: "naavre"
+      clientSecret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+      issuerUrl: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre"
+      {{- end }}
+    secret: "{{ .Values.global.secrets.naavrePaasFrontend.secretKey }}"
+    services:
+      naavreCatalogueServiceUrl: https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}

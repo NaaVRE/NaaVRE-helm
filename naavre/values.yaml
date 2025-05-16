@@ -22,7 +22,7 @@ naavre-containerizer-service:
 naavre-workflow-service:
   enabled: true
 
-vrepaas:
+naavre-paas-frontend:
   enabled: true
 
 global:

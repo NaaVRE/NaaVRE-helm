@@ -28,22 +28,8 @@ global:
           password: <a random password>
       postgresql:
         password: <a random password>
-    vrepaas:
-      vreapi:
-        secretKey: <a random secret>
-        auth:
-          superuser:
-            email: "admin@example.com"
-            username: admin
-            password: <a random password>
-          apiUser:
-            username: user
-            password: <a random password>
-            apiToken: <a random token>
-      vreapp:
-        secretKey: <a random secret>
-      postgresql:
-        password: <a random password>
+    naavrePaasFrontend:
+      secretKey: <a random secret>
 
   externalServices:
     argoWorkflows:

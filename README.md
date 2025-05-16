@@ -2,7 +2,7 @@
 
 ## Overview
 
-NaaVRE consists of several components which have their own Helm charts (Keycloak, Argo, Jupyter Hub, VREPaaS, all NaaVRE-*-services and more).
+NaaVRE consists of several components which have their own Helm charts (Keycloak, Argo, Jupyter Hub, NaaVRE-PaaS-frontend, all NaaVRE-*-services and more).
 They are all sub-charts of the `naavre` chart.
 
 However, Helm requires to set values for all sub-charts manually.

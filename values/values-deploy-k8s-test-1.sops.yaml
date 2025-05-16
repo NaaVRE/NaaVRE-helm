@@ -24,22 +24,8 @@ global:
                     password: ENC[AES256_GCM,data:oDnPZcTzlfrDBum2NIsUiXHObX798jIRbVSvqfWrQNg=,iv:uqgU43bypjbuM8bsnXrD/nBqol5XknvzmPb8qp3t7d0=,tag:td1qii8X69JHg4Biekni6w==,type:str]
             postgresql:
                 password: ENC[AES256_GCM,data:5JSo1+n98KjGrrJI4FxGayN00QQ7pVsFC6sIpTvCb54=,iv:f9tkRkyVTjxhaPwetLzL/E9OOPQt/TnLZJG4+wIa6Ds=,tag:YHrmjDMpWuo20WVJqzas5w==,type:str]
-        vrepaas:
-            vreapi:
-                secretKey: ENC[AES256_GCM,data:/00Wng1cXHSMFFgRYhXJQV/ll/JlNd7vI7qxSlNU3Tg=,iv:xF4Ipbh/EFpRFLB6VGr6egSlBwiUg25w0AFxw8od1kM=,tag:1jGaBkJc6wOylEixtxi5Lg==,type:str]
-                auth:
-                    superuser:
-                        email: ENC[AES256_GCM,data:9bhuZIUVXNVso8lNFVrpQ7E=,iv:TmUw/GfQn+5Zy/jvHnLSJqCImt50OJFFTfodMl9SIhs=,tag:f2t1O9abxwuVr3doodvMGg==,type:str]
-                        username: ENC[AES256_GCM,data:kok00SM=,iv:Fi8x+pY2poF8WpD6Afy/j5rYcJXtmPX0+wJa0qywvEc=,tag:4tn6zaDC1wpMwRBDJk8yBA==,type:str]
-                        password: ENC[AES256_GCM,data:hKVubBR0zF0z0FQQbn4Ty26+zUS1FnyRLmugXbGLVCU=,iv:3A9y/9U9bFJuvsBy6nq3gziuw6X62ikveexJX8c++Kg=,tag:Fea4GhhIHYaaAVUUrMe8lQ==,type:str]
-                    apiUser:
-                        username: ENC[AES256_GCM,data:DlmR3Q==,iv:nyFkBKVI6TYYguQdfCS/jrlTXNNR/0Xo6xMzgEkfXSA=,tag:RLAJ6aKzW2r0csdgghV8+Q==,type:str]
-                        password: ENC[AES256_GCM,data:q+5QsSFxwlBo2YT1sGdwEhFQbCOdTD3YkRuBdIbbHGc=,iv:y/trMw7w/bt8eeDWeEryuaEx3yuQxNM9ZkEdEzlCcyk=,tag:+1vQCfonBitkVtAjkNqugA==,type:str]
-                        apiToken: ENC[AES256_GCM,data:Ytllch6lsofK4plGFl6nbLFXGgC5hKlevUjklx7/QAM=,iv:wumyt3NuipxhdPamijqrVu9eEI5wIziRLCAAjMU1NQw=,tag:HNtaH1Jzq0hrjBZKbHqedw==,type:str]
-            vreapp:
-                secretKey: ENC[AES256_GCM,data:z36fRjU9PTr0i0eOW4Zk9YDBBZbdgmT3FUy4YISZrnI=,iv:53+4Nop3MeRigtu+ShviGPfgT/ZqVNlZOTWm0opG9BA=,tag:HflNs+f5QRP9Je3L+CVzUg==,type:str]
-            postgresql:
-                password: ENC[AES256_GCM,data:zEPEm2OoXsRblIrQZPdXiSlLi2EJr4gXoGBMI7phwvo=,iv:7H35QDTnjKvANeSg2eIOBZlPph6mHADhDQ2xT4YGsAQ=,tag:eIHT9XxHX/L9lJ9/V/X6Tw==,type:str]
+        naavrePaasFrontend:
+            secretKey: ENC[AES256_GCM,data:LUvYs8a9Xl8saS4sbXJUAnwJL0SVpz2Hj9DyJORF9eI=,iv:7OgSi4xGLJX+v1Akf34tyl0/B0ESUtYNEGiay/Cyj/E=,tag:cyHzAnO2Y26uha6YLuow1w==,type:str]
 jupyterhub:
     vlabs:
         openlab:
@@ -55,12 +41,8 @@ sops:
           created_at: "2025-04-01T09:37:52Z"
           enc: AQICAHi22G6tOL2LsvF6wpMHn/yuAwEASofH+f0dK2WYCvRIlQHCYFNAC0M5Kzm2MB9/KH2KAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMdmtRDANIK0lu29C/AgEQgDvkdYSv1hP6fQcoLH+WdM/nqIbUl60YsLi4rGuDoCTH8NFrNclJq765cUc0cRvg1Y/3JgVR9uNHq+vD9g==
           aws_profile: ""
-    gcp_kms: []
-    azure_kv: []
-    hc_vault: []
-    age: []
-    lastmodified: "2025-04-11T07:40:39Z"
-    mac: ENC[AES256_GCM,data:9oQPdH5FmId4g5s7jgwwvPJUhjXakGfAc8sN87cnrwL27r4ZNCsFauSd3NXh1mqBMb0eZq5r7twD7ZPZpGtMvjhufkH1fKl/2cPNp0hmn9eA1/wevG7GImxG45KQqFgFLSEJXBAn88w1sUKoWtb6QZtNEQX+Xp+E4oDRv7Ipbcc=,iv:vnYnK8xyj0ArFiAtVKvFFLxSO6NF1bp6thzrmv76a/4=,tag:eVZSoPdefFy+z2OsSxqsEQ==,type:str]
+    lastmodified: "2025-05-15T12:53:19Z"
+    mac: ENC[AES256_GCM,data:ZM5Cb3oNKmze3qR1TnBW0LGUGp/Wy2EB+1eqXjMyf3Kjes2looPGaCjrn6Ha5mI1/ePfoiFvFgfM1a9Nm84WEpnTvSLk2dL46iA88E9dw43WUQuFiVWwK4l+L/6firWz7HSn2vjDRfcx7JpaRrcBYh9ugKt7QlalnlKpTQugbyk=,iv:Q1Oo318XWeMEcI3nz9sbD91fupNn2XcCxajU4l9iGzM=,tag:gocMOkYVnFdmDmctQxN7ZA==,type:str]
     pgp:
         - created_at: "2025-04-01T09:37:52Z"
           enc: |-
@@ -75,4 +57,4 @@ sops:
             -----END PGP MESSAGE-----
           fp: E90351D346AFCF25477190F1434316312E1CF3B1
     unencrypted_suffix: _unencrypted
-    version: 3.9.4
+    version: 3.10.2

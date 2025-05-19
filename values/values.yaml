@@ -113,7 +113,7 @@ jupyterhub:
   extraVolumes:
     - name: naa-vre-public
       persistentVolumeClaim:
-        claimName:  csi-s3-naa-vre-public-bucket
+        claimName: csi-s3-naa-vre-public-bucket
     - name: naa-vre-user-data
       persistentVolumeClaim:
         claimName: naa-vre-user-data

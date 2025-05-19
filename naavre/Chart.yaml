@@ -41,18 +41,18 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     condition: keycloak.enabled
   - name: "naavre-catalogue-service"
-    version: "v0.1.6"
+    version: "v0.2.0"
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-catalogue-service.enabled
   - name: "naavre-containerizer-service"
-    version: "v0.3.3"
+    version: "v0.3.5"
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-containerizer-service.enabled
   - name: "naavre-workflow-service"
     version: "v0.1.2"
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-workflow-service.enabled
-  - name: "vrepaas"
-    version: "0.6.0"
-    repository: "oci://ghcr.io/qcdis/charts"
-    condition: vrepaas.enabled
+  - name: "naavre-paas-frontend"
+    version: "v0.1.2"
+    repository: "oci://ghcr.io/naavre/charts"
+    condition: naavre-paas-frontend.enabled

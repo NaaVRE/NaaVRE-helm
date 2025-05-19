@@ -129,6 +129,7 @@ jupyterhub:
       guarantee: 1G
     storage:
       capacity: 10Gi
+      {{- toYaml .Values.jupyterhub.extraVolumes | nindent 6 }}
     cpu:
       limit: 1.25
       guarantee: 1.1

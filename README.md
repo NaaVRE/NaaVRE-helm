@@ -110,6 +110,27 @@ rm -r values/rendered/
 
 ## Advanced setups
 
+### Add MinIO mount to user home directory 
+
+To add a MinIO mount to the user's home directory, add the following to the root values file:
+
+```yaml
+jupyterhub:
+  extraVolumes:
+    - name: naa-vre-public
+      persistentVolumeClaim:
+        claimName:  csi-s3-naa-vre-public-bucket
+    - name: naa-vre-user-data
+      persistentVolumeClaim:
+        claimName: naa-vre-user-data
+  extraVolumeMounts:
+    - name: naa-vre-public
+      mountPath: /home/jovyan/naa-vre-public
+    - name: naa-vre-user-data
+      mountPath: /home/jovyan/naa-vre-user-data/
+      subPath: '{username}'
+```
+
 ### Run a command after starting Jupyter Lab
 
 This shows how to run a command after starting a user's Jupyter Lab instance in the singleuser pod. This is useful to, e.g., clone a Git repository.

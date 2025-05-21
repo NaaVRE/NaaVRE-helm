@@ -109,20 +109,8 @@ jupyterhub:
         log_queries: true
       postStartShSnippet: |
         echo "Pull some data"
-
-  extraVolumes:
-    - name: naa-vre-public
-      persistentVolumeClaim:
-        claimName:  csi-s3-naa-vre-public-bucket
-    - name: naa-vre-user-data
-      persistentVolumeClaim:
-        claimName: naa-vre-user-data
-  extraVolumeMounts:
-    - name: naa-vre-public
-      mountPath: /home/jovyan/naa-vre-public
-    - name: naa-vre-user-data
-      mountPath: /home/jovyan/naa-vre-user-data/
-      subPath: '{username}'
+  extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
+  extraVolumeMounts: []
 
 k8sSecretCreator:
   enabled: true

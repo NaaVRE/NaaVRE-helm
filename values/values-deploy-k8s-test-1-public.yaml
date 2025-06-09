@@ -11,17 +11,8 @@ global:
 jupyterhub:
   vlabs:
     openlab:
-      slug: openlab
-      title: NaaVRE Open Lab
-      description: Open experimentation with virtual labs
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.0.5
+      enabled: true
+      # Overrides the configuration in virtual-labs/values-openlab-public.yaml
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.5/base_image_tags.json
-        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
         registry_url: ghcr.io/qcdis/naavre-cells-test-2
-        log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

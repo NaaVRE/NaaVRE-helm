@@ -26,11 +26,6 @@ global:
         keycloak:
             client_id: ENC[AES256_GCM,data:u8Rp8Zplyw9u6w==,iv:D0TCP22oeb8QZZctT6O+y9bUMJai+bY0qCu1YomADTI=,tag:aRAwhLQZjH3U/WywCeD39w==,type:str]
             client_secret: ENC[AES256_GCM,data:vWPPOrsyYjUDSZbcCyrV6VCQj3HfMBXeJZ/j9KyqSAE=,iv:Gna3Hpn8qZglk4EvLJbHmUOxu3oIb54lPYiJEzedbyc=,tag:K6LZAA/b3Z6IRa3QtriMUQ==,type:str]
-jupyterhub:
-    vlabs:
-        openlab:
-            configuration:
-                cell_github_token: ENC[AES256_GCM,data:2+YWjHlP05MECXXUGgMTR9Mfp7X4KCur6LvFrctxRxtnm66sjTwMnIOYE/MpiYuzRphWZSGgkl5+ZfxPLQ+17o4WMCRdhZ7RnXdjFGSE3rQiVbobwKjR+J1BpW6l,iv:nO+h7t8OIxa9p9ho3N2ZnEj/+hpnaA9OXMlFeSHDdU8=,tag:1lvLviXiPYK3ZlVqaugKFg==,type:str]
 sops:
     kms:
         - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
@@ -41,8 +36,8 @@ sops:
           created_at: "2025-04-10T16:08:18Z"
           enc: AQICAHi22G6tOL2LsvF6wpMHn/yuAwEASofH+f0dK2WYCvRIlQGq4tKx8klPHDG1PmBKFw6QAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM2bYn1HgBxBbKXW45AgEQgDvyN1G+C46QKd52mAwZFSGprYlHC8KYlUlmqU5SGeOs84f0axKOsyt2XKuZRzjG4jYTAln0buL3geNvPQ==
           aws_profile: ""
-    lastmodified: "2025-05-15T12:53:51Z"
-    mac: ENC[AES256_GCM,data:GLCHxuvtZ5tLQWLau8I1VMP8zCa7kXfChv4j2aB9zyYYal1WrvToueO4GCE4WEcnQoP8NegaSTiK+qhzGuE5LBuHlQKr0qdshf2PAiRfy0spBu68DzSOj7ttw2TiOYXzVQbtkwqAzng7t4eBhqzOGL5iaTuYOIgr5qZ90STrUjg=,iv:a4LQs4ZqdjMJwkKGIk6w7mFQVgZD1kuyvN/s5h3oeYI=,tag:UDoVzP+suQWZXT9V1lcD8Q==,type:str]
+    lastmodified: "2025-06-09T10:45:15Z"
+    mac: ENC[AES256_GCM,data:MBA4hWE+AabXR85rbfBs79cn+Xn1WidlVIO6wcFMBHDtnu4E0XyX390E0VisARu6EYATlV+aCMi+q6ZgYm3wOSdrInoK1c91kmMRDopM5DzXwLq0HpVg0cIUjxfoITc9GoKkQc4xWcEchTmsaM9Cb+1C4LxmYcbgSiEbVZ0BE6E=,iv:WSqjPNKVNixsZAk0gMdD0UUkxAAygd2RGVenxQxABNs=,tag:Vzhs0gViwUU1VxqfEPKNDA==,type:str]
     pgp:
         - created_at: "2025-04-10T16:08:18Z"
           enc: |-

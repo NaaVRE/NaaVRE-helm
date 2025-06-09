@@ -55,7 +55,7 @@ helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --inst
 helm -n naavre uninstall naavre
 ```
 
-## Secrets and deployment values
+## Secrets and values for VLIC deployments
 
 Secrets and deployment values are managed with [SOPS](https://github.com/getsops/sops) and [helm-secrets](https://github.com/jkroepke/helm-secrets).
 
@@ -103,7 +103,7 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 context="minikube"
 namespace="naavre"
 release_name="naavre"
-helm secrets template "$release_name" values/ --output-dir values/rendered -f "./values/values-deploy-$context-public.yaml" -f "./values/values-deploy-$context.sops.yaml" && \
+helm secrets template "$release_name" values/ --output-dir values/rendered $(find values/virtual-labs -type f | xargs -I{} echo -n " -f {}") -f "./values/values-deploy-$context-public.yaml" -f "./values/values-deploy-$context.sops.yaml" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 rm -r values/rendered/
 ```

@@ -4,13 +4,14 @@ naavre/charts/*.tgz
 
 values/rendered/
 values/*.yaml
+values/virtual-labs/*.yaml
 !values/Chart.yaml
 !values/values.yaml
 !values/values-example-*.yaml
-!values/values-*.sops.yaml
+!values/values-*.public.yaml
+!values/values-*.secrets.yaml
+!values/virtual-labs/*.public.yaml
+!values/virtual-labs/*.secrets.yaml
 *.dec
 
 *.drawio.bkp
-
-!values/values-deploy-k8s-staging-1-public.yaml
-!values/values-deploy-k8s-test-1-public.yaml

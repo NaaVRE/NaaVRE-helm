@@ -150,7 +150,7 @@ jupyterhub:
         kubespawner_override:
           image: "{{ .image.name }}:{{ .image.tag }}"
           pullPolicy: IfNotPresent
-          pvc_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
+          pvc_name_template: "jupyter-lab-{username}"
           pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
           lifecycle_hooks:
             postStart:

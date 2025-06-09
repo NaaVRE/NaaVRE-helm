@@ -1,0 +1,30 @@
+global:
+  namespace: new-naavre
+
+  ingress:
+    domain: testing.demo.naavre.net
+    commonAnnotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls:
+      enabled: true
+
+jupyterhub:
+  vlabs:
+    openlab:
+      enabled: true
+      # Overrides the configuration in virtual-labs/values-openlab.public.yaml
+      configuration:
+        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
+        registry_url: ghcr.io/qcdis/naavre-cells-test-2
+    laserfarm:
+      enabled: true
+      # Overrides the configuration in virtual-labs/values-laserfarm.public.yaml
+      configuration:
+        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
+        registry_url: ghcr.io/qcdis/naavre-cells-test-2
+    biodt-hackathon25:
+      enabled: true
+      # Overrides the configuration in virtual-labs/values-biodt-hackathon25.public.yaml
+      configuration:
+        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
+        registry_url: ghcr.io/qcdis/naavre-cells-test-2

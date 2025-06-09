@@ -20,6 +20,9 @@ The deployment is done in two steps:
 
 ## Deployment
 
+> [!IMPORTANT]
+> If you are creating a new deployment on VLIC-managed infrastructure, follow [Secrets and values for VLIC deployments](#secrets-and-values-for-vlic-deployments).
+
 Create a new root values file and fill in your values. This can be done by copying one of the examples:
 
 ```shell
@@ -68,31 +71,24 @@ Secrets and deployment values are managed with [SOPS](https://github.com/getsops
    helm plugin install https://github.com/jkroepke/helm-secrets
    ```
 
-### Create a new encrypted values file
+### Manage deployments or virtual labs
 
-- Create a new _unencrypted_ values file (same as in the [Deployment](#deployment) section):
-  ```shell
-  cp ./values/values-example-basic.yaml ./values/values-deploy-my-k8s-context.yaml
-  ```
+A deployment consists of two files:
 
-- Encrypt it:
-  ```shell
-  helm secrets encrypt values/values-deploy-my-k8s-context.yaml > values/values-deploy-my-k8s-context.sops.yaml
-  ```
+- `values/values-deploy-{context}.public.yaml` (clear text)
+- `values/values-deploy-{context}.secrets.yaml`: (SOPS-encrypted)
 
-- Remove the _unencrypted_ file:
-  ```shell
-  rm values/values-deploy-my-k8s-context.yaml
-  ```
+A virtual lab definition also consists of two files:
 
-The encrypted file (`values-*.sops.yaml`) can safely commited to Git.
+- `values/virtual-labs/values-{vl-slug}.public.yaml` (clear text)
+- `values/virtual-labs/values-{vl-slug}.secrets.yaml` (SOPS-encrypted)
 
-You can also create an unencrypted file `values-deploy-my-k8s-context-public.yaml` to store non-secret values. (This file needs to be explicitly white-listed in `.gitignore`.)
+Clear-text files should only contain public values. Secrets should be stored in the SOPS-encrypted files (typically, everything under `global.secrets`, as well as sensitive values under `global.externalServices` and `jupyterhub.vlabs.*`). Both files can safely commited to Git.
 
-### Edit an encrypted values file
+To create a new SOPS-encrypted, or edit an existing one, run:
 
 ```shell
-helm secrets edit values/values-deploy-my-k8s-context.sops.yaml
+helm secrets edit my-file.secrets.yaml
 ```
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
@@ -101,9 +97,9 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 
 ```shell
 context="minikube"
-namespace="naavre"
+namespace="new-naavre"
 release_name="naavre"
-helm secrets template "$release_name" values/ --output-dir values/rendered $(find values/virtual-labs -type f | xargs -I{} echo -n " -f {}") -f "./values/values-deploy-$context-public.yaml" -f "./values/values-deploy-$context.sops.yaml" && \
+helm secrets template "$release_name" values/ --output-dir values/rendered $(find values/virtual-labs -type f | xargs -I{} echo -n " -f {}") -f "./values/values-deploy-$context.public.yaml" -f "./values/values-deploy-$context.secrets.yaml" && \
 helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 rm -r values/rendered/
 ```

@@ -16,3 +16,9 @@ jupyterhub:
       configuration:
         cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
         registry_url: ghcr.io/qcdis/naavre-cells-test-2
+    laserfarm:
+      enabled: true
+      # Overrides the configuration in virtual-labs/values-laserfarm.public.yaml
+      configuration:
+        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
+        registry_url: ghcr.io/qcdis/naavre-cells-test-2

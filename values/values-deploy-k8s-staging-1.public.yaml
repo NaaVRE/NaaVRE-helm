@@ -75,3 +75,5 @@ jupyterhub:
   vlabs:
     openlab:
       enabled: true
+    laserfarm:
+      enabled: true

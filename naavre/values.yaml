@@ -26,6 +26,9 @@ naavre-paas-frontend:
   enabled: true
 
 global:
+  ingress:
+    redirectDomainToPaasFrontend: false
+
   secrets:
     keycloak:
       client_id:

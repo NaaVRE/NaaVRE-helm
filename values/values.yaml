@@ -9,6 +9,7 @@ global:
     commonAnnotations: {}
     tls:
       enabled: false
+    redirectDomainToPaasFrontend: false
 
   secrets:
     k8sSecretCreator:

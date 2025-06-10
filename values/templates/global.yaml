@@ -1,4 +1,7 @@
 global:
+  ingress:
+    redirectDomainToPaasFrontend: {{ .Values.global.ingress.redirectDomainToPaasFrontend }}
+
   secrets:
     keycloak:
       {{- if .Values.global.externalServices.keycloak.useExternal }}

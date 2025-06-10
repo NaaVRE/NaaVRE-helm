@@ -1,0 +1,23 @@
+{{- if .Values.global.ingress.redirectDomainToPaasFrontend }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ include "naavre.fullname" . }}-redirect-to-paas"
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: /vreapp
+spec:
+  ingressClassName: nginx
+  rules:
+  {{- range $host := index .Values "naavre-paas-frontend" "ingress" "hosts" }}
+    - host: "{{ $host.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: "{{ template "naavre-paas-frontend.fullname" (index $.Subcharts "naavre-paas-frontend") }}"
+                port:
+                  number: {{ index $.Values "naavre-paas-frontend" "service" "port" }}
+  {{- end }}
+{{- end }}

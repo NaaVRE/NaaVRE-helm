@@ -176,7 +176,7 @@ jupyterhub:
       mountPath: /home/jovyan/naa-vre-public
     - name: naa-vre-user-data
       mountPath: /home/jovyan/naa-vre-user-data/
-      subPath: '{username}'
+      subPath: '{unescaped_username}'
 ```
 
 ### Run a command after starting Jupyter Lab

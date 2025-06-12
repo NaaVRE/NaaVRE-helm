@@ -104,6 +104,58 @@ helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --inst
 rm -r values/rendered/
 ```
 
+Troubleshooting:
+If you get an error like:
+```shell
+Failed to get the data key required to decrypt the SOPS file.
+
+Group 0: FAILED
+  E90351D346AFCF25477190F1434316312E1CF3B1: FAILED
+    - | could not decrypt data key with PGP key:
+      | github.com/ProtonMail/go-crypto/openpgp error: could not
+      | load secring: open /home/alogo/.gnupg/pubring.gpg: no such
+      | file or directory; GnuPG binary error: failed to decrypt
+      | sops data key with pgp: gpg: encrypted with cv25519 key, ID
+      | 7633BAF7BF458E69, created 2025-04-01
+      |       "LifeWatch ERIC VLIC <vlic@lifewatch.eu>"
+      | gpg: public key decryption failed: No secret key
+      | gpg: decryption failed: No secret key
+  
+  arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef: FAILED
+    - | failed to decrypt sops data key with AWS KMS: operation
+      | error KMS: Decrypt, get identity: get credentials: failed to
+      | refresh cached credentials, refresh cached SSO token failed,
+      | unable to refresh SSO token, operation error SSO OIDC:
+      | CreateToken, https response error StatusCode: 400,
+      | RequestID: 3e11e8dc-a0f9-40c2-9f30-217605492daf,
+      | InvalidGrantException: 
+  
+  arn:aws:kms:eu-central-1:050752621342:key/6a9ef814-a13a-4299-b406-2e75b3ef1554: FAILED
+    - | failed to decrypt sops data key with AWS KMS: operation
+      | error KMS: Decrypt, get identity: get credentials: failed to
+      | refresh cached credentials, refresh cached SSO token failed,
+      | unable to refresh SSO token, operation error SSO OIDC:
+      | CreateToken, https response error StatusCode: 400,
+      | RequestID: 944c735b-ef18-4aca-b03a-836387440916,
+      | InvalidGrantException: 
+
+Recovery failed because no master key was able to decrypt the file. In
+order for SOPS to recover the file, at least one key has to be successful,
+but none were.
+[helm-secrets] Error while decrypting file: values/virtual-labs/values-laserfarm.secrets.yaml
+Error: plugin "secrets" exited with error
+```
+Make sure you login to the AWS CLI with the correct profile, e.g.:
+```shell
+aws sso login --profile use-kms-vlic-sops-admin-050752621342
+```
+
+If the deployment fails or is not correct, you can roollback to the previous deployment with:
+
+```shell
+helm --kube-context "$context" rollback naavre -n $namespace
+```
+
 ## Advanced setups
 
 ### Add MinIO mount to user home directory 

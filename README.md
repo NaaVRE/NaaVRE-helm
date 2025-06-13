@@ -36,8 +36,10 @@ vim ./values/values-deploy-my-k8s-context.yaml
 Download the sub-charts:
 
 ```shell
+helm dependency update naavre
 helm dependency build naavre
 ```
+
 
 Render the `values` chart (step 1) and deploy the `naavre` chart (step 2):
 

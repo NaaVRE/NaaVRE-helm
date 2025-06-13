@@ -24,4 +24,4 @@ dependencies:
   repository: oci://ghcr.io/naavre/charts
   version: v0.1.2
 digest: sha256:1380c37a47b279705a8cc74f39bedc45faceacee0f9327fe3ef7aa2610814e33
-generated: "2025-06-13T10:07:57.970331892+02:00"
+generated: "2025-06-13T09:48:44.700723018+02:00"

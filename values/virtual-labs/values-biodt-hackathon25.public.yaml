@@ -16,3 +16,7 @@ jupyterhub:
         log_queries: true
       postStartShSnippet: |
         echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
+        vl_dir="BioDT Hackathon/"
+        mkdir -p "$vl_dir"
+        cd "$vl_dir"
+        gitpuller https://github.com/QCDIS/Hackathon25.git main "Git public"

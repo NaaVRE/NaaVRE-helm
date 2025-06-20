@@ -175,6 +175,7 @@ jupyterhub:
         claimName: naa-vre-user-data
   extraVolumeMounts:
     - name: naa-vre-public
+      readOnly: true
       mountPath: /home/jovyan/naa-vre-public
     - name: naa-vre-user-data
       mountPath: /home/jovyan/naa-vre-user-data/

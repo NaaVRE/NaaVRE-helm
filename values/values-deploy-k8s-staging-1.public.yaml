@@ -82,6 +82,7 @@ jupyterhub:
         claimName:  csi-s3-naa-vre-user-data-bucket
   extraVolumeMounts:
     - name: naa-vre-public
+      readOnly: true
       mountPath: /home/jovyan/naa-vre-public
     - name: naa-vre-user-data
       mountPath: /home/jovyan/naa-vre-user-data/

@@ -162,25 +162,10 @@ helm --kube-context "$context" rollback naavre -n $namespace
 
 ### Add MinIO mount to user home directory 
 
-To add a MinIO mount to the user's home directory, add the following to the root values file:
+To add MinIO mounts to the user's home directory, you can use the `extraVolumes` and `extraVolumeMounts` options in the Jupyter Hub configuration.
+This is an example of how to add a MinIO mount to the user's home directory:
+[values-example-mount-minio-buckets.yaml](./values/values-example-mount-minio-buckets.yaml)
 
-```yaml
-jupyterhub:
-  extraVolumes:
-    - name: naa-vre-public
-      persistentVolumeClaim:
-        claimName:  csi-s3-naa-vre-public-bucket
-    - name: naa-vre-user-data
-      persistentVolumeClaim:
-        claimName: naa-vre-user-data
-  extraVolumeMounts:
-    - name: naa-vre-public
-      readOnly: true
-      mountPath: /home/jovyan/naa-vre-public
-    - name: naa-vre-user-data
-      mountPath: /home/jovyan/naa-vre-user-data/
-      subPath: '{unescaped_username}'
-```
 
 ### Run a command after starting Jupyter Lab
 

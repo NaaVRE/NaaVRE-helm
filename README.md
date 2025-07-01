@@ -33,6 +33,8 @@ vim ./values/values-deploy-my-k8s-context.yaml
 > [!CAUTION]
 > Values files (`./values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
 
+Add the third-party Helm repos:
+
 ```shell
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo add jupyterhub	https://jupyterhub.github.io/helm-chart/

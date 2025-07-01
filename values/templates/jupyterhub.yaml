@@ -80,10 +80,11 @@ jupyterhub:
   ingress:
     enabled: true
     ingressClassName: "nginx"
-    {{- with .Values.global.ingress.commonAnnotations }}
     annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      {{- with .Values.global.ingress.commonAnnotations }}
       {{- toYaml . | nindent 6 }}
-    {{- end }}
+      {{- end }}
     hosts:
       - "{{ .Values.global.ingress.domain }}"
     {{- if .Values.global.ingress.tls.enabled }}

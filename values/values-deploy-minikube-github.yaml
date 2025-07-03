@@ -1,0 +1,37 @@
+global:
+  namespace: naavre
+
+  ingress:
+    domain: minikube.local
+    commonAnnotations: {}
+    tls:
+      enabled: false
+
+  secrets:
+    keycloak:
+      adminPassword: SECRET_KEYCLOAK_ADMIN_PASSWORD
+      naavreClientSecret: SECRET_KEYCLOAK_NAAVRE_CLIENT_SECRET
+      # Adding users is optional. To not create any, remove the `users` entry.
+      users:
+        - username: my-user
+          password: USER_PASSWORD
+      postgresql:
+        password: SECRET_KEYCLOAK_POSTGRESQL_PASSWORD
+
+jupyterhub:
+  enabled: false
+
+k8sSecretCreator:
+  enabled: false
+
+naavreCatalogueService:
+  enabled: false
+
+naavreContainerizerService:
+  enabled: false
+
+naavreWorkflowService:
+  enabled: false
+
+naavrePaasFrontend:
+  enabled: false

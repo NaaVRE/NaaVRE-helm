@@ -48,7 +48,7 @@ jupyterhub:
         registry_url: "ghcr.io/user/repo"
 
 k8sSecretCreator:
-  enabled: false
+  enabled: true
 
 naavreCatalogueService:
   enabled: false

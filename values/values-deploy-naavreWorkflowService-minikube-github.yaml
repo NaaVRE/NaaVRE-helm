@@ -2,7 +2,7 @@ global:
   namespace: naavre
 
   ingress:
-    domain: minikube.local
+    domain: naavre-dev.minikube.test
     commonAnnotations: {}
     tls:
       enabled: false

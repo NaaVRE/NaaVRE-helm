@@ -94,3 +94,5 @@ jupyterhub:
       enabled: true
     biodt-hackathon25:
       enabled: true
+    quadfavl:
+      enabled: true

@@ -96,3 +96,5 @@ jupyterhub:
       enabled: true
     quadfavl:
       enabled: true
+    veluwe-forest-model:
+      enabled: true

@@ -7,7 +7,7 @@
 {{- include "checkRequiredValues" (dict "path" $fullPath "map" $value) }}
 {{- else }}
 {{- if eq $key "fullnameOverride" "nameOverride" | not }}
-{{- $_ := required (printf "Value required for key: %s" $key) $value }}
+{{- $_ := required (printf "Value required for key: %s %s" $.path $key) $value }}
 {{- end }}
 {{- end }}
 {{- end }}

@@ -75,6 +75,8 @@ jupyterhub:
         c.JupyterHub.template_paths = ['/etc/jupyterhub/custom/templates']
   singleuser:
     storage:
+      dynamic:
+        storageClass: zfs-generic-nfs
       extraVolumes:
         - name: naa-vre-public
           persistentVolumeClaim:

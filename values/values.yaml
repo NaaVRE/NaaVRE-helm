@@ -92,6 +92,8 @@ jupyterhub:
     storage:
       capacity: 10Gi
       dynamic: {}
+      extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
+      extraVolumeMounts: []
   vlabs:
     openlab:
       slug: openlab
@@ -109,8 +111,6 @@ jupyterhub:
         log_queries: true
       postStartShSnippet: |
         echo "Pull some data"
-  extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
-  extraVolumeMounts: []
 
 k8sSecretCreator:
   enabled: true

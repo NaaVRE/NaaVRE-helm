@@ -137,14 +137,14 @@ jupyterhub:
       dynamic:
         {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 6}}
       {{- end }}
-    {{- if .Values.jupyterhub.extraVolumes }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumes }}
       extraVolumes:
-        {{ .Values.jupyterhub.extraVolumes | toYaml | nindent 6 }}
-    {{- end }}
-    {{- if .Values.jupyterhub.extraVolumeMounts }}
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumes | toYaml | nindent 6 }}
+      {{- end }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumeMounts }}
       extraVolumeMounts:
-        {{ .Values.jupyterhub.extraVolumeMounts | toYaml | nindent 6 }}
-    {{- end }}
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumeMounts | toYaml | nindent 6 }}
+      {{- end }}
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"

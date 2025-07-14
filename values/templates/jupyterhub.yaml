@@ -135,7 +135,7 @@ jupyterhub:
       capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
       {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
       dynamic:
-        {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 6}}
+        {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 8 }}
       {{- end }}
       {{- if .Values.jupyterhub.singleuser.storage.extraVolumes }}
       extraVolumes:

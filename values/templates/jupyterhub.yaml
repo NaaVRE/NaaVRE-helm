@@ -126,21 +126,25 @@ jupyterhub:
           }
 
     memory:
-      limit: 4G
-      guarantee: 4G
-    storage:
-      capacity: 10Gi
-    {{- if .Values.jupyterhub.extraVolumes }}
-      extraVolumes:
-        {{ .Values.jupyterhub.extraVolumes | toYaml | nindent 6 }}
-    {{- end }}
-    {{- if .Values.jupyterhub.extraVolumeMounts }}
-      extraVolumeMounts:
-        {{ .Values.jupyterhub.extraVolumeMounts | toYaml | nindent 6 }}
-    {{- end }}
+      limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.memory.guarantee }}
     cpu:
-      limit: 1.25
-      guarantee: 1.1
+      limit: {{ .Values.jupyterhub.singleuser.cpu.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.cpu.guarantee }}
+    storage:
+      capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
+      {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
+      dynamic:
+        {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 6}}
+      {{- end }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumes }}
+      extraVolumes:
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumes | toYaml | nindent 6 }}
+      {{- end }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumeMounts }}
+      extraVolumeMounts:
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumeMounts | toYaml | nindent 6 }}
+      {{- end }}
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"

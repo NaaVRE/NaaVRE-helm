@@ -126,10 +126,17 @@ jupyterhub:
           }
 
     memory:
-      limit: 4G
-      guarantee: 4G
+      limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.memory.guarantee }}
+    cpu:
+      limit: {{ .Values.jupyterhub.singleuser.cpu.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.cpu.guarantee }}
     storage:
-      capacity: 10Gi
+      capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
+      {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
+      dynamic:
+        {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 6}}
+      {{- end }}
     {{- if .Values.jupyterhub.extraVolumes }}
       extraVolumes:
         {{ .Values.jupyterhub.extraVolumes | toYaml | nindent 6 }}
@@ -138,9 +145,6 @@ jupyterhub:
       extraVolumeMounts:
         {{ .Values.jupyterhub.extraVolumeMounts | toYaml | nindent 6 }}
     {{- end }}
-    cpu:
-      limit: 1.25
-      guarantee: 1.1
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"

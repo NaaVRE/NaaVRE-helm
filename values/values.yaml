@@ -82,6 +82,16 @@ jupyterhub:
     initContainers: []
     extraVolumes: []
     extraVolumeMounts: []
+  singleuser:
+    memory:
+      limit: 4G
+      guarantee: 4G
+    cpu:
+      limit: 1.25
+      guarantee: 1.1
+    storage:
+      capacity: 10Gi
+      dynamic: {}
   vlabs:
     openlab:
       slug: openlab

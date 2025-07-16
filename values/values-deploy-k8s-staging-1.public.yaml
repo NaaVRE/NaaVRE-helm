@@ -102,3 +102,21 @@ jupyterhub:
       enabled: true
     veluwe-forest-model:
       enabled: true
+    cnr-biomass:
+        enabled: true
+    cnr-phytoplankton:
+        enabled: true
+    pclake:
+        enabled: true
+    phytoplankton:
+        enabled: true
+    ravl:
+        enabled: true
+    veluwe-proto-dt:
+        enabled: true
+    veluwe-wolf-deer-tree:
+        enabled: true
+    waddenzee-proto-dt:
+        enabled: true
+    wiresivl:
+        enabled: true

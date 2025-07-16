@@ -45,6 +45,7 @@ data:
     {{- $hosts := .Values.jupyterhub.ingress.hosts }}
     {{- $tls := .Values.jupyterhub.ingress.tls }}
     {{- range .Values.global.vlabs }}
+    {{- if .enabled }}
     print("Checking for vlab {{ .slug }}")
     if not VirtualLab.objects.filter(slug='{{ .slug }}').exists():
         print("Creating vlab {{ .slug }}")
@@ -55,6 +56,7 @@ data:
             deployment_url='http{{ if $tls }}s{{ end }}://{{ index $hosts 0 }}/{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
             container_image='{{ .image.name }}:{{ .image.tag }}',
             )
+    {{- end }}
     {{- end }}
 ---
 apiVersion: v1

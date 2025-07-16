@@ -27,6 +27,7 @@ naavre-workflow-service:
       {{- define "workflow_service_vl_configuration" -}}
       vl_configurations:
         {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+        {{- if $vlab.enabled }}
         - name: "{{ $vlab.slug }}"
           wf_engine_config:
             name: "argo"
@@ -42,6 +43,7 @@ naavre-workflow-service:
             service_account: "argo-executor"
             {{- end }}
             workdir_storage_size: "1Gi"
+        {{- end }}
         {{- end }}
       {{- end }}
       rawJson: |

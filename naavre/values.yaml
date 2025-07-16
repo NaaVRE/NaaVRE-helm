@@ -36,6 +36,7 @@ global:
 
   vlabs:
     openlab:
+      enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"

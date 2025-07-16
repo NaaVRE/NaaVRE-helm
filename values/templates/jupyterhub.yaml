@@ -151,6 +151,7 @@ jupyterhub:
 
     profileList:
       {{- range .Values.jupyterhub.vlabs }}
+      {{- if .enabled }}
       - display_name: "{{ .slug }}"
         kubespawner_override:
           image: "{{ .image.name }}:{{ .image.tag }}"
@@ -178,4 +179,5 @@ jupyterhub:
           {{- end }}
           environment:
             NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+      {{- end }}
       {{- end }}

@@ -40,6 +40,7 @@ global:
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      icon: ""
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1

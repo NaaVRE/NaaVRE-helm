@@ -55,6 +55,7 @@ data:
             description='{{ .description }}',
             deployment_url='http{{ if $tls }}s{{ end }}://{{ index $hosts 0 }}/{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
             container_image='{{ .image.name }}:{{ .image.tag }}',
+            image='{{ .icon | default "" | trim }}',
             )
     {{- end }}
     {{- end }}

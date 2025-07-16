@@ -2,7 +2,7 @@ global:
   namespace: new-naavre
 
   ingress:
-    domain: testing.demo.naavre.net
+    domain: alpha.naavre.net
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:

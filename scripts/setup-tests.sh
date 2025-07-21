@@ -78,7 +78,6 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
-cp $VALUES_FILE NaaVRE-helm/values/
 cd NaaVRE-helm
 helm dependency update naavre
 helm dependency build naavre
@@ -86,7 +85,7 @@ context="naavreWorkflowService-minikube-github"
 namespace="naavre"
 release_name="naavre"
 kubectl create namespace "$namespace"
-helm template "$release_name" values/ --output-dir values/rendered -f "./values/$VALUES_FILE" && \
+helm template "$release_name" values/ --output-dir values/rendered -f "$VALUES_FILE" && \
 helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
 # Exit if the installation fails
 if [ $? -ne 0 ]; then

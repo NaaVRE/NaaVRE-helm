@@ -79,6 +79,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
 cd NaaVRE-helm
+git checkout 36-move-setup-testssh-for-testing-in-minikube-here
 helm dependency update naavre
 helm dependency build naavre
 context="naavreWorkflowService-minikube-github"

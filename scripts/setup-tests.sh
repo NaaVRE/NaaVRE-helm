@@ -19,6 +19,8 @@ if [[ -n "$VALUES_FILE" ]]; then
 fi
 
 
+# Get only the last part of the current directory
+CURRENT_DIR=$(basename "$(pwd)")
 
 # Variables
 export MINIKUBE_HOST="naavre-dev.minikube.test"
@@ -38,8 +40,8 @@ export VERIFY_SSL="False"
 echo "VERIFY_SSL=False" >> $GITHUB_ENV
 export DISABLE_AUTH="False"
 echo "DISABLE_AUTH=False" >> $GITHUB_ENV
-export CONFIG_FILE_URL="NaaVRE-workflow-service/minkube_configuration.json"
-echo "CONFIG_FILE_URL=NaaVRE-workflow-service/minkube_configuration.json" >> $GITHUB_ENV
+export CONFIG_FILE_URL="$CURRENT_DIR/minkube_configuration.json"
+echo "CONFIG_FILE_URL=$CURRENT_DIR/minkube_configuration.json" >> $GITHUB_ENV
 export SECRETS_CREATOR_API_ENDPOINT="https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0"
 echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
 export SECRETS_CREATOR_API_TOKEN="SECRETS_CREATOR_API_TOKEN"
@@ -197,6 +199,9 @@ jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |=
 else
     echo "configuration.json does not exist, skipping update"
 fi
+
+
+
 
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"

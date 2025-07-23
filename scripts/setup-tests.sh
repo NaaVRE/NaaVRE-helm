@@ -191,11 +191,13 @@ done
 
 # if configuration.json exists add the values, else skip
 if [ -f "configuration.json" ]; then
-    jq --arg token "$ARGO_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-# Set namesapce in minkube_configuration.json in the virtual_lab_1
-jq --arg namespace "naavre" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-# Set service_account in minkube_configuration.json in the virtual_lab_1
-jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg token "$ARGO_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set namesapce in minkube_configuration.json in the virtual_lab_1
+  jq --arg namespace "naavre" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set service_account in minkube_configuration.json in the virtual_lab_1
+  jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set the cell_github_token in minkube_configuration.json in the virtual_lab_1
+  jq --arg cell_github_token "$CELL_GITHUB_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
 else
     echo "configuration.json does not exist, skipping update"
 fi

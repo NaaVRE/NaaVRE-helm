@@ -40,6 +40,7 @@ global:
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      dirname: "Open Lab"
       icon: ""
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
@@ -50,3 +51,4 @@ global:
         cell_github_url:
         cell_github_token:
         registry_url:
+        git_public: {}

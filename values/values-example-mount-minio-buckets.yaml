@@ -37,22 +37,23 @@ jupyterhub:
       extraVolumes:
         - name: naa-vre-public
           persistentVolumeClaim:
-            claimName: csi-s3-naa-vre-public-bucket-naavre
+            claimName: naa-vre-public-pvc
         - name: naa-vre-user-data
           persistentVolumeClaim:
-            claimName: csi-s3-naa-vre-user-data-bucket-naavre
+            claimName: naa-vre-user-data-pvc
       extraVolumeMounts:
         - name: naa-vre-public
           readOnly: true
-          mountPath: /home/jovyan/naa-vre-public
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
         - name: naa-vre-user-data
-          mountPath: /home/jovyan/naa-vre-user-data/
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
   vlabs:
     openlab:
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      dirname: "Open Lab"
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1
@@ -62,10 +63,12 @@ jupyterhub:
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
+        git_public: {}
     otherLab:
       slug: other-lab
       title: "Another lab"
       description: "Another virtual lab to demonstrate that we support several"
+      dirname: "Another Lab"
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1
@@ -75,3 +78,4 @@ jupyterhub:
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
+        git_public: {}

@@ -4,7 +4,8 @@ jupyterhub:
       enabled: false
       slug: cnr-biomass
       title:  CNR Biomass
-      description:  CNR Biomass virtual lab
+      description: CNR Biomass virtual lab
+      dirname: CNR Biomass
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13
@@ -14,5 +15,3 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-cnr-biomass
         registry_url: ghcr.io/naavre/cells-vl-cnr-biomass
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

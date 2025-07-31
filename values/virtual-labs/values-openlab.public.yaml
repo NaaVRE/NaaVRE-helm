@@ -5,6 +5,7 @@ jupyterhub:
       slug: openlab
       title: NaaVRE Open Lab
       description: Open experimentation with virtual labs
+      dirname: Open Lab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13
@@ -14,9 +15,6 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-openlab
         registry_url: ghcr.io/naavre/cells-vl-openlab
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
-        vl_dir="Open Lab"
-        mkdir -p "$vl_dir"
-        cd "$vl_dir"
-        gitpuller https://github.com/NaaVRE/vl-openlab.git main "Git public"
+        git_public:
+          repo: https://github.com/NaaVRE/vl-openlab.git
+          branch: main

@@ -5,6 +5,7 @@ jupyterhub:
       slug: pclake
       title:  PCLake virtual lab
       description:  "PCLake model: study the trophic state of freshwater lakes"
+      dirname: PCLake
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-pclake-jupyter
         tag: v0.0.13
@@ -14,5 +15,3 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-pclake
         registry_url: ghcr.io/naavre/cells-vl-pclake
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

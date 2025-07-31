@@ -5,6 +5,7 @@ jupyterhub:
       slug: phytoplankton
       title:  Phytoplankton traits
       description:  Phytoplankton traits computation
+      dirname: Phytoplankton traits
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-phytoplankton-jupyter
         tag: v0.0.13
@@ -14,5 +15,3 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-phytoplankton
         registry_url: ghcr.io/naavre/cells-vl-phytoplankton
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

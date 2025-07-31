@@ -170,6 +170,12 @@ jupyterhub:
                       mkdir -p "$dir"
                       echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
                     done
+                    echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
+                    mkdir -p "Virtual Labs/{{ .dirname }}/My data"
+                    {{- if .configuration.git_public }}
+                    cd "Virtual Labs/{{ .dirname }}/"
+                    gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"
+                    {{- end }}
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}
                     {{- end }}

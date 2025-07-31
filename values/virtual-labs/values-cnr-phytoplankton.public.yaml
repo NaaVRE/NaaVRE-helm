@@ -5,6 +5,7 @@ jupyterhub:
       slug: cnr-phytoplankton
       title:  CNR Phytoplankton
       description:  CNR Phytoplankton virtual lab
+      dirname: CNR Phytoplankton
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13
@@ -14,5 +15,3 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-cnr-phytoplankton
         registry_url: ghcr.io/naavre/cells-vl-cnr-phytoplankton
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

@@ -170,6 +170,7 @@ jupyterhub:
                       mkdir -p "$dir"
                       echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
                     done
+                    echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}
                     {{- end }}

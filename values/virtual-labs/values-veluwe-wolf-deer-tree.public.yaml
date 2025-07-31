@@ -14,5 +14,3 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-veluwe-wolf-deer-tree
         registry_url: ghcr.io/naavre/cells-vl-veluwe-wolf-deer-tree
         log_queries: true
-      postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json

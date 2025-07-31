@@ -17,7 +17,6 @@ jupyterhub:
         registry_url: ghcr.io/naavre/cells-vl-laserfarm
         log_queries: true
       postStartShSnippet: |
-        echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
         vl_dir="Laserfarm/"
         mkdir -p "$vl_dir"
         cd "$vl_dir"

@@ -80,10 +80,10 @@ jupyterhub:
       extraVolumes:
         - name: naa-vre-public
           persistentVolumeClaim:
-            claimName: csi-s3-naa-vre-public-bucket
+            claimName: naa-vre-public-pvc
         - name: naa-vre-user-data
           persistentVolumeClaim:
-            claimName:  csi-s3-naa-vre-user-data-bucket
+            claimName: naa-vre-user-data-pvc
       extraVolumeMounts:
         - name: naa-vre-public
           readOnly: true

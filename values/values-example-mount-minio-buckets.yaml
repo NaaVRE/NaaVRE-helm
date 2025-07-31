@@ -44,9 +44,9 @@ jupyterhub:
       extraVolumeMounts:
         - name: naa-vre-public
           readOnly: true
-          mountPath: /home/jovyan/naa-vre-public
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
         - name: naa-vre-user-data
-          mountPath: /home/jovyan/naa-vre-user-data/
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
   vlabs:
     openlab:

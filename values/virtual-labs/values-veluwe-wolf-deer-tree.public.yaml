@@ -5,6 +5,7 @@ jupyterhub:
       slug: veluwe-wolf-deer-tree
       title:  Veluwe wolf-deer-tree
       description:  Wolf-deer-tree trophic cascade in the Veluwe
+      dirname: Veluwe wolf-deer-tree
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13

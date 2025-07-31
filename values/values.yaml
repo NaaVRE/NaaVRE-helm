@@ -100,6 +100,7 @@ jupyterhub:
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      dirname: "Open Lab"
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
       image:
@@ -112,8 +113,12 @@ jupyterhub:
         cell_github_token:
         registry_url:
         log_queries: true
+        git_public: {}
+          # Public git repo cloned when starting the lab
+          # repo: https://example.org/my/repo.git
+          # branch: main
       postStartShSnippet: |
-        echo "Pull some data"
+        echo "Do something"
 
 k8sSecretCreator:
   enabled: true

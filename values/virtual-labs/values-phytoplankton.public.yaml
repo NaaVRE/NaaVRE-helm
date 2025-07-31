@@ -5,6 +5,7 @@ jupyterhub:
       slug: phytoplankton
       title:  Phytoplankton traits
       description:  Phytoplankton traits computation
+      dirname: Phytoplankton traits
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-phytoplankton-jupyter
         tag: v0.0.13

@@ -53,6 +53,7 @@ jupyterhub:
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      dirname: "Open Lab"
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1
@@ -62,10 +63,12 @@ jupyterhub:
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
+        git_public: {}
     otherLab:
       slug: other-lab
       title: "Another lab"
       description: "Another virtual lab to demonstrate that we support several"
+      dirname: "Another Lab"
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1
@@ -75,3 +78,4 @@ jupyterhub:
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
+        git_public: {}

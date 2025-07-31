@@ -5,6 +5,7 @@ jupyterhub:
       slug: cnr-phytoplankton
       title:  CNR Phytoplankton
       description:  CNR Phytoplankton virtual lab
+      dirname: CNR Phytoplankton
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13

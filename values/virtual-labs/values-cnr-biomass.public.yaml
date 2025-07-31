@@ -4,7 +4,8 @@ jupyterhub:
       enabled: false
       slug: cnr-biomass
       title:  CNR Biomass
-      description:  CNR Biomass virtual lab
+      description: CNR Biomass virtual lab
+      dirname: CNR Biomass
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.13

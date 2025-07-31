@@ -5,6 +5,7 @@ jupyterhub:
       slug: pclake
       title:  PCLake virtual lab
       description:  "PCLake model: study the trophic state of freshwater lakes"
+      dirname: PCLake
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-pclake-jupyter
         tag: v0.0.13

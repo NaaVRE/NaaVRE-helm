@@ -5,6 +5,7 @@ jupyterhub:
       slug: ravl
       title:  RAVL collaborative virtual labs
       description:  Vertical profiling of biological scatterers
+      dirname: RAVL
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-ravl-jupyter
         tag: v0.0.13

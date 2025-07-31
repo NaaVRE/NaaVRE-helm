@@ -5,6 +5,7 @@ jupyterhub:
       slug: waddenzee-proto-dt
       title:  Waddenzee proto DT
       description:  Waddenzee Digital Twin prototype for LTER-LIFE
+      dirname: Waddenzee proto DT
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-lter-life-wadden-jupyter
         tag: v0.0.13

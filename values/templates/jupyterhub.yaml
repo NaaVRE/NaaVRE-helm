@@ -12,6 +12,7 @@ jupyterhub:
     config:
       Authenticator:
         enable_auth_state: true
+        auto_login: true
       GenericOAuthenticator:
         login_service: keycloak
         username_claim: preferred_username

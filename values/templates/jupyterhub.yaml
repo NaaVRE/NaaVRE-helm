@@ -142,6 +142,39 @@ jupyterhub:
               "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
             }
           }
+      setup_virtual_lab.sh:
+        mountPath: /opt/setup-scripts/setup_virtual_lab.sh
+        stringData: |
+          #!/bin/bash
+          slug="$1"
+          dirname="$2"
+          vl_dir="Virtual Labs/$dirname"
+
+          if [ -z "$slug" ]; then
+            echo "missing slug"
+            exit 1
+          fi
+          if [ -z "$dirname" ]; then
+            echo "missing dirname"
+            exit 1
+          fi
+
+          # Plugin settings
+          for ext in "containerizer" "workflow"; do
+            dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
+            mkdir -p "$dir"
+            echo "{\"virtualLab\":\"$slug\"}" > "$dir/plugin.jupyterlab-settings"
+          done
+
+          # Virtual Lab dir
+          mkdir -p "$vl_dir/My data"
+
+          # Workspace initialization on first VL launch
+          workspace_slug=$(python -c "from jupyterlab_server.workspaces_handler import slugify; print(slugify(\"$slug\"))")
+          workspace_file="/home/jovyan/.jupyter/lab/workspaces/$workspace_slug.jupyterlab-workspace"
+          if [ ! -f "$workspace_file" ]; then
+            echo "{\"data\":{\"file-browser-filebrowser:cwd\":{\"path\":\"$vl_dir\"}},\"metadata\":{\"id\":\"$slug\"}}" > "$workspace_file"
+          fi
 
     memory:
       limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
@@ -183,13 +216,8 @@ jupyterhub:
                   - "sh"
                   - "-c"
                   - |
-                    for ext in "containerizer" "workflow"; do
-                      dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
-                      mkdir -p "$dir"
-                      echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
-                    done
+                    bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}" "{{ .dirname }}"
                     echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
-                    mkdir -p "Virtual Labs/{{ .dirname }}/My data"
                     {{- if .configuration.git_public }}
                     cd "Virtual Labs/{{ .dirname }}/"
                     gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"

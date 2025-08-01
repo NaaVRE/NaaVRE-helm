@@ -76,6 +76,23 @@ jupyterhub:
                 return super().get_pvc_manifest()
                 return super().get_pod_manifest()
         c.JupyterHub.spawner_class = CustomKubeSpawner
+      custom_user_redirect.py: |
+        from jupyterhub.utils import url_path_join
+        from tornado.httputil import url_concat
+        from urllib.parse import parse_qsl
+        async def custom_user_redirect_hook(path, request, user, base_url):
+          user_url = url_path_join(user.url, path)
+          profile = ""
+          if request.query:
+            query_dict = dict(parse_qsl(request.query))
+            profile = query_dict.pop("profile", "")
+            user_url = url_concat(user_url, query_dict)
+          url = url_concat(
+            url_path_join(base_url, "spawn", user.escaped_name),
+            {"next": user_url, "profile": profile},
+            )
+          return url
+        c.JupyterHub.user_redirect_hook = custom_user_redirect_hook
 
   ingress:
     enabled: true

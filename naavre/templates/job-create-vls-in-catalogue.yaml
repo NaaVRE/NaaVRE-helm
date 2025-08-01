@@ -51,7 +51,7 @@ data:
       slug = vlab["slug"]
       title = vlab["title"]
       description = vlab["description"]
-      deployment_url = f"{protocol}://{host}/{base_url}/?profile={vlab['slug']}"
+      deployment_url = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{slug}/?profile={vlab['slug']}"
       container_image = f"{vlab['image']['name']}:{vlab['image']['tag']}"
       image = vlab.get("icon", "").strip()
       if enabled:

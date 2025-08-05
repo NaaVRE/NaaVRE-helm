@@ -1,0 +1,17 @@
+jupyterhub:
+  vlabs:
+    phytoplankton:
+      enabled: false
+      slug: phytoplankton
+      title:  Phytoplankton traits
+      description:  Phytoplankton traits computation
+      dirname: Phytoplankton traits
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-phytoplankton-jupyter
+        tag: v0.0.13
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.13/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-phytoplankton
+        registry_url: ghcr.io/naavre/cells-vl-phytoplankton
+        log_queries: true

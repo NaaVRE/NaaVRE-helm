@@ -12,6 +12,7 @@ jupyterhub:
     config:
       Authenticator:
         enable_auth_state: true
+        auto_login: true
       GenericOAuthenticator:
         login_service: keycloak
         username_claim: preferred_username
@@ -76,6 +77,23 @@ jupyterhub:
                 return super().get_pvc_manifest()
                 return super().get_pod_manifest()
         c.JupyterHub.spawner_class = CustomKubeSpawner
+      custom_user_redirect.py: |
+        from jupyterhub.utils import url_path_join
+        from tornado.httputil import url_concat
+        from urllib.parse import parse_qsl
+        async def custom_user_redirect_hook(path, request, user, base_url):
+          user_url = url_path_join(user.url, path)
+          profile = ""
+          if request.query:
+            query_dict = dict(parse_qsl(request.query))
+            profile = query_dict.pop("profile", "")
+            user_url = url_concat(user_url, query_dict)
+          url = url_concat(
+            url_path_join(base_url, "spawn", user.escaped_name),
+            {"next": user_url, "profile": profile},
+            )
+          return url
+        c.JupyterHub.user_redirect_hook = custom_user_redirect_hook
 
   ingress:
     enabled: true
@@ -124,29 +142,67 @@ jupyterhub:
               "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
             }
           }
+      setup_virtual_lab.sh:
+        mountPath: /opt/setup-scripts/setup_virtual_lab.sh
+        stringData: |
+          #!/bin/bash
+          slug="$1"
+          dirname="$2"
+          vl_dir="Virtual Labs/$dirname"
+
+          if [ -z "$slug" ]; then
+            echo "missing slug"
+            exit 1
+          fi
+          if [ -z "$dirname" ]; then
+            echo "missing dirname"
+            exit 1
+          fi
+
+          # Plugin settings
+          for ext in "containerizer" "workflow"; do
+            dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
+            mkdir -p "$dir"
+            echo "{\"virtualLab\":\"$slug\"}" > "$dir/plugin.jupyterlab-settings"
+          done
+
+          # Virtual Lab dir
+          mkdir -p "$vl_dir/My data"
+
+          # Workspace initialization on first VL launch
+          workspace_slug=$(python -c "from jupyterlab_server.workspaces_handler import slugify; print(slugify(\"$slug\"))")
+          workspace_file="/home/jovyan/.jupyter/lab/workspaces/$workspace_slug.jupyterlab-workspace"
+          if [ ! -f "$workspace_file" ]; then
+            echo "{\"data\":{\"file-browser-filebrowser:cwd\":{\"path\":\"$vl_dir\"}},\"metadata\":{\"id\":\"$slug\"}}" > "$workspace_file"
+          fi
 
     memory:
-      limit: 4G
-      guarantee: 4G
-    storage:
-      capacity: 10Gi
-    {{- if .Values.jupyterhub.extraVolumes }}
-      extraVolumes:
-        {{ .Values.jupyterhub.extraVolumes | toYaml | nindent 6 }}
-    {{- end }}
-    {{- if .Values.jupyterhub.extraVolumeMounts }}
-      extraVolumeMounts:
-        {{ .Values.jupyterhub.extraVolumeMounts | toYaml | nindent 6 }}
-    {{- end }}
+      limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.memory.guarantee }}
     cpu:
-      limit: 1.25
-      guarantee: 1.1
+      limit: {{ .Values.jupyterhub.singleuser.cpu.limit }}
+      guarantee: {{ .Values.jupyterhub.singleuser.cpu.guarantee }}
+    storage:
+      capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
+      {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
+      dynamic:
+        {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumes }}
+      extraVolumes:
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumes | toYaml | nindent 6 }}
+      {{- end }}
+      {{- if .Values.jupyterhub.singleuser.storage.extraVolumeMounts }}
+      extraVolumeMounts:
+        {{ .Values.jupyterhub.singleuser.storage.extraVolumeMounts | toYaml | nindent 6 }}
+      {{- end }}
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
 
     profileList:
       {{- range .Values.jupyterhub.vlabs }}
+      {{- if .enabled }}
       - display_name: "{{ .slug }}"
         kubespawner_override:
           image: "{{ .image.name }}:{{ .image.tag }}"
@@ -160,11 +216,12 @@ jupyterhub:
                   - "sh"
                   - "-c"
                   - |
-                    for ext in "containerizer" "workflow"; do
-                      dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
-                      mkdir -p "$dir"
-                      echo '{"virtualLab":"{{ .slug }}"}' > "$dir/plugin.jupyterlab-settings"
-                    done
+                    bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}" "{{ .dirname }}"
+                    echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
+                    {{- if .configuration.git_public }}
+                    cd "Virtual Labs/{{ .dirname }}/"
+                    gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"
+                    {{- end }}
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}
                     {{- end }}
@@ -174,4 +231,5 @@ jupyterhub:
           {{- end }}
           environment:
             NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+      {{- end }}
       {{- end }}

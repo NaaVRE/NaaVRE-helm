@@ -13,4 +13,9 @@ global:
       {{- end }}
 
   vlabs:
-    {{- toYaml .Values.jupyterhub.vlabs | nindent 4 }}
+    {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+    {{- if $vlab.enabled }}
+    {{ $index }}:
+      {{- toYaml $vlab | nindent 6 }}
+    {{- end }}
+    {{- end }}

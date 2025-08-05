@@ -69,6 +69,9 @@ argoWorkflows:
     install: true
   ingress:
     basePath: /argowf
+  server:
+    sso:
+      insecureSkipVerify: false
 
 jupyterhub:
   enabled: true
@@ -79,11 +82,27 @@ jupyterhub:
     initContainers: []
     extraVolumes: []
     extraVolumeMounts: []
+  singleuser:
+    memory:
+      limit: 4G
+      guarantee: 4G
+    cpu:
+      limit: 1.25
+      guarantee: 1.1
+    storage:
+      capacity: 10Gi
+      dynamic: {}
+      extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
+      extraVolumeMounts: []
   vlabs:
     openlab:
+      enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
       description: "Open experimentation with virtual labs"
+      dirname: "Open Lab"
+      # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
+      # icon:
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.0.1
@@ -94,10 +113,12 @@ jupyterhub:
         cell_github_token:
         registry_url:
         log_queries: true
+        git_public: {}
+          # Public git repo cloned when starting the lab
+          # repo: https://example.org/my/repo.git
+          # branch: main
       postStartShSnippet: |
-        echo "Pull some data"
-  extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
-  extraVolumeMounts: []
+        echo "Do something"
 
 k8sSecretCreator:
   enabled: true

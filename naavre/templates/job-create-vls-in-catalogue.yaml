@@ -40,22 +40,42 @@ metadata:
   name: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
 data:
   django_script.py: |
+    import json
     from virtual_labs.models import VirtualLab
-    {{- $baseUrl := .Values.jupyterhub.hub.baseUrl }}
-    {{- $hosts := .Values.jupyterhub.ingress.hosts }}
-    {{- $tls := .Values.jupyterhub.ingress.tls }}
-    {{- range .Values.global.vlabs }}
-    print("Checking for vlab {{ .slug }}")
-    if not VirtualLab.objects.filter(slug='{{ .slug }}').exists():
-        print("Creating vlab {{ .slug }}")
-        VirtualLab.objects.create(
-            slug='{{ .slug }}',
-            title='{{ .title }}',
-            description='{{ .description }}',
-            deployment_url='http{{ if $tls }}s{{ end }}://{{ index $hosts 0 }}/{{ trimAll "/" $baseUrl }}/?profile={{ .slug }}',
-            container_image='{{ .image.name }}:{{ .image.tag }}',
-            )
-    {{- end }}
+    protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
+    host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
+    base_url = "{{ trimAll "/" .Values.jupyterhub.hub.baseUrl }}"
+    vlabs = json.loads({{ .Values.global.vlabs | toJson | quote }})
+    for vlab in vlabs.values():
+      enabled = vlab["enabled"]
+      slug = vlab["slug"]
+      title = vlab["title"]
+      description = vlab["description"]
+      deployment_url = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{slug}/?profile={vlab['slug']}"
+      container_image = f"{vlab['image']['name']}:{vlab['image']['tag']}"
+      image = vlab.get("icon", "").strip()
+      if enabled:
+        print("Checking for vlab", slug)
+        qs = VirtualLab.objects.filter(slug=slug)
+        if not qs.exists():
+            print("Creating vlab", slug)
+            VirtualLab.objects.create(
+                slug=slug,
+                title=title,
+                description=description,
+                deployment_url=deployment_url,
+                container_image=container_image,
+                image=image,
+                )
+        else:
+            print("Updating vlab", slug)
+            qs.update(
+                title=title,
+                description=description,
+                deployment_url=deployment_url,
+                container_image=container_image,
+                image=image,
+                )
 ---
 apiVersion: v1
 kind: ServiceAccount

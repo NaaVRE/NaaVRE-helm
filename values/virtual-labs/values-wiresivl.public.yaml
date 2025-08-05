@@ -1,0 +1,17 @@
+jupyterhub:
+  vlabs:
+    wiresivl:
+      enabled: false
+      slug: wiresivl
+      title:  Wildfire Resilience Satellite Imaging Time Series Virtual Lab
+      description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
+      dirname: Wildfire Resilience Satellite Imaging
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.0.13
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.13/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-wiresivl
+        registry_url: ghcr.io/naavre/cells-vl-wiresivl
+        log_queries: true

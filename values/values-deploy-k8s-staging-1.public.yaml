@@ -2,7 +2,7 @@ global:
   namespace: new-naavre
 
   ingress:
-    domain: new.demo.naavre.net
+    domain: beta.naavre.net
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:
@@ -73,20 +73,24 @@ jupyterhub:
     extraConfig:
       templates.py: |
         c.JupyterHub.template_paths = ['/etc/jupyterhub/custom/templates']
-  extraVolumes:
-    - name: naa-vre-public
-      persistentVolumeClaim:
-        claimName: csi-s3-naa-vre-public-bucket-new-naavre
-    - name: naa-vre-user-data
-      persistentVolumeClaim:
-        claimName:  csi-s3-naa-vre-user-data-bucket-new-naavre
-  extraVolumeMounts:
-    - name: naa-vre-public
-      readOnly: true
-      mountPath: /home/jovyan/naa-vre-public
-    - name: naa-vre-user-data
-      mountPath: /home/jovyan/naa-vre-user-data/
-      subPath: '{unescaped_username}'
+  singleuser:
+    storage:
+      dynamic:
+        storageClass: zfs-generic-nfs
+      extraVolumes:
+        - name: naa-vre-public
+          persistentVolumeClaim:
+            claimName: naa-vre-public-pvc
+        - name: naa-vre-user-data
+          persistentVolumeClaim:
+            claimName: naa-vre-user-data-pvc
+      extraVolumeMounts:
+        - name: naa-vre-public
+          readOnly: true
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+        - name: naa-vre-user-data
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+          subPath: '{unescaped_username}'
   vlabs:
     openlab:
       enabled: true
@@ -94,3 +98,25 @@ jupyterhub:
       enabled: true
     biodt-hackathon25:
       enabled: true
+    quadfavl:
+      enabled: true
+    veluwe-forest-model:
+      enabled: true
+    cnr-biomass:
+        enabled: true
+    cnr-phytoplankton:
+        enabled: true
+    pclake:
+        enabled: true
+    phytoplankton:
+        enabled: true
+    ravl:
+        enabled: true
+    veluwe-proto-dt:
+        enabled: true
+    veluwe-wolf-deer-tree:
+        enabled: true
+    waddenzee-proto-dt:
+        enabled: true
+    wiresivl:
+        enabled: true

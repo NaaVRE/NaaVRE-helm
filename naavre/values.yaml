@@ -12,6 +12,23 @@ k8s-secret-creator:
 
 keycloak:
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: bitnamilegacy/keycloak
+  keycloakConfigCli:
+    image:
+      repository: bitnamilegacy/keycloak-config-cli
+  postgresql:
+    image:
+      repository: bitnamilegacy/postgresql
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/bitnami-shell
+    metrics:
+      image:
+        repository: bitnamilegacy/postgres-exporter
 
 naavre-catalogue-service:
   enabled: true

@@ -118,5 +118,5 @@ jupyterhub:
         enabled: true
     waddenzee-proto-dt:
         enabled: true
-    wiresivl:
+    wiresits:
         enabled: true

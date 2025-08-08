@@ -15,3 +15,6 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-ravl
         registry_url: ghcr.io/naavre/cells-vl-ravl
         log_queries: true
+        git_public:
+          repo: https://github.com/NaaVRE/RAVL-virtual-lab.git
+          branch: main

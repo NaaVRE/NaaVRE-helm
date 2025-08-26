@@ -8,9 +8,9 @@ jupyterhub:
       dirname: Veluwe wolf-deer-tree
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.0.19
+        tag: v0.0.20
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.19/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.20/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-veluwe-wolf-deer-tree
         registry_url: ghcr.io/naavre/cells-vl-veluwe-wolf-deer-tree

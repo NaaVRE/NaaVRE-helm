@@ -4,6 +4,9 @@ fullnameOverride: ""
 global:
   namespace: naavre
 
+  # WARNING: don't verify SSL certificates (don't use in production!)
+  insecureSkipVerifySSL: false
+
   ingress:
     domain: example.org
     commonAnnotations: {}
@@ -69,9 +72,6 @@ argoWorkflows:
     install: true
   ingress:
     basePath: /argowf
-  server:
-    sso:
-      insecureSkipVerify: false
 
 jupyterhub:
   enabled: true

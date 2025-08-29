@@ -9,6 +9,10 @@ jupyterhub:
     namedServerLimitPerUser: 1
     shutdownOnLogout: true
     baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
+    {{- if .Values.global.insecureSkipVerifySSL }}
+    extraEnv:
+      OAUTH_TLS_VERIFY: "0"
+    {{- end }}
     config:
       Authenticator:
         enable_auth_state: true
@@ -199,6 +203,9 @@ jupyterhub:
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
+      {{- if .Values.global.insecureSkipVerifySSL }}
+      VRE_API_VERIFY_SSL: 'false'
+      {{- end }}
 
     profileList:
       {{- range .Values.jupyterhub.vlabs }}

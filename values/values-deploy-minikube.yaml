@@ -1,0 +1,61 @@
+# This requires minikube with addons ingress and ingress-dns.
+# Follow the ingress-dns installation documentation [1], paying attention to the following steps:
+#   (3) Add the `minikube ip` as a DNS server
+#   (4) (optional) Configure in-cluster DNS server to resolve local DNS names inside cluster
+# [1] https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/#installation
+
+global:
+  namespace: new-naavre
+
+  # WARNING: don't verify SSL certificates (don't use in production!)
+  insecureSkipVerifySSL: true
+
+  ingress:
+    domain: naavre-dev.minikube.test
+    redirectDomainToPaasFrontend: true
+
+  secrets:
+    k8sSecretCreator:
+      apiToken: fake-k8sSecretCreator-apiToken
+    keycloak:
+      adminPassword: admin
+      naavreClientSecret: fake-keycloak-naavreClientSecret
+      users:
+        - username: user
+          password: user
+      postgresql:
+        password: fake-keycloak-postgresql-password
+    naavreCatalogueService:
+      secretKey: fake-naavreCatalogueService-secretKey
+      auth:
+        superuser:
+          email: admin@example.org
+          username: admin
+          password: admin
+      postgresql:
+        password: fake-naavreCatalogueService-postgresql-password
+    naavrePaasFrontend:
+      secretKey: fake-naavrePaasFrontend-secretKey
+
+jupyterhub:
+  vlabs:
+    openlab:
+      enabled: true
+      slug: openlab
+      title: NaaVRE Open Lab
+      description: Open experimentation with virtual labs
+      dirname: Open Lab
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.0.20
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.20/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        log_queries: true
+        # WARNING: with the values below, the deployment will work but containerizing cells won't.
+        # If you need to containerize cells, create your own cells repository using the template at
+        # https://github.com/QCDIS/NaaVRE-cells, generate a token following the instruction in
+        # the repo's README.
+        cell_github_url: https://github.com/user/repo
+        cell_github_token: fake-cell-github-token
+        registry_url: ghcr.io/user/repo

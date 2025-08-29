@@ -21,6 +21,9 @@ naavre-paas-frontend:
     {{- end }}
 
   conf:
+    {{- if .Values.global.insecureSkipVerifySSL }}
+    verifySSL: false
+    {{- end }}
     oidc:
       {{- if .Values.global.externalServices.keycloak.useExternal }}
       clientId: "{{ .Values.global.externalServices.keycloak.client_id }}"

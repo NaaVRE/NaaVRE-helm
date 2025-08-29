@@ -50,6 +50,9 @@ naavre-workflow-service:
         {{- include "workflow_service_vl_configuration" . | fromYaml | toPrettyJson | nindent 8 }}
 
   env:
+    {{- if .Values.global.insecureSkipVerifySSL }}
+    VERIFY_SSL: "false"
+    {{- end }}
     {{- if .Values.global.externalServices.keycloak.useExternal }}
     OIDC_CONFIGURATION_URL: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/.well-known/openid-configuration"
     {{- else }}

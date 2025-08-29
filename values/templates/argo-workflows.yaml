@@ -77,7 +77,7 @@ argo-workflows:
       redirectUrl: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/oauth2/callback"
       rbac:
         enabled: false
-      insecureSkipVerify: {{ .Values.argoWorkflows.server.sso.insecureSkipVerify }}
+      insecureSkipVerify: {{ .Values.global.insecureSkipVerifySSL }}
     ingress:
       enabled: true
       ingressClassName: "nginx"

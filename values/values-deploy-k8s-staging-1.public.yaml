@@ -77,20 +77,20 @@ jupyterhub:
     storage:
       dynamic:
         storageClass: zfs-generic-nfs
-#      extraVolumes:
-#        - name: naa-vre-public
-#          persistentVolumeClaim:
-#            claimName: naa-vre-public-pvc
-#        - name: naa-vre-user-data
-#          persistentVolumeClaim:
-#            claimName: naa-vre-user-data-pvc
-#      extraVolumeMounts:
-#        - name: naa-vre-public
-#          readOnly: true
-#          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
-#        - name: naa-vre-user-data
-#          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
-#          subPath: '{unescaped_username}'
+      extraVolumes:
+        - name: naa-vre-public
+          persistentVolumeClaim:
+            claimName: naa-vre-public-pvc
+        - name: naa-vre-user-data
+          persistentVolumeClaim:
+            claimName: naa-vre-user-data-pvc
+      extraVolumeMounts:
+        - name: naa-vre-public
+          readOnly: true
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+        - name: naa-vre-user-data
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+          subPath: '{unescaped_username}'
   vlabs:
     openlab:
       enabled: true

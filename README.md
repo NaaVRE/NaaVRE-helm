@@ -74,6 +74,7 @@ helm plugin install https://github.com/jkroepke/helm-secrets
 > For VLIC-managed deployments, run the following commands before `deploy.sh`:
 > * `ssh -TL 127.0.1.<x>:6443:localhost:6443 <context>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md#open-the-ssh-tunnel))
 > * `aws sso login --profile <profile name>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#reading-and-editing-files))
+> * `git checkout main && git pull`
 
 #### Install or upgrade
 
@@ -162,6 +163,16 @@ helm secrets edit my-file.secrets.yaml
 ```
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
+
+## Maintenance
+
+To update sub-charts versions, edit [naavre/Chart.yaml](naavre/Chart.yaml) and run
+
+```shell
+./deploy.sh dependency-update
+```
+
+to update [naavre/Chart.lock](naavre/Chart.lock).
 
 ## Advanced setups
 

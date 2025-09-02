@@ -16,86 +16,146 @@ The deployment is done in two steps:
 - **Step 1:** render values for the sub-charts, using the `values` chart
 - **Step 2:** Deploy the sub-charts, using the `naavre` chart and the previously-rendered values.
 
-![Deployment overview](./docs/deployment-overview.drawio.png)
+![Deployment overview](docs/deployment-overview.drawio.png)
 
 ## Deployment
 
-> [!IMPORTANT]
-> If you are creating a new deployment on VLIC-managed infrastructure, follow [Secrets and values for VLIC deployments](#secrets-and-values-for-vlic-deployments).
-
-Create a new root values file and fill in your values. This can be done by copying one of the examples:
+Deployments are managed with [deploy.sh](deploy.sh):
 
 ```shell
-cp ./values/values-example-basic.yaml ./values/values-deploy-my-k8s-context.yaml
-vim ./values/values-deploy-my-k8s-context.yaml
+./deploy.sh --help
 ```
 
-> [!CAUTION]
-> Values files (`./values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
+> [!TIP]
+> Whenever you run `deploy.sh`, you can add `--dry-run` to print the commands without running them:
+> ```shell
+> ./deploy.sh --dry-run <action>
+> ```
+
+### Initial setup
 
 Add the third-party Helm repos:
 
 ```shell
-helm repo add argo https://argoproj.github.io/argo-helm
-helm repo add jupyterhub	https://jupyterhub.github.io/helm-chart/
-helm repo add bitnami   	https://charts.bitnami.com/bitnami
+./deploy.sh repo-add
 ```
 
 Download the sub-charts:
 
 ```shell
-helm dependency update naavre
-helm dependency build naavre
+./deploy.sh dependency-build
 ```
 
+### Additional initial setup for VLIC team members
 
-Render the `values` chart (step 1) and deploy the `naavre` chart (step 2):
+Configure Kubernetes access following the [internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md).
+The configuration is successful when you can run `kubectl` locally with the desired context:
 
 ```shell
-context="minikube"
-namespace="naavre"
-release_name="naavre"
-helm template "$release_name" values/ --output-dir values/rendered -f "./values/values-deploy-$context.yaml" && \
-helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+kubectl --context k8s-test-1 get ns new-naavree
 ```
 
-> [!NOTE]
-> Never edit files in `values/rendered`. Instead, change `./values/values-deploy-my-k8s-context.yaml` or `values/templates/*.yaml` and re-render the `values` chart.
+Configure SOPS to decode VLIC secrets following the [internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md).
+Don't forget to set the `AWS_PROFILE` environment variable for the project and to run `aws sso login --profile ...` before running `deploy.sh`.
+The configuration is successful when you can decrypt SOPS files:
+```shell
+sops decrypt values/values-deploy-k8s-test-1.secrets.yaml
+```
 
-## Uninstall
+Install `helm-secrets`:
 
 ```shell
-helm -n naavre uninstall naavre
+helm plugin install https://github.com/jkroepke/helm-secrets
 ```
 
-## Secrets and values for VLIC deployments
+### Manage existing deployments
 
-Secrets and deployment values are managed with [SOPS](https://github.com/getsops/sops) and [helm-secrets](https://github.com/jkroepke/helm-secrets).
+> [!IMPORTANT]
+> For VLIC-managed deployments, run the following commands before `deploy.sh`:
+> * `ssh -TL 127.0.1.<x>:6443:localhost:6443 <context>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md#open-the-ssh-tunnel))
+> * `aws sso login --profile <profile name>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#reading-and-editing-files))
 
-### Initial setup
+#### Install or upgrade
 
--  Configure SOPS with VLIC's keys ([documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md); private)).
-   Don't forget to set the `AWS_PROFILE` environment variable for the project.
--  Install `helm-secrets`
-   ```shell
-   helm plugin install https://github.com/jkroepke/helm-secrets
-   ```
+To install or upgrade an existing deployment, use:
 
-### Manage deployments or virtual labs
+```shell
+./deploy.sh --kube-context <deployment name> -n <namespace> [--use-vlic-secrets] upgrade --install
+```
+
+For example, to install or upgrade the `minikube` deployment ([values/values-deploy-minikube.yaml](values/values-deploy-minikube.yaml)), run:
+
+```shell
+./deploy.sh --kube-context minikube -n new-naavre upgrade --install
+```
+
+To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
+
+```shell
+bash ./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
+```
+
+#### Rollback
+
+To rollback an existing deployment, use:
+
+```shell
+bash deploy.sh --kube-context <deployment name> -n <namespace> rollback [REVISION]
+```
+
+Examples:
+
+```shell
+bash deploy.sh --kube-context minikube -n new-naavre rollback
+bash deploy.sh --kube-context k8s-test-1 -n new-naavre rollback 1
+```
+
+#### Uninstall
+
+To uninstall an existing deployment, use:
+
+```shell
+bash deploy.sh --kube-context <deployment name> -n <namespace> uninstall
+```
+
+Examples:
+
+```shell
+bash deploy.sh --kube-context minikube -n new-naavre uninstall
+bash deploy.sh --kube-context k8s-test-1 -n new-naavre uninstall
+```
+
+### Create a new deployment
+
+#### Without VLIC secrets
+
+Create a new root values file and fill in your values. This can be done by copying one of the examples:
+
+```shell
+cp values/values-example-basic.yaml values/values-deploy-my-k8s-context.yaml
+vim values/values-deploy-my-k8s-context.yaml
+```
+
+> [!CAUTION]
+> Values files (`values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
+
+#### With VLIC secrets
 
 A deployment consists of two files:
 
-- `values/values-deploy-{context}.public.yaml` (clear text)
-- `values/values-deploy-{context}.secrets.yaml`: (SOPS-encrypted)
+- `values/values-deploy-<context>.public.yaml` (clear text)
+- `values/values-deploy-<context>.secrets.yaml` (SOPS-encrypted)
 
-A virtual lab definition also consists of two files:
+For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. As for deployments, a virtual lab definition consist of two files:
 
-- `values/virtual-labs/values-{vl-slug}.public.yaml` (clear text)
-- `values/virtual-labs/values-{vl-slug}.secrets.yaml` (SOPS-encrypted)
+- `values/virtual-labs/values-<vl-slug>.public.yaml`
+- `values/virtual-labs/values-<vl-slug>.secrets.yaml`
+
+Virtual labs are disabled by default. To activate a virtual lab for a deployment, set `jupyterhub.vlabs.<slug>.enabled: true` in `values/values-deploy-<context>.public.yaml`
 
 Clear-text files should only contain public values. Secrets should be stored in the SOPS-encrypted files (typically, everything under `global.secrets`, as well as sensitive values under `global.externalServices` and `jupyterhub.vlabs.*`). Both files can safely commited to Git.
 
-To create a new SOPS-encrypted, or edit an existing one, run:
+To create or edit a SOPS-encrypted file, run:
 
 ```shell
 helm secrets edit my-file.secrets.yaml
@@ -103,76 +163,13 @@ helm secrets edit my-file.secrets.yaml
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
 
-### Deploy with encrypted values
-
-```shell
-context="minikube"
-namespace="new-naavre"
-release_name="naavre"
-helm secrets template "$release_name" values/ --output-dir values/rendered $(find values/virtual-labs -type f | xargs -I{} echo -n " -f {}") -f "./values/values-deploy-$context.public.yaml" -f "./values/values-deploy-$context.secrets.yaml" && \
-helm --kube-context "$context" -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
-rm -r values/rendered/
-```
-
-Troubleshooting:
-If you get an error like:
-```shell
-Failed to get the data key required to decrypt the SOPS file.
-
-Group 0: FAILED
-  E90351D346AFCF25477190F1434316312E1CF3B1: FAILED
-    - | could not decrypt data key with PGP key:
-      | github.com/ProtonMail/go-crypto/openpgp error: could not
-      | load secring: open /home/alogo/.gnupg/pubring.gpg: no such
-      | file or directory; GnuPG binary error: failed to decrypt
-      | sops data key with pgp: gpg: encrypted with cv25519 key, ID
-      | 7633BAF7BF458E69, created 2025-04-01
-      |       "LifeWatch ERIC VLIC <vlic@lifewatch.eu>"
-      | gpg: public key decryption failed: No secret key
-      | gpg: decryption failed: No secret key
-  
-  arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef: FAILED
-    - | failed to decrypt sops data key with AWS KMS: operation
-      | error KMS: Decrypt, get identity: get credentials: failed to
-      | refresh cached credentials, refresh cached SSO token failed,
-      | unable to refresh SSO token, operation error SSO OIDC:
-      | CreateToken, https response error StatusCode: 400,
-      | RequestID: 3e11e8dc-a0f9-40c2-9f30-217605492daf,
-      | InvalidGrantException: 
-  
-  arn:aws:kms:eu-central-1:050752621342:key/6a9ef814-a13a-4299-b406-2e75b3ef1554: FAILED
-    - | failed to decrypt sops data key with AWS KMS: operation
-      | error KMS: Decrypt, get identity: get credentials: failed to
-      | refresh cached credentials, refresh cached SSO token failed,
-      | unable to refresh SSO token, operation error SSO OIDC:
-      | CreateToken, https response error StatusCode: 400,
-      | RequestID: 944c735b-ef18-4aca-b03a-836387440916,
-      | InvalidGrantException: 
-
-Recovery failed because no master key was able to decrypt the file. In
-order for SOPS to recover the file, at least one key has to be successful,
-but none were.
-[helm-secrets] Error while decrypting file: values/virtual-labs/values-laserfarm.secrets.yaml
-Error: plugin "secrets" exited with error
-```
-Make sure you login to the AWS CLI with the correct profile, e.g.:
-```shell
-aws sso login --profile use-kms-vlic-sops-admin-050752621342
-```
-
-If the deployment fails or is not correct, you can roollback to the previous deployment with:
-
-```shell
-helm --kube-context "$context" rollback naavre -n $namespace
-```
-
 ## Advanced setups
 
 ### Add MinIO mount to user home directory 
 
 To add MinIO mounts to the user's home directory, you can use the `extraVolumes` and `extraVolumeMounts` options in the Jupyter Hub configuration.
 This is an example of how to add a MinIO mount to the user's home directory:
-[values-example-mount-minio-buckets.yaml](./values/values-example-mount-minio-buckets.yaml)
+[values-example-mount-minio-buckets.yaml](values/values-example-mount-minio-buckets.yaml)
 
 
 ### Run a command after starting Jupyter Lab

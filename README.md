@@ -27,7 +27,7 @@ Deployments are managed with [deploy.sh](./deploy.sh):
 ```
 
 > [!TIP]
-> Use `--dry-run` to print the commands without running them:
+> Whenever you run `deploy.sh`, you can add `--dry-run` to print the commands without running them:
 > ```shell
 > ./deploy.sh --dry-run <action>
 > ```
@@ -48,14 +48,14 @@ Download the sub-charts:
 
 ### Additional initial setup for VLIC team members
 
-Configure Kubernetes access following the [documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md) (private).
+Configure Kubernetes access following the [internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md).
 The configuration is successful when you can run `kubectl` locally with the desired context:
 
 ```shell
 kubectl --context k8s-test-1 get ns new-naavree
 ```
 
-Configure SOPS to decode VLIC secrets following the [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md) (private).
+Configure SOPS to decode VLIC secrets following the [internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md).
 Don't forget to set the `AWS_PROFILE` environment variable for the project and to run `aws sso login --profile ...` before running `deploy.sh`.
 The configuration is successful when you can decrypt SOPS files:
 ```shell
@@ -68,10 +68,12 @@ Install `helm-secrets`:
 helm plugin install https://github.com/jkroepke/helm-secrets
 ```
 
-> [!TIP]
-> Use `--use-vlic-secrets` with `deploy.sh` to use VLIC secrets.
-
 ### Manage existing deployments
+
+> [!IMPORTANT]
+> For VLIC-managed deployments (i.e. anything with `--use-vlic-secrets`), run the following commands before `deploy.sh`:
+> * `aws sso login --profile <profile name>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#reading-and-editing-files))
+> * `ssh -TL 127.0.1.<x>:6443:localhost:6443 <context>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md#open-the-ssh-tunnel))
 
 #### Install or upgrade
 
@@ -152,16 +154,16 @@ vim ./values/values-deploy-my-k8s-context.yaml
 
 A deployment consists of two files:
 
-- `values/values-deploy-{context}.public.yaml` (clear text)
-- `values/values-deploy-{context}.secrets.yaml`: (SOPS-encrypted)
+- `values/values-deploy-<context>.public.yaml` (clear text)
+- `values/values-deploy-<context>.secrets.yaml`: (SOPS-encrypted)
 
 For VLIC-managed deployments, virtual labs are defined in separate files placed in `./values/virtual-labs`. A virtual lab definition also consist of two files:
 
-- `values/virtual-labs/values-{vl-slug}.public.yaml` (clear text)
-- `values/virtual-labs/values-{vl-slug}.secrets.yaml` (SOPS-encrypted)
+- `values/virtual-labs/values-<vl-slug>.public.yaml` (clear text)
+- `values/virtual-labs/values-<vl-slug>.secrets.yaml` (SOPS-encrypted)
 
 Virtual labs are disabled by default.
-To activate a virtual lab for a deployment, set `jupyterhub.vlabs.{slug}.enabled: true` in `values/values-deploy-{context}.public.yaml`
+To activate a virtual lab for a deployment, set `jupyterhub.vlabs.<slug>.enabled: true` in `values/values-deploy-<context>.public.yaml`
 
 Clear-text files should only contain public values. Secrets should be stored in the SOPS-encrypted files (typically, everything under `global.secrets`, as well as sensitive values under `global.externalServices` and `jupyterhub.vlabs.*`). Both files can safely commited to Git.
 

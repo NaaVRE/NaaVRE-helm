@@ -163,6 +163,16 @@ helm secrets edit my-file.secrets.yaml
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
 
+## Maintenance
+
+To update sub-charts versions, edit [naavre/Chart.yaml](naavre/Chart.yaml) and run
+
+```shell
+./deploy.sh dependency-update
+```
+
+to update [naavre/Chart.lock](naavre/Chart.lock).
+
 ## Advanced setups
 
 ### Add MinIO mount to user home directory 

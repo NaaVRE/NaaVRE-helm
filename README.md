@@ -16,11 +16,11 @@ The deployment is done in two steps:
 - **Step 1:** render values for the sub-charts, using the `values` chart
 - **Step 2:** Deploy the sub-charts, using the `naavre` chart and the previously-rendered values.
 
-![Deployment overview](./docs/deployment-overview.drawio.png)
+![Deployment overview](docs/deployment-overview.drawio.png)
 
 ## Deployment
 
-Deployments are managed with [deploy.sh](./deploy.sh):
+Deployments are managed with [deploy.sh](deploy.sh):
 
 ```shell
 ./deploy.sh --help
@@ -71,9 +71,9 @@ helm plugin install https://github.com/jkroepke/helm-secrets
 ### Manage existing deployments
 
 > [!IMPORTANT]
-> For VLIC-managed deployments (i.e. anything with `--use-vlic-secrets`), run the following commands before `deploy.sh`:
-> * `aws sso login --profile <profile name>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#reading-and-editing-files))
+> For VLIC-managed deployments, run the following commands before `deploy.sh`:
 > * `ssh -TL 127.0.1.<x>:6443:localhost:6443 <context>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/doc/kubernetes/deployment-from-laptop.md#open-the-ssh-tunnel))
+> * `aws sso login --profile <profile name>` ([internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#reading-and-editing-files))
 
 #### Install or upgrade
 
@@ -94,17 +94,6 @@ To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-tes
 ```shell
 bash ./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
 ```
-
-> [!TIP]
-> Troubleshooting:
-> If you get the following error during deployments with VLIC secrets,
-> ```shell
-> Could run command `sops decrypt values/values-deploy-k8s-test-1.secrets.yaml`. Check your SOPS configuration
-> ```
-> Make sure you login to the AWS CLI with the correct profile, e.g.:
-> ```shell
-> aws sso login --profile use-kms-vlic-sops-admin-050752621342
-> ```
 
 #### Rollback
 
@@ -143,27 +132,26 @@ bash deploy.sh --kube-context k8s-test-1 -n new-naavre uninstall
 Create a new root values file and fill in your values. This can be done by copying one of the examples:
 
 ```shell
-cp ./values/values-example-basic.yaml ./values/values-deploy-my-k8s-context.yaml
-vim ./values/values-deploy-my-k8s-context.yaml
+cp values/values-example-basic.yaml values/values-deploy-my-k8s-context.yaml
+vim values/values-deploy-my-k8s-context.yaml
 ```
 
 > [!CAUTION]
-> Values files (`./values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
+> Values files (`values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
 
-### With VLIC secrets
+#### With VLIC secrets
 
 A deployment consists of two files:
 
 - `values/values-deploy-<context>.public.yaml` (clear text)
-- `values/values-deploy-<context>.secrets.yaml`: (SOPS-encrypted)
+- `values/values-deploy-<context>.secrets.yaml` (SOPS-encrypted)
 
-For VLIC-managed deployments, virtual labs are defined in separate files placed in `./values/virtual-labs`. A virtual lab definition also consist of two files:
+For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. As for deployments, a virtual lab definition consist of two files:
 
-- `values/virtual-labs/values-<vl-slug>.public.yaml` (clear text)
-- `values/virtual-labs/values-<vl-slug>.secrets.yaml` (SOPS-encrypted)
+- `values/virtual-labs/values-<vl-slug>.public.yaml`
+- `values/virtual-labs/values-<vl-slug>.secrets.yaml`
 
-Virtual labs are disabled by default.
-To activate a virtual lab for a deployment, set `jupyterhub.vlabs.<slug>.enabled: true` in `values/values-deploy-<context>.public.yaml`
+Virtual labs are disabled by default. To activate a virtual lab for a deployment, set `jupyterhub.vlabs.<slug>.enabled: true` in `values/values-deploy-<context>.public.yaml`
 
 Clear-text files should only contain public values. Secrets should be stored in the SOPS-encrypted files (typically, everything under `global.secrets`, as well as sensitive values under `global.externalServices` and `jupyterhub.vlabs.*`). Both files can safely commited to Git.
 
@@ -181,7 +169,7 @@ Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/
 
 To add MinIO mounts to the user's home directory, you can use the `extraVolumes` and `extraVolumeMounts` options in the Jupyter Hub configuration.
 This is an example of how to add a MinIO mount to the user's home directory:
-[values-example-mount-minio-buckets.yaml](./values/values-example-mount-minio-buckets.yaml)
+[values-example-mount-minio-buckets.yaml](values/values-example-mount-minio-buckets.yaml)
 
 
 ### Run a command after starting Jupyter Lab

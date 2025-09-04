@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: wiresits
       title:  Wildfire Resilience Satellite Imaging Time Series Virtual Lab
+      labels: []
       description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
       dirname: Wildfire Resilience Satellite Imaging
       image:

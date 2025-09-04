@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: cnr-phytoplankton
       title:  CNR Phytoplankton
+      labels: []
       description:  CNR Phytoplankton virtual lab
       dirname: CNR Phytoplankton
       image:

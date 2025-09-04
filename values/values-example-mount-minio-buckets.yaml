@@ -52,6 +52,7 @@ jupyterhub:
     openlab:
       slug: openlab
       title: "NaaVRE Open Lab"
+      labels: []
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
       image:
@@ -67,6 +68,7 @@ jupyterhub:
     otherLab:
       slug: other-lab
       title: "Another lab"
+      labels: []
       description: "Another virtual lab to demonstrate that we support several"
       dirname: "Another Lab"
       image:

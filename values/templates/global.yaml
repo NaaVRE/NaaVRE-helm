@@ -12,6 +12,8 @@ global:
       client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
       {{- end }}
 
+  vlabLabels: {{- .Values.jupyterhub.vlabLabels | default dict | toYaml | nindent 4 }}
+
   vlabs:
     {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
     {{- if $vlab.enabled }}

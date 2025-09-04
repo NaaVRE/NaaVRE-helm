@@ -147,7 +147,7 @@ A deployment consists of two files:
 - `values/values-deploy-<context>.public.yaml` (clear text)
 - `values/values-deploy-<context>.secrets.yaml` (SOPS-encrypted)
 
-For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. As for deployments, a virtual lab definition consist of two files:
+For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. Labels are defined in `values/virtual-labs/labels.yaml`. As for deployments, a virtual lab definition consist of two files:
 
 - `values/virtual-labs/values-<vl-slug>.public.yaml`
 - `values/virtual-labs/values-<vl-slug>.secrets.yaml`

@@ -4,7 +4,7 @@ jupyterhub:
       enabled: false
       slug: openlab
       title: NaaVRE Open Lab
-      labels: []
+      labels: [tutorial]
       description: Open experimentation with virtual labs
       dirname: Open Lab
       image:

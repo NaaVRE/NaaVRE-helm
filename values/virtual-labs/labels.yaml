@@ -1,0 +1,6 @@
+jupyterhub:
+  vlabLabels:
+
+    tutorial:
+      title: Tutorial
+      color: "#3c8f49"

@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: veluwe-forest-model
       title: Veluwe forest model
+      labels: []
       description: Forest landscape modeling of the Veluwe
       dirname: Veluwe forest model
       icon: >

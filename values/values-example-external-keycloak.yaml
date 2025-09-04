@@ -43,6 +43,7 @@ jupyterhub:
     openlab:
       slug: openlab
       title: "NaaVRE Open Lab"
+      labels: []
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
       image:

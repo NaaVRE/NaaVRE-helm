@@ -93,7 +93,7 @@ For example, to install or upgrade the `minikube` deployment ([values/values-dep
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-bash ./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
 ```
 
 #### Rollback
@@ -101,14 +101,14 @@ bash ./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgr
 To rollback an existing deployment, use:
 
 ```shell
-bash deploy.sh --kube-context <deployment name> -n <namespace> rollback [REVISION]
+./deploy.sh --kube-context <deployment name> -n <namespace> rollback [REVISION]
 ```
 
 Examples:
 
 ```shell
-bash deploy.sh --kube-context minikube -n new-naavre rollback
-bash deploy.sh --kube-context k8s-test-1 -n new-naavre rollback 1
+./deploy.sh --kube-context minikube -n new-naavre rollback
+./deploy.sh --kube-context k8s-test-1 -n new-naavre rollback 1
 ```
 
 #### Uninstall
@@ -116,14 +116,14 @@ bash deploy.sh --kube-context k8s-test-1 -n new-naavre rollback 1
 To uninstall an existing deployment, use:
 
 ```shell
-bash deploy.sh --kube-context <deployment name> -n <namespace> uninstall
+./deploy.sh --kube-context <deployment name> -n <namespace> uninstall
 ```
 
 Examples:
 
 ```shell
-bash deploy.sh --kube-context minikube -n new-naavre uninstall
-bash deploy.sh --kube-context k8s-test-1 -n new-naavre uninstall
+./deploy.sh --kube-context minikube -n new-naavre uninstall
+./deploy.sh --kube-context k8s-test-1 -n new-naavre uninstall
 ```
 
 ### Create a new deployment
@@ -147,7 +147,7 @@ A deployment consists of two files:
 - `values/values-deploy-<context>.public.yaml` (clear text)
 - `values/values-deploy-<context>.secrets.yaml` (SOPS-encrypted)
 
-For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. As for deployments, a virtual lab definition consist of two files:
+For VLIC-managed deployments, virtual labs are defined in separate files placed in `values/virtual-labs/`. Labels are defined in `values/virtual-labs/labels.yaml`. As for deployments, a virtual lab definition consist of two files:
 
 - `values/virtual-labs/values-<vl-slug>.public.yaml`
 - `values/virtual-labs/values-<vl-slug>.secrets.yaml`

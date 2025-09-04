@@ -94,11 +94,19 @@ jupyterhub:
       dynamic: {}
       extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
       extraVolumeMounts: []
+
+  vlabLabels: {}
+  # myLabel:
+  #   title: My label
+  #   color: "#3c8f49"
+
   vlabs:
     openlab:
       enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
+      labels: []
+      # labels: [myLabel]
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")

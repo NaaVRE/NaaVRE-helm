@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: waddenzee-proto-dt
       title:  Waddenzee proto DT
+      labels: []
       description:  Waddenzee Digital Twin prototype for LTER-LIFE
       dirname: Waddenzee proto DT
       image:

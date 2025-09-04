@@ -51,11 +51,19 @@ global:
       client_id:
       client_secret:
 
+  vlabLabels: {}
+  # myLabel:
+  #   title: My label
+  #   color: "#3c8f49"
+
+
   vlabs:
     openlab:
       enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
+      labels: []
+      # labels: [myLabel]
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
       icon: ""

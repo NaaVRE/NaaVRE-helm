@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: ravl
       title:  RAVL collaborative virtual labs
+      labels: []
       description:  Vertical profiling of biological scatterers
       dirname: RAVL
       image:

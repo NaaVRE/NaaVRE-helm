@@ -41,15 +41,43 @@ metadata:
 data:
   django_script.py: |
     import json
-    from virtual_labs.models import VirtualLab
+    from virtual_labs.models import VirtualLabLabel, VirtualLab
     protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
     host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
     base_url = "{{ trimAll "/" .Values.jupyterhub.hub.baseUrl }}"
+    vlab_labels = json.loads({{ .Values.global.vlabLabels | toJson | quote }})
+    vlab_label_objects = {}
+    for key, vlab_label in vlab_labels.items():
+        title = vlab_label["title"]
+        color = vlab_label["color"]
+        qs = VirtualLabLabel.objects.filter(title=title)
+        if not qs.exists():
+            print("Creating vlab label", title)
+            obj = VirtualLabLabel.objects.create(
+                title=title,
+                color=color,
+                )
+            vlab_label_objects[key] = obj
+        else:
+            print("Updating vlab label", title)
+            qs.update(
+                title=title,
+                color=color,
+                )
+            vlab_label_objects[key] = qs[0]
+
     vlabs = json.loads({{ .Values.global.vlabs | toJson | quote }})
     for vlab in vlabs.values():
       enabled = vlab["enabled"]
       slug = vlab["slug"]
       title = vlab["title"]
+      labels = []
+      for key in vlab["labels"]:
+          try:
+            labels.append(vlab_label_objects[key])
+          except KeyError:
+            print(f"Vlab {slug} uses undefined label ({key})."
+                  " It is defined in vlabLabels?")
       description = vlab["description"]
       deployment_url = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{slug}/?profile={vlab['slug']}"
       container_image = f"{vlab['image']['name']}:{vlab['image']['tag']}"
@@ -59,7 +87,7 @@ data:
         qs = VirtualLab.objects.filter(slug=slug)
         if not qs.exists():
             print("Creating vlab", slug)
-            VirtualLab.objects.create(
+            obj = VirtualLab.objects.create(
                 slug=slug,
                 title=title,
                 description=description,
@@ -67,6 +95,7 @@ data:
                 container_image=container_image,
                 image=image,
                 )
+            obj.labels.set(labels)
         else:
             print("Updating vlab", slug)
             qs.update(
@@ -76,6 +105,7 @@ data:
                 container_image=container_image,
                 image=image,
                 )
+            qs[0].labels.set(labels)
 ---
 apiVersion: v1
 kind: ServiceAccount

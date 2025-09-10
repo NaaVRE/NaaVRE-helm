@@ -150,13 +150,17 @@ while true; do
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $timeout ]; then
         echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
-        # Print all pods in the naavre namespace for debugging
-        kubectl get pods -n $namespace  | grep argo
-        kubectl get services -n $namespace | grep argo
-        kubectl get ingress -n $namespace |  grep argo
+        # Find the pods that are not running in the naavre namespace and contain the word argo. Then print their status logs and describe them
+        kubectl get pods -n $namesapce | grep argo | grep -v Running
+        for pod in $(kubectl get pods -n $namespace | grep argo | grep -v Running | awk '{print $1}'); do
+            echo "Logs for pod $pod:"
+            kubectl logs $pod -n $namespace
+            echo "Describe for pod $pod:"
+            kubectl describe pod $pod -n $namespace
+        done
         exit 1
     fi
-    sleep 10
+    sleep 5
 done
 
 # Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf

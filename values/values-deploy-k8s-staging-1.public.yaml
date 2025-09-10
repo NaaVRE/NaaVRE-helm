@@ -112,6 +112,8 @@ jupyterhub:
         enabled: true
     ravl:
         enabled: true
+    reprolab:
+      enabled: true
     veluwe-proto-dt:
         enabled: true
     veluwe-wolf-deer-tree:

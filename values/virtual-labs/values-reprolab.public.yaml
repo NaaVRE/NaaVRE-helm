@@ -5,7 +5,7 @@ jupyterhub:
       slug: reprolab
       title: Reprolab
       labels: [experimental_features]
-      description:
+      description: Tool for Improving the Computational Reproducibility of Jupyter Notebooks
       dirname: Reprolab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-reprolab-jupyter

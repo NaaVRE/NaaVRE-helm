@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# The purpose of this script is to be used in a GitHub Actions workflow to set up a Minikube cluster for testing the individual NaaVRE service such as the /NaaVRE-workflow-servic, /NaaVRE-containerizer-service, etc.
+# It assumes that Minikube is already installed and running, and that kubectl and helm are also installed.
+# It adds minikube IP to /etc/hosts, adds the necessary Helm repositories, installs the NaaVRE Helm chart, and sets up the necessary environment variables for testing.
+
+# Usage: ./setup-tests.sh -f <values-file>
+# Example: ./setup-tests.sh -f values/minikube-values.yaml
+
+# For example values file, see values/ in this repository.
+
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do

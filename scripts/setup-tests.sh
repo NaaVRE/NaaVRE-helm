@@ -144,16 +144,15 @@ timeout=200
 start_time=$(date +%s)
 while true; do
     if curl -k --silent --fail https://$MINIKUBE_HOST/argowf/; then
-        echo "Argo workflow service is available"
         break
     fi
     current_time=$(date +%s)
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $timeout ]; then
-        echo "Argo workflow service is not available"
+        echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
         exit 1
     fi
-    sleep 5
+    sleep 10
 done
 
 # Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf

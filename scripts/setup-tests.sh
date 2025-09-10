@@ -150,6 +150,10 @@ while true; do
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $timeout ]; then
         echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
+        # Print all pods in the naavre namespace for debugging
+        kubectl get pods -n $namespace  | grep argo
+        kubectl get services -n $namespace | grep argo
+        kubectl get ingress -n $namespace |  grep argo
         exit 1
     fi
     sleep 10

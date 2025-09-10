@@ -1,5 +1,7 @@
 global:
   namespace: naavre
+  # WARNING: don't verify SSL certificates (don't use in production!)
+  insecureSkipVerifySSL: true
 
   ingress:
     domain: naavre-dev.minikube.test
@@ -61,8 +63,3 @@ naavreWorkflowService:
 
 naavrePaasFrontend:
   enabled: true
-
-argoWorkflows:
-  server:
-    sso:
-      insecureSkipVerify: true

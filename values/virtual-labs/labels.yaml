@@ -4,3 +4,7 @@ jupyterhub:
     tutorial:
       title: Tutorial
       color: "#3c8f49"
+
+    experimental_features:
+      title: Experimental features
+      color: "#e6dc69"

@@ -1,0 +1,21 @@
+jupyterhub:
+  vlabs:
+    reprolab:
+      enabled: false
+      slug: reprolab
+      title: Reprolab
+      labels: [experimental_features]
+      description: Tool for Improving the Computational Reproducibility of Jupyter Notebooks
+      dirname: Reprolab
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-reprolab-jupyter
+        tag: v0.0.24
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.24/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-reprolab
+        registry_url: ghcr.io/naavre/cells-vl-reprolab
+        log_queries: true
+        git_public:
+          repo: https://github.com/NaaVRE/vl-reprolab.git
+          branch: main

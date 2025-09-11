@@ -93,8 +93,10 @@ For example, to install or upgrade the `minikube` deployment ([values/values-dep
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install --timeout 30m
 ```
+
+Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAILED: pre-upgrade hooks failed: 1 error occurred: * timed out waiting for the condition`.
 
 #### Rollback
 

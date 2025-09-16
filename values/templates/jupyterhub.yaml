@@ -2,6 +2,11 @@ jupyterhub:
   enabled: {{ .Values.jupyterhub.enabled }}
   fullnameOverride: "{{ include "values.fullname" . }}-jupyter"
 
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
+
   hub:
     concurrentSpawnLimit: 10
     consecutiveFailureLimit: 16

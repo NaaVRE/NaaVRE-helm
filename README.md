@@ -298,8 +298,9 @@ This shows how to schedule Jupyter user pods on a dedicated set of nodes, and to
 1. Set the `hub.jupyter.org/node-purpose=user` on the target nodes. E.g. with kubectl:
 
    ```shell
-   kubectl label nodes my-node-1 hub.jupyter. org/node-purpose=user
-   kubectl label nodes my-node-2 hub.jupyter. org/node-purpose=user
+   kubectl label nodes my-node-1 hub.jupyter.org/node-purpose=user
+   kubectl label nodes my-node-2 hub.jupyter.org/node-purpose=user
+   ...
    ```
 
 2. Add the following to the root values:

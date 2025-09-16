@@ -33,6 +33,10 @@ keycloak:
   enabled: false
 
 jupyterhub:
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: require
   hub:
     initContainers:
       - name: git-clone-templates

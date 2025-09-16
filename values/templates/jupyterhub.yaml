@@ -243,5 +243,8 @@ jupyterhub:
           {{- end }}
           environment:
             NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+          extra_pod_config:
+            securityContext:
+              fsGroupChangePolicy: OnRootMismatch
       {{- end }}
       {{- end }}

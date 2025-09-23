@@ -77,6 +77,10 @@ jupyterhub:
   enabled: true
   ingress:
     basePath: /jupyter
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: prefer
   hub:
     extraConfig: {}
     initContainers: []

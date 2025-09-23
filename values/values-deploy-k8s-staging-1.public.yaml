@@ -33,6 +33,10 @@ keycloak:
   enabled: false
 
 jupyterhub:
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: require
   hub:
     initContainers:
       - name: git-clone-templates
@@ -112,6 +116,8 @@ jupyterhub:
         enabled: true
     ravl:
         enabled: true
+    reprolab:
+      enabled: true
     veluwe-proto-dt:
         enabled: true
     veluwe-wolf-deer-tree:

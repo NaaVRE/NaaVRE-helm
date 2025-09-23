@@ -18,13 +18,14 @@ Options:
   -h,--help             print help and exit
 
 Actions:
-  repo-add
-  dependency-build
-  dependency-update
-  install
-  upgrade
-  rollback
-  uninstall
+  repo-add              add repositories for subcharts of naavre/
+  dependency-build      rebuild the naavre/charts/ directory based on the naavre/Chart.lock file
+  dependency-update     update naavre/charts/ based on the contents of naavre/Chart.yaml
+  install               render values/ and create a new deployment of naavre/
+  upgrade               render values/ and upgrade an existing deployment of naavre/
+  rollback              rollback an existing deployment
+  uninstall             uninstall an existing deployment
+  template              render values/ to values/rendered/, for debug purposes
 
 Action options:
   Passed to \`helm <action>\`
@@ -44,6 +45,7 @@ g_allowed_actions=(
   "upgrade"
   "rollback"
   "uninstall"
+  "template"
 )
 g_action=""
 
@@ -246,6 +248,15 @@ main() {
     uninstall)
       check_k8s
       run_cmd "$(gen_helm_uninstall_cmd)"
+      ;;
+    template)
+      run_cmd "$(gen_helm_template_cmd)"
+      if [[ "$g_use_vlic_secrets" -eq 1 ]]; then
+        echo
+        echo "@@@@@@@@@@@@@@@@@    The files rendered to values/rendered/"
+        echo "@@@ IMPORTANT @@@    may contain unencrypted secrets."
+        echo "@@@@@@@@@@@@@@@@@    Clean them up after use!"
+      fi
       ;;
   esac
 

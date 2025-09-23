@@ -93,8 +93,10 @@ For example, to install or upgrade the `minikube` deployment ([values/values-dep
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install --timeout 30m
 ```
+
+Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAILED: pre-upgrade hooks failed: 1 error occurred: * timed out waiting for the condition`.
 
 #### Rollback
 
@@ -288,6 +290,28 @@ jupyterhub:
       templates.py: |
         c.JupyterHub.template_paths = ['/etc/jupyterhub/custom/templates']
 ```
+
+### Schedule Jupyter user pods on dedicated set nodes
+
+This shows how to schedule Jupyter user pods on a dedicated set of nodes, and to only pre-pull images on these nodes (see the [z2jh documentation](https://z2jh.jupyter.org/en/stable/administrator/optimization.html#using-a-dedicated-node-pool-for-users) for more).
+
+1. Set the `hub.jupyter.org/node-purpose=user` on the target nodes. E.g. with kubectl:
+
+   ```shell
+   kubectl label nodes my-node-1 hub.jupyter.org/node-purpose=user
+   kubectl label nodes my-node-2 hub.jupyter.org/node-purpose=user
+   ...
+   ```
+
+2. Add the following to the root values:
+
+   ```yaml
+   jupyterhub:
+     scheduling:
+       userPods:
+         nodeAffinity:
+          matchNodePurpose: require
+   ```
 
 ## Limitations
 

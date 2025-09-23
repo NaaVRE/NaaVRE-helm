@@ -2,6 +2,11 @@ jupyterhub:
   enabled: {{ .Values.jupyterhub.enabled }}
   fullnameOverride: "{{ include "values.fullname" . }}-jupyter"
 
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
+
   hub:
     concurrentSpawnLimit: 10
     consecutiveFailureLimit: 16
@@ -238,5 +243,8 @@ jupyterhub:
           {{- end }}
           environment:
             NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+          extra_pod_config:
+            securityContext:
+              fsGroupChangePolicy: OnRootMismatch
       {{- end }}
       {{- end }}

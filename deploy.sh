@@ -122,7 +122,7 @@ gen_helm_upgrade_cmd() {
 }
 
 gen_helm_rollback_cmd() {
-  echo "helm $(gen_helm_common_options) rollback $g_action_options $g_release_name"
+  echo "helm $(gen_helm_common_options) rollback $g_release_name $g_action_options"
 }
 
 gen_helm_uninstall_cmd() {

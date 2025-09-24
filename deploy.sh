@@ -233,11 +233,13 @@ main() {
       ;;
     install)
       check_all
+      run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_template_cmd)"
       run_cmd "$(gen_helm_install_cmd) ; $(gen_rm_values_cmd)"
       ;;
     upgrade)
       check_all
+      run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_template_cmd)"
       run_cmd "$(gen_helm_upgrade_cmd) ; $(gen_rm_values_cmd)"
       ;;

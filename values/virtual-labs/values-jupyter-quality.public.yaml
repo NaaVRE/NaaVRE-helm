@@ -17,5 +17,5 @@ jupyterhub:
         registry_url: ghcr.io/naavre/cells-vl-openlab
         log_queries: true
         git_public:
-          repo: https://github.com/NaaVRE/vl-openlab.git
+          repo: https://github.com/QCDIS/jupyter-quality-extension.git
           branch: main

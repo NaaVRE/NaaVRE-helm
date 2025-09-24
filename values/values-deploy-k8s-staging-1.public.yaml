@@ -66,9 +66,9 @@ jupyterhub:
             mountPath: /usr/local/share/jupyterhub/static/external
     extraVolumes:
       - name: hub-templates
-        emptyDir: { }
+        emptyDir: {}
       - name: hub-static
-        emptyDir: { }
+        emptyDir: {}
     extraVolumeMounts:
       - name: hub-templates
         mountPath: /etc/jupyterhub/custom
@@ -107,22 +107,24 @@ jupyterhub:
     veluwe-forest-model:
       enabled: true
     cnr-biomass:
-        enabled: true
+      enabled: true
     cnr-phytoplankton:
-        enabled: true
+      enabled: true
+    jupyter-quality:
+      enabled: true
     pclake:
-        enabled: true
+      enabled: true
     phytoplankton:
-        enabled: true
+      enabled: true
     ravl:
-        enabled: true
+      enabled: true
     reprolab:
       enabled: true
     veluwe-proto-dt:
-        enabled: true
+      enabled: true
     veluwe-wolf-deer-tree:
-        enabled: true
+      enabled: true
     waddenzee-proto-dt:
-        enabled: true
+      enabled: true
     wiresits:
-        enabled: true
+      enabled: true

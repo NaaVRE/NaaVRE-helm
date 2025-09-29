@@ -1,0 +1,8 @@
+jupyterhub:
+  communities:
+
+    naavre:
+      title: NaaVRE
+
+    lter-life:
+      title: LTER-LIFE

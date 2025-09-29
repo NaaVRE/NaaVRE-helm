@@ -41,71 +41,110 @@ metadata:
 data:
   django_script.py: |
     import json
+    from base_assets.models import SharingScope
     from virtual_labs.models import VirtualLabLabel, VirtualLab
+
+    from base_assets.models import SharingScope
+
     protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
     host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
-    base_url = "{{ trimAll "/" .Values.jupyterhub.hub.baseUrl }}"
-    vlab_labels = json.loads({{ .Values.global.vlabLabels | toJson | quote }})
-    vlab_label_objects = {}
-    for key, vlab_label in vlab_labels.items():
-        title = vlab_label["title"]
-        color = vlab_label["color"]
-        qs = VirtualLabLabel.objects.filter(title=title)
-        if not qs.exists():
-            print("Creating vlab label", title)
-            obj = VirtualLabLabel.objects.create(
-                title=title,
-                color=color,
-                )
-            vlab_label_objects[key] = obj
-        else:
-            print("Updating vlab label", title)
-            qs.update(
-                title=title,
-                color=color,
-                )
-            vlab_label_objects[key] = qs[0]
+    base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
 
-    vlabs = json.loads({{ .Values.global.vlabs | toJson | quote }})
-    for vlab in vlabs.values():
-      enabled = vlab["enabled"]
-      slug = vlab["slug"]
-      title = vlab["title"]
-      labels = []
-      for key in vlab["labels"]:
-          try:
-            labels.append(vlab_label_objects[key])
-          except KeyError:
-            print(f"Vlab {slug} uses undefined label ({key})."
-                  " It is defined in vlabLabels?")
-      description = vlab["description"]
-      deployment_url = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{slug}/?profile={vlab['slug']}"
-      container_image = f"{vlab['image']['name']}:{vlab['image']['tag']}"
-      image = vlab.get("icon", "").strip()
-      if enabled:
-        print("Checking for vlab", slug)
-        qs = VirtualLab.objects.filter(slug=slug)
+
+    def create_or_update(model_class, search_field, object_dict):
+        search_value = object_dict[search_field]
+        log_repr = f'{model_class.__name__}({search_field}={repr(search_value)})'
+        print(f'\nSearching {log_repr}')
+        qs = model_class.objects.filter(**{search_field: search_value})
         if not qs.exists():
-            print("Creating vlab", slug)
-            obj = VirtualLab.objects.create(
-                slug=slug,
-                title=title,
-                description=description,
-                deployment_url=deployment_url,
-                container_image=container_image,
-                image=image,
-                )
-            obj.labels.set(labels)
+            print(f'Creating {json.dumps(object_dict)}')
+            obj = model_class.objects.create(**object_dict)
         else:
-            print("Updating vlab", slug)
-            qs.update(
-                title=title,
-                description=description,
-                deployment_url=deployment_url,
-                container_image=container_image,
-                image=image,
-                )
-            qs[0].labels.set(labels)
+            print(f'Updating {json.dumps(object_dict)}')
+            qs.update(**object_dict)
+            obj = qs[0]
+        return obj
+
+
+    communities = json.loads({{.Values.global.communities | toJson | quote}})
+    vlab_labels = json.loads({{.Values.global.vlabLabels | toJson | quote}})
+    vlabs = json.loads({{.Values.global.vlabs | toJson | quote}})
+
+    sharing_scopes_community_objects = {
+        key: create_or_update(
+            SharingScope,
+            'slug',
+            {
+                'slug': key,
+                'label': 'community',
+                **community
+                })
+        for key, community in communities.items()
+        }
+
+    sharing_scopes_virtual_lab_objects = {
+        vlab['slug']: create_or_update(
+            SharingScope,
+            'slug',
+            {
+                'slug': vlab['slug'],
+                'label': 'virtual_lab',
+                'title': vlab['title'],
+                })
+        for vlab in vlabs.values()
+        }
+
+    vlab_label_objects = {
+        key: create_or_update(
+            VirtualLabLabel,
+            'title',
+            vlab_label)
+        for key, vlab_label in vlab_labels.items()
+        }
+
+    for vlab in vlabs.values():
+        if vlab['enabled']:
+            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/?profile={vlab['slug']}"
+            vlab['container_image'] = f"{vlab['image']['name']}:{vlab['image']['tag']}"
+            vlab['image'] = vlab.get("icon", "").strip()
+
+            obj = create_or_update(
+                VirtualLab,
+                'slug',
+                {
+                    'slug': vlab['slug'],
+                    'title': vlab['title'],
+                    'description': vlab['description'],
+                    'deployment_url': vlab['deployment_url'],
+                    'container_image': vlab['container_image'],
+                    'image': vlab['image'],
+                    })
+
+            # Set labels
+            labels = []
+            for key in vlab["labels"]:
+                try:
+                    labels.append(vlab_label_objects[key])
+                except KeyError:
+                    print(f"Vlab {vlab['slug']} uses undefined label ({key})."
+                          " It is defined in vlabLabels?")
+            obj.labels.set(labels)
+
+            # Set visible_sharing_scopes
+            obj.visible_sharing_scopes.set(
+                list(sharing_scopes_community_objects.values()) +
+                list(sharing_scopes_virtual_lab_objects.values()))
+
+            # Set checked_sharing_scopes
+            checked_sharing_scopes = [sharing_scopes_virtual_lab_objects[vlab['slug']]]
+            for key in vlab["communities"]:
+                try:
+                    checked_sharing_scopes.append(sharing_scopes_community_objects[key])
+                except KeyError:
+                    print(f"Vlab {vlab['slug']} uses undefined community ({key})."
+                          " It is defined in communities?")
+            obj.checked_sharing_scopes.set(checked_sharing_scopes)
+
 ---
 apiVersion: v1
 kind: ServiceAccount

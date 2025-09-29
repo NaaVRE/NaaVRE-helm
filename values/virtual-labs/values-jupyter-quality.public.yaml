@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: jupyter-quality
       title: Jupyter quality
+      communities: [naavre]
       labels: [experimental_features]
       description: An interactive, lifecycle-aware quality assessment tool for research software developed in Jupyter Notebooks.
       dirname: Jupyter quality

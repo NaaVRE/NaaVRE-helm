@@ -4,14 +4,15 @@ jupyterhub:
       enabled: false
       slug: wiresits
       title:  Wildfire Resilience Satellite Imaging Time Series Virtual Lab
+      communities: [naavre, lter-life]
       labels: []
       description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
       dirname: Wildfire Resilience Satellite Imaging
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-wiresits-jupyter
-        tag: v0.0.25
+        tag: v0.0.29
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.25/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.29/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-wiresits
         registry_url: ghcr.io/naavre/cells-vl-wiresits

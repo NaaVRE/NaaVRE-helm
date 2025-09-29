@@ -51,6 +51,10 @@ global:
       client_id:
       client_secret:
 
+  communities: {}
+  # myCommunity:
+  #   title: My community
+
   vlabLabels: {}
   # myLabel:
   #   title: My label
@@ -62,6 +66,8 @@ global:
       enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
+      communities: []
+      # communities: [myCommunity]
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"

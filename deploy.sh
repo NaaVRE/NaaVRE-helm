@@ -49,8 +49,6 @@ g_allowed_actions=(
 )
 g_action=""
 
-g_action_options=""
-
 
 exit_error() {
   echo "$1"
@@ -99,34 +97,34 @@ gen_helm_template_cmd() {
 }
 
 gen_helm_repo_add() {
-  cmd="helm repo add $g_action_options argo https://argoproj.github.io/argo-helm"
-  cmd+=" && helm repo add $g_action_options jupyterhub https://jupyterhub.github.io/helm-chart/"
-  cmd+=" && helm repo add $g_action_options bitnami https://charts.bitnami.com/bitnami"
+  cmd="helm repo add $1 argo https://argoproj.github.io/argo-helm"
+  cmd+=" && helm repo add $1 jupyterhub https://jupyterhub.github.io/helm-chart/"
+  cmd+=" && helm repo add $1 bitnami https://charts.bitnami.com/bitnami"
   echo "$cmd"
 }
 
 gen_helm_dependency_build() {
-  echo "helm dependency build $g_action_options naavre"
+  echo "helm dependency build $1 naavre"
 }
 
 gen_helm_dependency_update() {
-  echo "helm dependency update $g_action_options naavre"
+  echo "helm dependency update $1 naavre"
 }
 
 gen_helm_install_cmd() {
-  echo "helm $(gen_helm_common_options) install $g_action_options $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
+  echo "helm $(gen_helm_common_options) install $1 $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
 }
 
 gen_helm_upgrade_cmd() {
-  echo "helm $(gen_helm_common_options) upgrade $g_action_options $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
+  echo "helm $(gen_helm_common_options) upgrade $1 $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
 }
 
 gen_helm_rollback_cmd() {
-  echo "helm $(gen_helm_common_options) rollback $g_release_name $g_action_options"
+  echo "helm $(gen_helm_common_options) rollback $g_release_name $1"
 }
 
 gen_helm_uninstall_cmd() {
-  echo "helm $(gen_helm_common_options) uninstall $g_action_options $g_release_name"
+  echo "helm $(gen_helm_common_options) uninstall $1 $g_release_name"
 }
 
 gen_rm_values_cmd() {
@@ -219,37 +217,37 @@ main() {
     esac
   done
 
-  g_action_options="$*"
+  action_options="$*"
 
   case "$g_action" in
     repo-add)
-      run_cmd "$(gen_helm_repo_add)"
+      run_cmd "$(gen_helm_repo_add "$action_options")"
       ;;
     dependency-build)
-      run_cmd "$(gen_helm_dependency_build)"
+      run_cmd "$(gen_helm_dependency_build "$action_options")"
       ;;
     dependency-update)
-      run_cmd "$(gen_helm_dependency_update)"
+      run_cmd "$(gen_helm_dependency_update "$action_options")"
       ;;
     install)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_template_cmd)"
-      run_cmd "$(gen_helm_install_cmd) ; $(gen_rm_values_cmd)"
+      run_cmd "$(gen_helm_install_cmd "$action_options") ; $(gen_rm_values_cmd)"
       ;;
     upgrade)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_template_cmd)"
-      run_cmd "$(gen_helm_upgrade_cmd) ; $(gen_rm_values_cmd)"
+      run_cmd "$(gen_helm_upgrade_cmd "$action_options") ; $(gen_rm_values_cmd)"
       ;;
     rollback)
       check_k8s
-      run_cmd "$(gen_helm_rollback_cmd)"
+      run_cmd "$(gen_helm_rollback_cmd "$action_options")"
       ;;
     uninstall)
       check_k8s
-      run_cmd "$(gen_helm_uninstall_cmd)"
+      run_cmd "$(gen_helm_uninstall_cmd "$action_options")"
       ;;
     template)
       run_cmd "$(gen_helm_template_cmd)"

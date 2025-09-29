@@ -4,14 +4,15 @@ jupyterhub:
       enabled: false
       slug: waddenzee-proto-dt
       title:  Waddenzee proto DT
+      communities: [naavre, lter-life]
       labels: []
       description:  Waddenzee Digital Twin prototype for LTER-LIFE
       dirname: Waddenzee proto DT
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-lter-life-wadden-jupyter
-        tag: v0.0.25
+        tag: v0.0.29
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.25/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.29/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-waddenzee-proto-dt
         registry_url: ghcr.io/naavre/cells-vl-waddenzee-proto-dt

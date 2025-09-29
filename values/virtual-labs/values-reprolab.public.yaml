@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: reprolab
       title: Reprolab
+      communities: [naavre]
       labels: [experimental_features]
       description: Tool for Improving the Computational Reproducibility of Jupyter Notebooks
       dirname: Reprolab

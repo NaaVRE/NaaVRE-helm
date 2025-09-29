@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: quadfavl
       title: QUADFAVL collaborative virtual labs
+      communities: [naavre]
       labels: []
       description: Quality Data for Aloft
       dirname: QUADFAVL

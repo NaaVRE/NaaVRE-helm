@@ -99,6 +99,10 @@ jupyterhub:
       extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
       extraVolumeMounts: []
 
+  communities: {}
+  # myCommunity:
+  #   title: My community
+
   vlabLabels: {}
   # myLabel:
   #   title: My label
@@ -109,6 +113,8 @@ jupyterhub:
       enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
+      communities: []
+      # communities: [myCommunity]
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"

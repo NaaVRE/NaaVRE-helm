@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: cnr-biomass
       title:  CNR Biomass
+      communities: [naavre]
       labels: []
       description: CNR Biomass virtual lab
       dirname: CNR Biomass

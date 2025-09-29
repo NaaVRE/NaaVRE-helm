@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: veluwe-wolf-deer-tree
       title:  Veluwe wolf-deer-tree
+      communities: [naavre, lter-life]
       labels: []
       description:  Wolf-deer-tree trophic cascade in the Veluwe
       dirname: Veluwe wolf-deer-tree

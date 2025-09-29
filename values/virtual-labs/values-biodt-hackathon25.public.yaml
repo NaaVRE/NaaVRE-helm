@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: biodt-hackathon25
       title: BioDT Hackathon
+      communities: [naavre]
       labels: []
       description: BioDT Hackathon lab
       dirname: BioDT Hackathon

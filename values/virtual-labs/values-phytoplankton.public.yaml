@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: phytoplankton
       title:  Phytoplankton traits
+      communities: [naavre]
       labels: []
       description:  Phytoplankton traits computation
       dirname: Phytoplankton traits

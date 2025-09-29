@@ -4,6 +4,7 @@ jupyterhub:
       enabled: false
       slug: pclake
       title:  PCLake virtual lab
+      communities: [naavre, lter-life]
       labels: []
       description:  "PCLake model: study the trophic state of freshwater lakes"
       dirname: PCLake

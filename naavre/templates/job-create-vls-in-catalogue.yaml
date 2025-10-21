@@ -14,15 +14,21 @@ spec:
       serviceAccountName: "{{ include "naavre.fullname" . }}-create-vls-in-catalogue"
       containers:
         - name: executor
-          image: bitnamilegacy/kubectl:latest
+          image: alpine:latest
           command: ["sh", "-c"]
           args:
             - |
+              set -e
+              k8s_version=$(wget -qO - https://dl.k8s.io/release/stable.txt)
+              wget -q "https://dl.k8s.io/release/$k8s_version/bin/linux/amd64/kubectl"
+              wget -q "https://dl.k8s.io/release/$k8s_version/bin/linux/amd64/kubectl.sha256"
+              echo "$(cat kubectl.sha256) kubectl" | sha256sum -c
+              chmod +x kubectl
               APP_NAME="{{ template "naavre-catalogue-service.name" (index .Subcharts "naavre-catalogue-service") }}"
-              POD_NAME=$(kubectl get pod -l app.kubernetes.io/name=$APP_NAME -o jsonpath='{.items[0].metadata.name}');
+              POD_NAME=$(./kubectl get pod -l app.kubernetes.io/name=$APP_NAME -o jsonpath='{.items[0].metadata.name}');
               echo "Waiting for pod $POD_NAME"
-              kubectl wait --for=condition=ready pod $POD_NAME --timeout=300s || exit 1
-              kubectl exec -i $POD_NAME -- python /code/app/manage.py shell < /mnt/django_script.py
+              ./kubectl wait --for=condition=ready pod $POD_NAME --timeout=300s || exit 1
+              ./kubectl exec -i $POD_NAME -- python /code/app/manage.py shell < /mnt/django_script.py
           volumeMounts:
             - mountPath: /mnt/django_script.py
               name: django-script

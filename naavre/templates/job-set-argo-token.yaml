@@ -14,15 +14,21 @@ spec:
       serviceAccountName: "{{ include "naavre.fullname" . }}-set-argo-token"
       containers:
         - name: executor
-          image: bitnamilegacy/kubectl:latest
+          image: alpine:latest
           command: ["sh", "-c"]
           args:
             - |
+              set -e
+              k8s_version=$(wget -qO - https://dl.k8s.io/release/stable.txt)
+              wget -q "https://dl.k8s.io/release/$k8s_version/bin/linux/amd64/kubectl"
+              wget -q "https://dl.k8s.io/release/$k8s_version/bin/linux/amd64/kubectl.sha256"
+              echo "$(cat kubectl.sha256) kubectl" | sha256sum -c
+              chmod +x kubectl
               CM_NAME="{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}"
               DEPLOY_NAME="{{ template "naavre-workflow-service.fullname" (index .Subcharts "naavre-workflow-service") }}"
               TOKEN=$(cat /mnt/service-account-token/token)
-              kubectl get cm $CM_NAME -o json | sed -e "s/++argo-vreapi.service-account-token++/$TOKEN/g" | kubectl apply -f -
-              kubectl rollout restart deployment/$DEPLOY_NAME
+              ./kubectl get cm $CM_NAME -o json | sed -e "s/++argo-vreapi.service-account-token++/$TOKEN/g" | ./kubectl apply -f -
+              ./kubectl rollout restart deployment/$DEPLOY_NAME
           volumeMounts:
             - mountPath: /mnt/service-account-token
               name: service-account-token

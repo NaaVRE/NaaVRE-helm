@@ -17,3 +17,6 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-pclake
         registry_url: ghcr.io/naavre/cells-vl-pclake
         log_queries: true
+        git_public:
+          repo: https://github.com/LTER-LIFE/PCLake_NaaVRE_workflow.git
+          branch: main

@@ -40,8 +40,8 @@ Add the third-party Helm repos:
 ./deploy.sh repo-add
 ```
 
-Deploy the Keycloak operator ([documentation](https://www.keycloak.org/operator/installation)).
-Example with Keycloak `26.4.2` in the `new-naavre` realm:
+Deploy the Keycloak operator ([documentation](https://www.keycloak.org/operator/installation)) in the namespace.
+Example with Keycloak `26.4.2` in the `new-naavre` namespace:
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.4.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml

@@ -8,9 +8,9 @@ dependencies:
 - name: k8s-secret-creator
   repository: oci://ghcr.io/qcdis/charts
   version: 0.1.0
-- name: keycloak
+- name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 16.1.7
+  version: 12.12.10
 - name: naavre-catalogue-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.4.2
@@ -23,5 +23,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.1
-digest: sha256:989f1c9a5931e62ba4c6061d3b27f4cc72b9db9b2351a804f25039cb070a0ac5
-generated: "2025-10-06T12:50:39.980158327+02:00"
+digest: sha256:38800949b09ad0413c47d2377511229328f2d363ef5ccb5e8cc73d76eb36b588
+generated: "2025-10-24T11:26:37.708863207+02:00"

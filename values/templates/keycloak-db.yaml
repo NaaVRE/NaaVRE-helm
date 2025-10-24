@@ -1,0 +1,31 @@
+keycloak-db:
+  enabled: {{ .Values.keycloak.enabled }}
+  nameOverride: "{{ include "values.fullname" . }}-keycloak-db"
+
+  security:
+    allowInsecureImages: true
+
+  primary:
+    {{ toYaml .Values.global.common.velero | nindent 6 }}
+  readReplicas:
+    {{- toYaml .Values.global.common.velero | nindent 6 }}
+
+  auth:
+    # Match values set by the bitnami/keycloak chart
+    postgresPassword: ""
+    database: "{{ .Values.global.secrets.keycloak.postgresql.database }}"
+    username: "{{ .Values.global.secrets.keycloak.postgresql.username }}"
+    password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"
+    existingSecret: ""
+
+  image:
+    repository: bitnamilegacy/postgresql
+    tag: 15.4.0-debian-11-r45 # Match version in subchart of bitnami/keycloak
+
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+
+  metrics:
+    image:
+      repository: bitnamilegacy/postgres-exporter

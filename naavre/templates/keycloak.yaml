@@ -1,0 +1,137 @@
+{{- if (index .Values "keycloak-db" "enabled") }}
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: {{ include "naavre.fullname" . }}-keycloak
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+spec:
+  instances: 1
+  bootstrapAdmin:
+    user:
+      secret: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-admin
+  db:
+    vendor: postgres
+    host: {{ template "postgresql.v1.primary.fullname" (index .Subcharts "keycloak-db") }}
+    database: {{ .Values.global.secrets.keycloak.postgresql.database }}
+    usernameSecret:
+      name: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-db-auth
+      key: username
+    passwordSecret:
+      name: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-db-auth
+      key: password
+  http:
+    tlsSecret: {{ include "naavre.fullname" . }}-keycloak-tls
+  hostname:
+    hostname: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.global.ingress.basePaths.keycloak }}/"
+    admin: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.global.ingress.basePaths.keycloak }}/"
+  proxy:
+    headers: xforwarded
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+{{/*      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"*/}}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  additionalOptions:
+    - name: http-relative-path
+      value: {{ .Values.global.ingress.basePaths.keycloak }}
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-db-auth
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+data:
+  username: "{{ .Values.global.secrets.keycloak.postgresql.username | b64enc }}"
+  password: "{{ .Values.global.secrets.keycloak.postgresql.password | b64enc }}"
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/basic-auth
+metadata:
+  name: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-admin
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+data:
+  username: "{{ "admin" | b64enc }}"
+  password: "{{ .Values.global.secrets.keycloak.adminPassword | b64enc }}"
+---
+{{- $secretName := printf "%s-crt" (include "common.names.fullname" .) }}
+{{- $releaseNamespace := include "common.names.namespace" . }}
+{{- $clusterDomain := .Values.clusterDomain }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-tls
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  {{- $ca := genCA "keycloak-ca" 365 }}
+  {{- $cert := genSignedCert .Values.global.ingress.domain nil nil 3650 $ca }}
+  tls.crt: {{ $cert.Cert | b64enc }}
+  tls.key: {{ $cert.Key | b64enc }}
+{{- end }}
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: KeycloakRealmImport
+metadata:
+  name: {{ include "naavre.fullname" . }}-keycloak-realm-import
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
+spec:
+  keycloakCRName: {{ include "naavre.fullname" . }}-keycloak
+  realm:
+    realm: vre
+    enabled: true
+    ssoSessionIdleTimeout: 36000
+    groups:
+      - name: users
+        path: /users
+    users:
+          {{- range .Values.global.secrets.keycloak.users }}
+      - username: "{{ .username }}"
+        enabled: true
+        credentials:
+          - type: password
+            value: "{{ .password }}"
+            temporary: false
+        groups:
+          - users
+          {{- end }}
+
+    clients:
+      - clientId: naavre
+        name: NaaVRE
+        description: ""
+        baseUrl: ""
+        rootUrl: "https://{{ .Values.global.ingress.domain }}"
+        redirectUris:
+          - /*
+        enabled: true
+        publicClient: true
+        clientAuthenticatorType: client-secret
+        secret: "{{ .Values.global.secrets.keycloak.client_secret }}"
+        protocol: openid-connect
+        protocolMappers:
+          - name: Groups mapper
+            protocol: openid-connect
+            protocolMapper: oidc-group-membership-mapper
+            consentRequired: false
+            config:
+              full.path: 'false'
+              id.token.claim: 'true'
+              access.token.claim: 'true'
+              claim.name: groups
+              userinfo.token.claim: 'true'
+        defaultClientScopes:
+          - acr
+          - email
+          - profile
+          - roles
+          - web-origins

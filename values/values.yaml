@@ -22,6 +22,11 @@ global:
       naavreClientSecret:
       users: []
       postgresql:
+        # database and username match the values set by the bitnami/keycloak
+        # helm chart, so that the pv can be reused when migrating from the
+        # bitnami helm chart to the official operator
+        database: bitnami_keycloak
+        username: bn_keycloak
         password:
     naavreCatalogueService:
       secretKey:

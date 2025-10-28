@@ -82,23 +82,15 @@ fi
 
 
 # Add the third-party Helm repos
-helm repo add argo https://argoproj.github.io/argo-helm
-helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm repo add bitnami https://charts.bitnami.com/bitnami
-
+./deploy.sh repo-add
 
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
 cd NaaVRE-helm
-git checkout 36-move-setup-testssh-for-testing-in-minikube-here
-helm dependency update naavre
-helm dependency build naavre
-context="naavreWorkflowService-minikube-github"
+context="minikube"
 namespace="naavre"
-release_name="naavre"
 kubectl create namespace "$namespace"
-helm template "$release_name" values/ --output-dir values/rendered -f "$VALUES_FILE" && \
-helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+./deploy --kube-context "$context" -n "$namespace" install --install -f "$VALUES_FILE"
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

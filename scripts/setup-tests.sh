@@ -82,23 +82,15 @@ fi
 
 
 # Add the third-party Helm repos
-helm repo add argo https://argoproj.github.io/argo-helm
-helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm repo add bitnami https://charts.bitnami.com/bitnami
-
+./deploy.sh repo-add
 
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
 cd NaaVRE-helm
-git checkout 36-move-setup-testssh-for-testing-in-minikube-here
-helm dependency update naavre
-helm dependency build naavre
-context="naavreWorkflowService-minikube-github"
+context="minikube"
 namespace="naavre"
-release_name="naavre"
-kubectl create namespace "$namespace"
-helm template "$release_name" values/ --output-dir values/rendered -f "$VALUES_FILE" && \
-helm -n "$namespace" upgrade --create-namespace --install "$release_name" naavre/ $(find values/rendered/values/templates -type f | xargs -I{} echo -n " -f {}")
+./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"
@@ -151,7 +143,7 @@ while true; do
     if [ $elapsed_time -ge $timeout ]; then
         echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
         # Find the pods that are not running in the naavre namespace and contain the word argo. Then print their status logs and describe them
-        kubectl get pods -n $namesapce | grep argo | grep -v Running
+        kubectl get pods -n $namespace | grep argo | grep -v Running
         for pod in $(kubectl get pods -n $namespace | grep argo | grep -v Running | awk '{print $1}'); do
             echo "Logs for pod $pod:"
             kubectl logs $pod -n $namespace
@@ -208,7 +200,7 @@ done
 # if configuration.json exists add the values, else skip
 if [ -f "configuration.json" ]; then
   jq --arg token "$ARGO_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set namesapce in minkube_configuration.json in the virtual_lab_1
+  # Set namespace in minkube_configuration.json in the virtual_lab_1
   jq --arg namespace "naavre" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set service_account in minkube_configuration.json in the virtual_lab_1
   jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json

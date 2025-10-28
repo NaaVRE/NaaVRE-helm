@@ -44,10 +44,7 @@ Deploy the Keycloak operator ([documentation](https://www.keycloak.org/operator/
 Example with Keycloak `26.4.2` in the `new-naavre` namespace:
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.4.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.4.2/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-kubectl create namespace new-naavre
-kubectl -n new-naavre apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.4.2/kubernetes/kubernetes.yml
+./deploy.sh --kube-context <deployment name> -n <namespace> install-keycloak-operator
 ```
 
 _Note: this can be skipped when using an external Keycloak instance (e.g. [values-example-external-keycloak.yaml](values/values-example-external-keycloak.yaml))._
@@ -58,7 +55,7 @@ Configure Kubernetes access following the [internal documentation](https://githu
 The configuration is successful when you can run `kubectl` locally with the desired context:
 
 ```shell
-kubectl --context k8s-test-1 get ns new-naavree
+kubectl --kube-context k8s-test-1 get ns new-naavre
 ```
 
 Configure SOPS to decode VLIC secrets following the [internal documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md).

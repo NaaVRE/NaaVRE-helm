@@ -90,7 +90,7 @@ cd NaaVRE-helm
 context="minikube"
 namespace="naavre"
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" install --install -f "$VALUES_FILE"
+./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

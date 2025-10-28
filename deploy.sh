@@ -13,12 +13,15 @@ Options:
   --kube-context        Kubernetes context (default: \"\")
   -n,--namespace        Kubernetes namespace (default: \"\")
   -r,--release-name     helm release name (default: \"naavre\")
+  -f,--values           value file(s) for the values/ chart (default: guess
+                        from --kube-context and --use-vlic-secrets)
   -s,--use-vlic-secrets use VLIC secrets (default: false)
   --dry-run             print the commands without running them
   -h,--help             print help and exit
 
 Actions:
   repo-add              add repositories for subcharts of naavre/
+  install-keycloak-operator   install the keycloak operator in the current namespace
   dependency-build      rebuild the naavre/charts/ directory based on the naavre/Chart.lock file
   dependency-update     update naavre/charts/ based on the contents of naavre/Chart.yaml
   install               render values/ and create a new deployment of naavre/
@@ -40,6 +43,7 @@ g_dry_run=0
 
 g_allowed_actions=(
   "repo-add"
+  "install-keycloak-operator"
   "dependency-build"
   "dependency-update"
   "install"
@@ -78,6 +82,17 @@ gen_find_helm_value_files() {
   echo "find $dir -type f -exec echo -n \" -f {}\" ';'"
 }
 
+gen_kubectl_common_options() {
+  options=""
+  if [[ -n "$g_context" ]]; then
+    options="$options --context $g_context"
+  fi
+  if [[ -n "$g_namespace" ]]; then
+    options="$options --namespace $g_namespace"
+  fi
+  echo "$options"
+}
+
 gen_helm_common_options() {
   options=""
   if [[ -n "$g_context" ]]; then
@@ -99,6 +114,18 @@ gen_helm_template_cmd() {
   else
     echo "helm secrets template $g_release_name values/ --output-dir values/rendered \$($(gen_find_helm_value_files values/virtual-labs)) $f_args"
   fi
+}
+
+gen_kubectl_create_namespace() {
+  echo "kubectl $(gen_kubectl_common_options) create ns \"$g_namespace\" || echo 'continuing'"
+}
+
+gen_kubectl_install_keycloak_operator() {
+  keycloak_version="26.4.2"
+  cmd="kubectl $(gen_kubectl_common_options) apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$keycloak_version/kubernetes/keycloaks.k8s.keycloak.org-v1.yml"
+  cmd+=" && kubectl $(gen_kubectl_common_options) apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$keycloak_version/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml"
+  cmd+=" && kubectl $(gen_kubectl_common_options) apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$keycloak_version/kubernetes/kubernetes.yml"
+  echo "$cmd"
 }
 
 gen_helm_repo_add() {
@@ -238,6 +265,10 @@ main() {
   case "$g_action" in
     repo-add)
       run_cmd "$(gen_helm_repo_add "$action_options")"
+      ;;
+    install-keycloak-operator)
+      run_cmd "$(gen_kubectl_create_namespace)"
+      run_cmd "$(gen_kubectl_install_keycloak_operator)"
       ;;
     dependency-build)
       run_cmd "$(gen_helm_dependency_build "$action_options")"

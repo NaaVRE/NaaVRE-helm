@@ -10,25 +10,8 @@ jupyterhub:
 k8s-secret-creator:
   enabled: true
 
-keycloak:
+keycloak-db:
   enabled: true
-  global:
-    security:
-      allowInsecureImages: true
-  image:
-    repository: bitnamilegacy/keycloak
-  keycloakConfigCli:
-    image:
-      repository: bitnamilegacy/keycloak-config-cli
-  postgresql:
-    image:
-      repository: bitnamilegacy/postgresql
-    volumePermissions:
-      image:
-        repository: bitnamilegacy/bitnami-shell
-    metrics:
-      image:
-        repository: bitnamilegacy/postgres-exporter
 
 naavre-catalogue-service:
   enabled: true
@@ -44,12 +27,25 @@ naavre-paas-frontend:
 
 global:
   ingress:
+    domain: example.com
+    commonAnnotations: {}
     redirectDomainToPaasFrontend: false
+    basePaths:
+      keycloak: /auth
 
   secrets:
     keycloak:
       client_id:
       client_secret:
+      adminPassword:
+      users: []
+      # users:
+      #   - username: example-1
+      #     password: ...
+      postgresql:
+        database:
+        username:
+        password:
 
   communities: {}
   # myCommunity:

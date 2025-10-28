@@ -1,6 +1,10 @@
 global:
   ingress:
+    domain: {{ .Values.global.ingress.domain }}
+    commonAnnotations: {{- .Values.global.ingress.commonAnnotations | default dict | toYaml | nindent 6 }}
     redirectDomainToPaasFrontend: {{ .Values.global.ingress.redirectDomainToPaasFrontend }}
+    basePaths:
+      keycloak: {{ .Values.keycloak.ingress.basePath }}
 
   secrets:
     keycloak:
@@ -10,6 +14,22 @@ global:
       {{- else }}
       client_id: "naavre"
       client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+      {{- end }}
+      {{- if .Values.keycloak.enabled }}
+      adminPassword: "{{ .Values.global.secrets.keycloak.adminPassword }}"
+      {{- if .Values.global.secrets.keycloak.users }}
+      users:
+        {{- range .Values.global.secrets.keycloak.users }}
+        - username: {{ .username }}
+          password: {{ .password }}
+        {{- end }}
+      {{- else }}
+      users: []
+      {{- end }}
+      postgresql:
+        database: "{{ .Values.global.secrets.keycloak.postgresql.database }}"
+        username: "{{ .Values.global.secrets.keycloak.postgresql.username }}"
+        password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"
       {{- end }}
 
   communities: {{- .Values.jupyterhub.communities | default dict | toYaml | nindent 4 }}

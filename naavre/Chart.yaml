@@ -36,10 +36,11 @@ dependencies:
     version: "0.1.0"
     repository: "oci://ghcr.io/qcdis/charts"
     condition: k8s-secret-creator.enabled
-  - name: "keycloak"
-    version: "16.x.x"
+  - name: "postgresql"
+    alias: "keycloak-db"
+    version: "12.x.x"
     repository: "https://charts.bitnami.com/bitnami"
-    condition: keycloak.enabled
+    condition: keycloak-db.enabled
   - name: "naavre-catalogue-service"
     version: "v0.4.2"
     repository: "oci://ghcr.io/naavre/charts"

@@ -25,9 +25,8 @@ http{{ if $kscIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.p
 {{- end }}
 {{- end }}
 
-{{- if .Values.keycloak.enabled }}
-{{- $keycloakIngress := .Values.keycloak.ingress }}
-http{{ if $keycloakIngress.tls }}s{{ end }}://{{ $keycloakIngress.hostname }}/{{ trimAll "/" $keycloakIngress.path }}/
+{{- if index .Values "keycloak-db" "enabled" }}
+https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.global.ingress.basePaths.keycloak }}/
 {{- end }}
 
 {{- if index .Values "naavre-catalogue-service" "enabled" }}

@@ -34,6 +34,7 @@ Action options:
 g_context=""
 g_namespace=""
 g_release_name="naavre"
+g_value_files=()
 g_use_vlic_secrets=0
 g_dry_run=0
 
@@ -89,10 +90,14 @@ gen_helm_common_options() {
 }
 
 gen_helm_template_cmd() {
+  f_args=""
+  for file in "${g_value_files[@]}"; do
+    f_args="$f_args -f \"$file\""
+  done
   if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
-    echo "helm template $g_release_name values/ --output-dir values/rendered -f \"./values/values-deploy-$g_context.yaml\""
+    echo "helm template $g_release_name values/ --output-dir values/rendered $f_args"
   else
-    echo "helm secrets template $g_release_name values/ --output-dir values/rendered \$($(gen_find_helm_value_files values/virtual-labs)) -f \"./values/values-deploy-$g_context.public.yaml\" -f \"./values/values-deploy-$g_context.secrets.yaml\""
+    echo "helm secrets template $g_release_name values/ --output-dir values/rendered \$($(gen_find_helm_value_files values/virtual-labs)) $f_args"
   fi
 }
 
@@ -145,31 +150,36 @@ check_sops() {
   fi
 }
 
-check_values_file() {
-  if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
-    value_files=(
-      "./values/values-deploy-$g_context.yaml"
-    )
-  else
-    value_files=(
-      "./values/values-deploy-$g_context.public.yaml"
-      "./values/values-deploy-$g_context.secrets.yaml"
-    )
+set_default_value_files() {
+  if [[ ${#g_value_files[@]} -eq 0 ]]; then
+    if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
+      g_value_files=(
+        "./values/values-deploy-$g_context.yaml"
+      )
+    else
+      g_value_files=(
+        "./values/values-deploy-$g_context.public.yaml"
+        "./values/values-deploy-$g_context.secrets.yaml"
+      )
+    fi
   fi
+}
+
+check_value_files() {
   error=0
-  for value_file in "${value_files[@]}"; do
+  for value_file in "${g_value_files[@]}"; do
     if [[ ! -f "$value_file" ]]; then
       error=1
     fi
   done
   if [[ "$error" -ne 0 ]]; then
-    exit_error "File(s) ${value_files[*]} not found, check context configuration and --use-vlic-secrets option"
+    exit_error "File(s) ${g_value_files[*]} not found, check context configuration and --use-vlic-secrets option"
   fi
 }
 
 check_all() {
   check_k8s
-  check_values_file
+  check_value_files
   check_sops
 }
 
@@ -191,6 +201,10 @@ main() {
         ;;
       -r|--release-name)
         g_release_name="$2"
+        shift 2
+        ;;
+      -f|--values)
+        g_value_files+=("$2")
         shift 2
         ;;
       -s|--use-vlic-secrets)
@@ -218,6 +232,8 @@ main() {
   done
 
   action_options="$*"
+
+  set_default_value_files
 
   case "$g_action" in
     repo-add)

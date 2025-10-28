@@ -90,7 +90,7 @@ cd NaaVRE-helm
 context="minikube"
 namespace="naavre"
 kubectl create namespace "$namespace"
-./deploy --kube-context "$context" -n "$namespace" install --install -f "$VALUES_FILE"
+./deploy.sh --kube-context "$context" -n "$namespace" install --install -f "$VALUES_FILE"
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

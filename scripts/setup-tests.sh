@@ -87,6 +87,7 @@ fi
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
 cd NaaVRE-helm
+git checkout fix_setup_tests_script  # FIXME
 context="minikube"
 namespace="naavre"
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator

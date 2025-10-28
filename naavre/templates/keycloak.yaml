@@ -76,7 +76,6 @@ data:
   {{- $cert := genSignedCert .Values.global.ingress.domain nil nil 3650 $ca }}
   tls.crt: {{ $cert.Cert | b64enc }}
   tls.key: {{ $cert.Key | b64enc }}
-{{- end }}
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakRealmImport
@@ -135,3 +134,4 @@ spec:
           - profile
           - roles
           - web-origins
+{{- end }}

@@ -88,7 +88,16 @@ else
 fi
 
 # Test $MINIKUBE_HOST
-if ! curl -k https://$MINIKUBE_HOST | grep '<head><title>404 Not Found</title></head>'; then
+minikube_status=$(minikube status --format '{{.Host}}')
+if [ "$minikube_status" != "Running" ]; then
+    echo "Minikube is not running. Please start minikube and try again."
+    exit 1
+fi
+
+minikube_http_code=$(curl -o /dev/null -s -w "%{http_code}" -k https://$MINIKUBE_HOST)
+echo "Minikube host $MINIKUBE_HOST returned HTTP status code $minikube_http_code"
+
+if ! [[ "$minikube_http_code" -ge 200 && "$minikube_http_code" -lt 400 ]]; then
     echo "Minikube local test failed"
     exit 1
 else
@@ -99,9 +108,14 @@ fi
 # Add the third-party Helm repos
 ./deploy.sh repo-add
 
-#Install argo workflows from NaaVRE-helm
-git clone https://github.com/NaaVRE/NaaVRE-helm.git
-cd NaaVRE-helm
+# Check if we are already in a NaaVRE-helm directory, if not clone the repo
+current_directory=$(basename "$PWD")
+if [ "$current_directory" != "NaaVRE-helm" ]; then
+    echo "Cloning NaaVRE-helm repository"
+    git clone https://github.com/NaaVRE/NaaVRE-helm.git
+    cd NaaVRE-helm
+fi
+
 context="minikube"
 namespace="naavre"
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
@@ -247,3 +261,12 @@ echo "Exporting environment variables to dev3.env"
 
 
 
+# Print services urls
+echo "NaaVRE services are set up in Minikube. Access them at:"
+echo "Workflow Service: https://$MINIKUBE_HOST/workflow-service/"
+echo "Containerizer Service: https://$MINIKUBE_HOST/containerizer-service/"
+echo "K8s Secret Creator Service: https://$MINIKUBE_HOST/k8s-secret-creator/"
+echo "Keycloak Service: https://$MINIKUBE_HOST/auth/"
+echo "Argo Workflows UI: https://$MINIKUBE_HOST/argowf/"
+echo "K8s Dashboard: https://$MINIKUBE_HOST/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
+echo "Setup complete."

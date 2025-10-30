@@ -75,8 +75,10 @@ argo-workflows:
         name: argo-sso
         key: client-secret
       redirectUrl: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/oauth2/callback"
+      scopes:
+        - groups
       rbac:
-        enabled: false
+        enabled: true
       insecureSkipVerify: {{ .Values.global.insecureSkipVerifySSL }}
     ingress:
       enabled: true

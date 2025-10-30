@@ -150,6 +150,7 @@ k8sSecretCreator:
 
 keycloak:
   enabled: true
+  image: quay.io/keycloak/keycloak:26.4.2
   ingress:
     basePath: /auth
 

@@ -7,6 +7,10 @@ metadata:
     {{- include "naavre.labels" . | nindent 4 }}
 spec:
   instances: 1
+  {{- if .Values.global.keycloak.image }}
+  image: {{ .Values.global.keycloak.image }}
+  startOptimized: false
+  {{- end }}
   bootstrapAdmin:
     user:
       secret: {{ include "naavre-catalogue-service.fullname" . }}-keycloak-admin

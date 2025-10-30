@@ -47,6 +47,9 @@ global:
         username:
         password:
 
+  keycloak:
+    image:
+
   communities: {}
   # myCommunity:
   #   title: My community

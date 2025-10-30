@@ -4,6 +4,7 @@
 # It assumes that Minikube is already installed and running, and that kubectl and helm are also installed.
 # It adds minikube IP to /etc/hosts, adds the necessary Helm repositories, installs the NaaVRE Helm chart, and sets up the necessary environment variables for testing.
 
+
 # Usage: ./setup-tests.sh -f <values-file>
 # Example: ./setup-tests.sh -f values/minikube-values.yaml
 
@@ -22,6 +23,20 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+# If no values file is provided print help.
+if [[ -z "$VALUES_FILE" ]]; then
+  echo "No values file provided. Using default values file: values/minikube-values.yaml"
+  echo "Usage: ./setup-tests.sh -f <values-file>"
+  echo "Example: ./setup-tests.sh -f values/minikube-values.yaml"
+  exit 1
+else
+  # Check if the values file exists
+  if [[ ! -f "$VALUES_FILE" ]]; then
+    echo "Values file $VALUES_FILE does not exist."
+    exit 1
+  fi
+fi
 
 if [[ -n "$VALUES_FILE" ]]; then
   echo "Using values file: $VALUES_FILE"

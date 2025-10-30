@@ -1,0 +1,6 @@
+name: naavre-helm
+channels:
+  - conda-forge
+dependencies:
+  - kubernetes-helm=3.19.0
+  - minikube=1.36.0

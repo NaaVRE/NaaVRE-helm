@@ -9,6 +9,9 @@ global:
       enabled: true
     redirectDomainToPaasFrontend: true
 
+keycloak:
+  image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
+
 jupyterhub:
   vlabs:
     openlab:

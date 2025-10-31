@@ -97,7 +97,7 @@ fi
 minikube_http_code=$(curl -o /dev/null -s -w "%{http_code}" -k https://$MINIKUBE_HOST)
 echo "Minikube host $MINIKUBE_HOST returned HTTP status code $minikube_http_code"
 
-if ! [[ "$minikube_http_code" -ge 200 && "$minikube_http_code" -lt 400 ]]; then
+if ! [[ "$minikube_http_code" -ge 200 || "$minikube_http_code" -lt 500 ]]; then
     echo "Minikube local test failed"
     exit 1
 else
@@ -118,6 +118,7 @@ fi
 
 context="minikube"
 namespace="naavre"
+./deploy.sh --kube-context minikube -n "$namespace" uninstall
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
 # Exit if the installation fails
@@ -268,5 +269,4 @@ echo "Containerizer Service: https://$MINIKUBE_HOST/containerizer-service/"
 echo "K8s Secret Creator Service: https://$MINIKUBE_HOST/k8s-secret-creator/"
 echo "Keycloak Service: https://$MINIKUBE_HOST/auth/"
 echo "Argo Workflows UI: https://$MINIKUBE_HOST/argowf/"
-echo "K8s Dashboard: https://$MINIKUBE_HOST/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/"
 echo "Setup complete."

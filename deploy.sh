@@ -17,6 +17,7 @@ Options:
                         from --kube-context and --use-vlic-secrets)
   -s,--use-vlic-secrets use VLIC secrets (default: false)
   --dry-run             print the commands without running them
+  -k --keep-rendered   keep the rendered templates in values/rendered/ (default: false)
   -h,--help             print help and exit
 
 Actions:
@@ -40,6 +41,7 @@ g_release_name="naavre"
 g_value_files=()
 g_use_vlic_secrets=0
 g_dry_run=0
+g_keep_rendered=0
 
 g_allowed_actions=(
   "repo-add"
@@ -160,7 +162,9 @@ gen_helm_uninstall_cmd() {
 }
 
 gen_rm_values_cmd() {
-  echo "rm -r values/rendered/"
+  if [[ "$g_keep_rendered" -eq 0 ]]; then
+    echo "rm -r values/rendered/"
+  fi
 }
 
 check_k8s() {
@@ -240,6 +244,10 @@ main() {
         ;;
       --dry-run)
         g_dry_run=1
+        shift
+        ;;
+      -k|--keep-rendered)
+        g_keep_rendered=1
         shift
         ;;
       -*)

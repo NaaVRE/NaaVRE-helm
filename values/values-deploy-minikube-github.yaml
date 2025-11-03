@@ -33,7 +33,7 @@ global:
         password: SECRET_KEYCLOAK_POSTGRESQL_PASSWORD
 
 jupyterhub:
-  enabled: false
+  enabled: true
   vlabs:
     openlab:
       slug: openlab
@@ -41,7 +41,7 @@ jupyterhub:
       description: "Open experimentation with virtual labs"
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.0.1
+        tag: v0.0.33
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.1/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -57,6 +57,7 @@ naavreCatalogueService:
 
 naavreContainerizerService:
   enabled: true
+  debug: true
 
 naavreWorkflowService:
   enabled: true

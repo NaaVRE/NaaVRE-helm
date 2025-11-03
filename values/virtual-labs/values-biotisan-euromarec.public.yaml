@@ -1,0 +1,19 @@
+jupyterhub:
+  vlabs:
+    biotisan-euromarec:
+      enabled: false
+      slug: biotisan-euromarec
+      title:  Biodiversity Time Series Analyses from European Marine Ecosystems
+      communities: [naavre]
+      labels: []
+      description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
+      dirname: Biodiversity Time Series Analyses
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-biotisan-euromarec-jupyter
+        tag: v0.0.33
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.33/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-biotisan-euromarec
+        registry_url: ghcr.io/naavre/cells-vl-biotisan-euromarec
+        log_queries: true

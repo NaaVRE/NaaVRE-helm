@@ -132,6 +132,16 @@ spec:
               access.token.claim: 'true'
               claim.name: groups
               userinfo.token.claim: 'true'
+          - name: Audience mapper
+            protocol: openid-connect
+            protocolMapper: oidc-audience-mapper
+            consentRequired: false
+            config:
+              included.client.audience: "account"
+              id.token.claim: "true"
+              lightweight.claim: "false"
+              access.token.claim: "true"
+              introspection.token.claim: "true"
         defaultClientScopes:
           - acr
           - email

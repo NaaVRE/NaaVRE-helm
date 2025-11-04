@@ -3,10 +3,10 @@ jupyterhub:
     biotisan-euromarec:
       enabled: false
       slug: biotisan-euromarec
-      title:  Biodiversity Time Series Analyses from European Marine Ecosystems
+      title:  Biodiversity Time Series Analyses from European Marine Ecosystems Virtual Lab
       communities: [naavre]
       labels: []
-      description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
+      description:  A virtual lab to compile comprehensive marine biodiversity time series in Europe and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic and functional diversity metrics, species traits, and environmental variables.
       dirname: Biodiversity Time Series Analyses
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-biotisan-euromarec-jupyter

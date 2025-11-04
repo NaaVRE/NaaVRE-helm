@@ -128,3 +128,5 @@ jupyterhub:
       enabled: true
     wiresits:
       enabled: true
+    biotisan-euromarec:
+      enabled: true

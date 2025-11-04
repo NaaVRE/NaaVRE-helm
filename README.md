@@ -316,6 +316,27 @@ This shows how to schedule Jupyter user pods on a dedicated set of nodes, and to
           matchNodePurpose: require
    ```
 
+### Private cells repository
+
+When using a private cells repository ([template](https://github.com/NaaVRE/NaaVRE-cells)), containerization works out of the box.
+
+However, an additional token is needed to run workflows. This token should have sufficient permissions to pull containers published to the registry:
+
+
+```yaml
+jupyterhub:
+  vlabs:
+    openlab:
+      slug: openlab
+      ...
+      registry_token: "<username>:<token>"
+```
+
+For ghcr.io, this is a personal access token (classic) with the `read:packages` permissions. [Documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry).
+
+The above only works when Argo workflows is deployed by this chart.
+For [external Argo instances](./values/values-example-external-argo.yaml), you will need to manually create an image pull secret and configure your instance Argo to use it by default (e.g. by adding it to Helm value `controller.workflowDefaults.spec.imagePullSecrets`).
+
 ## Limitations
 
 - Assumes that all components are served from one domain

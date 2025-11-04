@@ -81,4 +81,5 @@ global:
         cell_github_url:
         cell_github_token:
         registry_url:
+        # registry_token:
         git_public: {}

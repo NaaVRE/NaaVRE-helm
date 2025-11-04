@@ -38,6 +38,21 @@ argo-workflows:
           secondsAfterSuccess: {{ .Values.argoWorkflows.workflowTTL }}
           # podGC:
           #   strategy: OnWorkflowCompletion
+        {{- $hasToken := false -}}
+        {{- range .Values.jupyterhub.vlabs }}
+          {{- if .configuration.registry_token }}
+            {{- $hasToken = true }}
+            {{- break }}
+          {{- end }}
+        {{- end }}
+        {{- if $hasToken }}
+        imagePullSecrets:
+          {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
+          {{- if $vlab.configuration.registry_token }}
+          - name: "{{ include "values.fullname" $ }}-image-pull-secret-{{ $vlab.slug }}"
+          {{- end }}
+          {{- end}}
+        {{- end }}
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:

@@ -122,9 +122,9 @@ jupyterhub:
       enabled: true
     veluwe-proto-dt:
       enabled: true
-    veluwe-wolf-deer-tree:
-      enabled: true
     waddenzee-proto-dt:
       enabled: true
     wiresits:
+      enabled: true
+    biotisan-euromarec:
       enabled: true

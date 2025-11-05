@@ -135,6 +135,8 @@ jupyterhub:
         cell_github_url:
         cell_github_token:
         registry_url:
+        # Optional token to pull images from private registries (leave out for public ones)
+        # registry_token: "<username>:<token>"
         log_queries: true
         git_public: {}
           # Public git repo cloned when starting the lab
@@ -150,6 +152,7 @@ k8sSecretCreator:
 
 keycloak:
   enabled: true
+  image: quay.io/keycloak/keycloak:26.4.2
   ingress:
     basePath: /auth
 

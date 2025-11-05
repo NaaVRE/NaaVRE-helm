@@ -9,23 +9,26 @@ global:
       enabled: true
     redirectDomainToPaasFrontend: true
 
+keycloak:
+  image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
+
 jupyterhub:
   vlabs:
     openlab:
       enabled: true
       # Overrides the configuration in virtual-labs/values-openlab.public.yaml
       configuration:
-        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
-        registry_url: ghcr.io/qcdis/naavre-cells-test-2
+        cell_github_url: https://github.com/NaaVRE/cells-test
+        registry_url: ghcr.io/naavre/cells-test
     laserfarm:
       enabled: true
       # Overrides the configuration in virtual-labs/values-laserfarm.public.yaml
       configuration:
-        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
-        registry_url: ghcr.io/qcdis/naavre-cells-test-2
+        cell_github_url: https://github.com/NaaVRE/cells-test
+        registry_url: ghcr.io/naavre/cells-test
     biodt-hackathon25:
       enabled: true
       # Overrides the configuration in virtual-labs/values-biodt-hackathon25.public.yaml
       configuration:
-        cell_github_url: https://github.com/QCDIS/NaaVRE-cells-test-2
-        registry_url: ghcr.io/qcdis/naavre-cells-test-2
+        cell_github_url: https://github.com/NaaVRE/cells-test
+        registry_url: ghcr.io/naavre/cells-test

@@ -32,6 +32,9 @@ global:
         password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"
       {{- end }}
 
+  keycloak:
+    image: {{ .Values.keycloak.image }}
+
   communities: {{- .Values.jupyterhub.communities | default dict | toYaml | nindent 4 }}
 
   vlabLabels: {{- .Values.jupyterhub.vlabLabels | default dict | toYaml | nindent 4 }}

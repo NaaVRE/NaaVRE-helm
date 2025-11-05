@@ -17,3 +17,6 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-biotisan-euromarec
         registry_url: ghcr.io/naavre/cells-vl-biotisan-euromarec
         log_queries: true
+        git_public:
+          repo: https://github.com/QCDIS/Biodiversity_time_series_analyses_from_European_marine_ecosystems.git
+          branch: main

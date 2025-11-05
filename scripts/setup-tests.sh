@@ -9,6 +9,9 @@
 
 # For example values file, see values/ in this repository.
 
+
+set -e # Fail on any error
+
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -81,12 +84,11 @@ else
 fi
 
 
-# Add the third-party Helm repos
-./deploy.sh repo-add
-
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git
 cd NaaVRE-helm
+# Add the third-party Helm repos
+./deploy.sh repo-add
 context="minikube"
 namespace="naavre"
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
@@ -99,7 +101,6 @@ else
     echo "Helm installation succeeded"
 fi
 cd ../
-
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/ vre/.well-known/openid-configuration to be available and fail if it is not available

@@ -1,8 +1,6 @@
 naavre-containerizer-service:
   enabled: {{ .Values.naavreContainerizerService.enabled }}
   fullnameOverride: "{{ include "values.fullname" . }}-naavre-containerizer-service"
-  image:
-    tag: "{{ .Values.naavreContainerizerService.image.tag }}"
 
   ingress:
     enabled: true

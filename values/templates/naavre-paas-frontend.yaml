@@ -1,7 +1,5 @@
 naavre-paas-frontend:
   enabled: {{ .Values.naavrePaasFrontend.enabled }}
-  image:
-    tag: "{{ .Values.naavrePaasFrontend.image.tag }}"
 
   ingress:
     enabled: true

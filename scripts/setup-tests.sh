@@ -10,6 +10,8 @@
 
 # For example values file, see values/ in this repository.
 
+set -e
+
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -104,10 +106,6 @@ else
     echo "Minikube local test passed"
 fi
 
-
-# Add the third-party Helm repos
-./deploy.sh repo-add
-
 # Check if we are already in a NaaVRE-helm directory, if not clone the repo
 current_directory=$(basename "$PWD")
 if [ "$current_directory" != "NaaVRE-helm" ]; then
@@ -115,6 +113,9 @@ if [ "$current_directory" != "NaaVRE-helm" ]; then
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
 fi
+
+# Add the third-party Helm repos
+./deploy.sh repo-add
 
 context="minikube"
 namespace="naavre"

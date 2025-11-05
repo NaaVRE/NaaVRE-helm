@@ -1,6 +1,8 @@
 naavre-workflow-service:
   enabled: {{ .Values.naavreWorkflowService.enabled }}
   fullnameOverride: "{{ include "values.fullname" . }}-naavre-workflow-service"
+  image:
+    tag: "{{ .Values.naavreWorkflowService.image.tag }}"
 
   ingress:
     enabled: true

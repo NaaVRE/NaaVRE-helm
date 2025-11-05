@@ -10,8 +10,6 @@
 
 # For example values file, see values/ in this repository.
 
-set -e
-
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -120,7 +118,7 @@ fi
 context="minikube"
 namespace="naavre"
 kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall
+./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
 # Exit if the installation fails
@@ -136,7 +134,7 @@ cd ../
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/ vre/.well-known/openid-configuration to be available and fail if it is not available
 echo "Waiting for OIDC configuration URL to be available"
-timeout=200
+timeout=300
 start_time=$(date +%s)
 while true; do
     if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/vre/; then
@@ -146,22 +144,28 @@ while true; do
     current_time=$(date +%s)
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $timeout ]; then
-        echo "OIDC configuration URL is not available after 5 minutes"
+        echo "OIDC configuration URL is not available"
         exit 1
     fi
-    sleep 5
+    sleep 6
 done
 
 echo "Getting access token for the workflow service"
 AUTH_TOKEN="$(curl -k -X POST https://$MINIKUBE_HOST/auth/realms/vre/protocol/openid-connect/token -H 'Content-Type: application/x-www-form-urlencoded'   -d 'grant_type=password' -d 'client_id=naavre'   -d 'username=my-user'   -d 'password=USER_PASSWORD'   -d 'scope=openid' | jq -r '.access_token')"
 echo "Setting the AUTH_TOKEN environment variable"
 export AUTH_TOKEN
-echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV
+echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
 
 
 #Get Argo workflow summation token and set it to configuration.json
 echo "Getting Argo workflow submission token"
 ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n naavre | base64 --decode)"
+# Make sure ARGO_TOKEN is not empty
+if [ -z "$ARGO_TOKEN" ]; then
+    echo "Failed to get Argo workflow submission token"
+    exit 1
+fi
+
 export ARGO_TOKEN
 # Wait for the Argo workflow service to be available
 timeout=200

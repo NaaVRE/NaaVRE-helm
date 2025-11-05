@@ -142,6 +142,14 @@ spec:
               lightweight.claim: "false"
               access.token.claim: "true"
               introspection.token.claim: "true"
+          - name: sub
+            protocol: openid-connect
+            protocolMapper: oidc-sub-mapper
+            consentRequired: false
+            config:
+              lightweight.claim: "false"
+              introspection.token.claim: "true"
+              access.token.claim: "true"
         defaultClientScopes:
           - acr
           - email

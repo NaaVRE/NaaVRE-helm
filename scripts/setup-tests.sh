@@ -10,9 +10,6 @@
 
 # For example values file, see values/ in this repository.
 
-
-set -e # Fail on any error
-
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do

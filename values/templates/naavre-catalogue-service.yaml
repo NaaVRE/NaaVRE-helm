@@ -1,8 +1,6 @@
 naavre-catalogue-service:
   enabled: {{ .Values.naavreCatalogueService.enabled }}
   nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-service"
-  image:
-    tag: "{{ .Values.naavreCatalogueService.image.tag }}"
 
   ingress:
     enabled: true

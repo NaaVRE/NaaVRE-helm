@@ -109,6 +109,7 @@ fi
 # Check if we are already in a NaaVRE-helm directory, if not clone the repo
 current_directory=$(basename "$PWD")
 if [ "$current_directory" != "NaaVRE-helm" ]; then
+    rm -rf NaaVRE-helm
     echo "Cloning NaaVRE-helm repository"
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
@@ -132,7 +133,9 @@ if [ $? -ne 0 ]; then
 else
     echo "Helm installation succeeded"
 fi
-cd ../
+if [ "$current_directory" != "NaaVRE-helm" ]; then
+  cd ../
+fi
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/ vre/.well-known/openid-configuration to be available and fail if it is not available

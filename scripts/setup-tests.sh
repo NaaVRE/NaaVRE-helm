@@ -110,6 +110,7 @@ if [ "$current_directory" != "NaaVRE-helm" ]; then
     echo "Cloning NaaVRE-helm repository"
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
+    cp "../$VALUES_FILE" .
 fi
 
 # Add the third-party Helm repos

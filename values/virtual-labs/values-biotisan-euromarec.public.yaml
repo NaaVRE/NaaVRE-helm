@@ -6,14 +6,17 @@ jupyterhub:
       title:  Biodiversity Time Series Analyses from European Marine Ecosystems Virtual Lab
       communities: [naavre]
       labels: []
-      description:  A virtual lab to compile comprehensive marine biodiversity time series in Europe and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic and functional diversity metrics, species traits, and environmental variables.
+      description:  A virtual lab to compile comprehensive marine biodiversity time series in Europe and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic and functional diversity metrics, species traits, and environmental variables. A tutorial is available in the virtual lab in "Virtual Labs/Biodiversity Time Series Analyses/Git public/Biodiversity_time_series_analyses_from_European_marine_ecosystems/workflows"
       dirname: Biodiversity Time Series Analyses
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-biotisan-euromarec-jupyter
-        tag: v0.0.35
+        tag: v0.0.36
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.35/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.36/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-biotisan-euromarec
         registry_url: ghcr.io/naavre/cells-vl-biotisan-euromarec
         log_queries: true
+        git_public:
+          repo: https://github.com/QCDIS/Biodiversity_time_series_analyses_from_European_marine_ecosystems.git
+          branch: main

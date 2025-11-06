@@ -250,6 +250,14 @@ else
     echo "configuration.json does not exist, skipping update"
 fi
 
+# Check if CONFIG_FILE_URL exists
+if [ -f "$CONFIG_FILE_URL" ]; then
+    echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
+else
+  export CONFIG_FILE_URL="minkube_configuration.json"
+  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV
+fi
+
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
 {

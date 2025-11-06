@@ -106,9 +106,7 @@ else
     echo "Minikube local test passed"
 fi
 
-# Check if we are already in a NaaVRE-helm directory, if not clone the repo
-current_directory=$(basename "$PWD")
-if [ "$current_directory" != "NaaVRE-helm" ]; then
+if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     rm -rf NaaVRE-helm
     echo "Cloning NaaVRE-helm repository"
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
@@ -252,9 +250,6 @@ else
     echo "configuration.json does not exist, skipping update"
 fi
 
-
-
-
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
 {
@@ -272,6 +267,9 @@ echo "Exporting environment variables to dev3.env"
   echo "PASSWORD=$PASSWORD"
 } > dev3.env
 
+echo "Listing all files in the current directory:"
+ls -la
+pwd
 
 
 # Print services urls

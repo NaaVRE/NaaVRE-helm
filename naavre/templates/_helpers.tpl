@@ -49,8 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "naavre.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-
-{{- define "naavre-catalogue-service.fullname" -}}
-{{ include "values.fullname" . }}-naavre-catalogue-service
-{{- end -}}

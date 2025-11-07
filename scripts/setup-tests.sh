@@ -52,14 +52,16 @@ export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
-export USERNAME=my-user
-echo "USERNAME=my-user" >> $GITHUB_ENV
-export PASSWORD=USER_PASSWORD
-echo "PASSWORD=USER_PASSWORD" >> $GITHUB_ENV
+export REALM=vre
+echo "REALM=$REALM" >> $GITHUB_ENV
+export USERNAME=$(yq e '.global.secrets.keycloak.users[0].username' "$VALUES_FILE")
+echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+export USER_PASSWORD=$(yq e '.global.secrets.keycloak.users[0].password' "$VALUES_FILE")
+echo "USER_PASSWORD=USER_PASSWORD" >> $GITHUB_ENV
 export DISABLE_OAUTH=False
 echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
-export OIDC_CONFIGURATION_URL="https://$MINIKUBE_HOST/auth/realms/vre/.well-known/openid-configuration"
-echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/vre/.well-known/openid-configuration" >> $GITHUB_ENV
+export OIDC_CONFIGURATION_URL="https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration"
+echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
 export VERIFY_SSL="False"
 echo "VERIFY_SSL=False" >> $GITHUB_ENV
 export DISABLE_AUTH="False"
@@ -76,8 +78,23 @@ export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
+export KEYCLOAK_CLIENT_SECRET=$(yq e '.global.secrets.keycloak.naavreClientSecret' "$VALUES_FILE")
+echo "KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET" >> $GITHUB_ENV
+export KEYCLOAK_AMIN_USER=admin
+echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
+export KEYCLOAK_ADMIN_PASSWORD=$(yq e '.global.secrets.keycloak.adminPassword' "$VALUES_FILE")
+echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
+export USER_EMAIL=$USERNAME@nowhere.no
+echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
+export USER_FIRST_NAME=$USERNAME
+echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
+export USER_LAST_NAME=$USERNAME
+echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
+
 
 set -e
+
+
 
 #Get the minikube IP and add it to /etc/hosts if not already present
 MINIKUBE_IP=$(minikube ip)
@@ -106,42 +123,42 @@ else
     echo "Minikube local test passed"
 fi
 
-if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-    rm -rf NaaVRE-helm
-    echo "Cloning NaaVRE-helm repository"
-    git clone https://github.com/NaaVRE/NaaVRE-helm.git
-    cd NaaVRE-helm
-    git checkout 108-error-installation-failed-template-naavretemplateskeycloakyaml
-    cp "../$VALUES_FILE" .
-fi
-
-# Add the third-party Helm repos
-./deploy.sh repo-add
-
-context="minikube"
-namespace="naavre"
-kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
-# Exit if the installation fails
-if [ $? -ne 0 ]; then
-    echo "Helm installation failed"
-    exit 1
-else
-    echo "Helm installation succeeded"
-fi
-if [ "$current_directory" != "NaaVRE-helm" ]; then
-  cd ../
-fi
+#if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+#    rm -rf NaaVRE-helm
+#    echo "Cloning NaaVRE-helm repository"
+#    git clone https://github.com/NaaVRE/NaaVRE-helm.git
+#    cd NaaVRE-helm
+#    git checkout 108-error-installation-failed-template-naavretemplateskeycloakyaml
+#    cp "../$VALUES_FILE" .
+#fi
+#
+## Add the third-party Helm repos
+#./deploy.sh repo-add
+#
+#context="minikube"
+#namespace="naavre"
+#kubectl delete ns $namespace --ignore-not-found=true
+#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+#./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+## Exit if the installation fails
+#if [ $? -ne 0 ]; then
+#    echo "Helm installation failed"
+#    exit 1
+#else
+#    echo "Helm installation succeeded"
+#fi
+#if [ "$current_directory" != "NaaVRE-helm" ]; then
+#  cd ../
+#fi
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
-# Wait for https://$MINIKUBE_HOST/auth/realms/ vre/.well-known/openid-configuration to be available and fail if it is not available
+# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
 echo "Waiting for OIDC configuration URL to be available"
 timeout=300
 start_time=$(date +%s)
 while true; do
-    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/vre/; then
+    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
         echo "OIDC configuration URL is available"
         break
     fi
@@ -154,17 +171,105 @@ while true; do
     sleep 6
 done
 
-echo "Getting access token for the workflow service"
-AUTH_TOKEN="$(curl -k -X POST https://$MINIKUBE_HOST/auth/realms/vre/protocol/openid-connect/token -H 'Content-Type: application/x-www-form-urlencoded'   -d 'grant_type=password' -d 'client_id=naavre'   -d 'username=my-user'   -d 'password=USER_PASSWORD'   -d 'scope=openid' | jq -r '.access_token')"
+echo "Getting AUTH_TOKEN token"
+
+# Get admin token
+KEYCLOAK_ADMIN_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/master/protocol/openid-connect/token" -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "grant_type=password"   --data-urlencode "client_id=admin-cli"   --data-urlencode "username=$KEYCLOAK_AMIN_USER"   --data-urlencode "password=$KEYCLOAK_ADMIN_PASSWORD" | jq -r '.access_token')
+if [ -z "$KEYCLOAK_ADMIN_TOKEN" ] || [ "$KEYCLOAK_ADMIN_TOKEN" == "null" ]; then
+  echo "Failed to get admin token"
+  exit 1
+fi
+
+# find user id
+USER_ID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users?username=$USERNAME" | jq -r '.[0].id')
+
+if [[ -z "$USER_ID" || "$USER_ID" == "null" ]]; then
+  echo "User $USERNAME not found"
+  exit 1
+fi
+
+# fetch user JSON and clear required actions + mark verified/enabled
+USER_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID")
+
+UPDATED_JSON=$(echo "$USER_JSON" | jq --arg email "$USER_EMAIL" --arg first "$USER_FIRST_NAME" --arg last "$USER_LAST_NAME" \
+  '.requiredActions = [] |
+   .emailVerified = true |
+   .enabled = true |
+   .email = (if $email == "" then .email else $email end) |
+   .firstName = (if $first == "" then .firstName else $first end) |
+   .lastName = (if $last == "" then .lastName else $last end)')
+
+curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID" \
+  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$UPDATED_JSON"
+
+# ensure password is set and not temporary
+curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID/reset-password" \
+  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"type\":\"password\",\"temporary\":false,\"value\":\"$USER_PASSWORD\"}"
+
+
+#Find Keycloak internal client UUID
+CLIENT_UUID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients?clientId=$CLIENT_ID" | jq -r '.[0].id')
+
+if [ -z "$CLIENT_UUID" ] || [ "$CLIENT_UUID" == "null" ]; then
+  echo "Client $CLIENT_ID not found in realm $REALM"
+  exit 1
+fi
+
+#Get full client JSON, set directAccessGrantsEnabled=true and PUT it back
+CLIENT_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID")
+
+UPDATED_JSON=$(echo "$CLIENT_JSON" | jq '.directAccessGrantsEnabled = true')
+
+curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID" \
+  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$UPDATED_JSON"
+
+
+echo "Requesting user token"
+AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode "grant_type=password" \
+  --data-urlencode "client_id=$CLIENT_ID" \
+  --data-urlencode "username=$USERNAME" \
+  --data-urlencode "password=$USER_PASSWORD" \
+  --data-urlencode "scope=openid"| jq -r '.access_token')
+
+
+#curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
+#    -H 'Content-Type: application/x-www-form-urlencoded' \
+#    --data-urlencode "grant_type=password" \
+#    --data-urlencode "client_id=$CLIENT_ID" \
+#    --data-urlencode "client_secret=$KEYCLOAK_CLIENT_SECRET" \
+#    --data-urlencode "username=$USERNAME" \
+#    --data-urlencode "password=$USER_PASSWORD" \
+#    --data-urlencode "scope=openid"
+#
+#TOKEN_RESPONSE=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
+#  -H 'Content-Type: application/x-www-form-urlencoded' \
+#  --data-urlencode "grant_type=password" \
+#  --data-urlencode "client_id=$CLIENT_ID" \
+#  --data-urlencode "username=$USERNAME" \
+#  --data-urlencode "password=$USER_PASSWORD" \
+#  --data-urlencode "scope=openid")
+
 echo "Setting the AUTH_TOKEN environment variable"
 # Make sure AUTH_TOKEN is not empty
 if [ -z "$AUTH_TOKEN" ]; then
-    echo "Failed to get access token for the workflow service"
+    echo "Failed to get AUTH_TOKEN"
     exit 1
 fi
 export AUTH_TOKEN
 echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
-
+echo $AUTH_TOKEN
 
 #Get Argo workflow summation token and set it to configuration.json
 echo "Getting Argo workflow submission token"
@@ -279,10 +384,6 @@ echo "Exporting environment variables to dev3.env"
   echo "USERNAME=$USERNAME"
   echo "PASSWORD=$PASSWORD"
 } > dev3.env
-
-echo "Listing all files in the current directory:"
-ls -la
-pwd
 
 
 # Print services urls

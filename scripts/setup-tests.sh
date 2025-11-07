@@ -251,7 +251,6 @@ if [ -z "$AUTH_TOKEN" ]; then
 fi
 export AUTH_TOKEN
 echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
-echo $AUTH_TOKEN
 
 #Get Argo workflow summation token and set it to configuration.json
 echo "Getting Argo workflow submission token"

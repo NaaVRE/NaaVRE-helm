@@ -123,34 +123,34 @@ else
     echo "Minikube local test passed"
 fi
 
-#if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-#    rm -rf NaaVRE-helm
-#    echo "Cloning NaaVRE-helm repository"
-#    git clone https://github.com/NaaVRE/NaaVRE-helm.git
-#    cd NaaVRE-helm
-#    git checkout 108-error-installation-failed-template-naavretemplateskeycloakyaml
-#    cp "../$VALUES_FILE" .
-#fi
-#
-## Add the third-party Helm repos
-#./deploy.sh repo-add
-#
-#context="minikube"
-#namespace="naavre"
-#kubectl delete ns $namespace --ignore-not-found=true
-#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-#./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
-## Exit if the installation fails
-#if [ $? -ne 0 ]; then
-#    echo "Helm installation failed"
-#    exit 1
-#else
-#    echo "Helm installation succeeded"
-#fi
-#if [ "$current_directory" != "NaaVRE-helm" ]; then
-#  cd ../
-#fi
+if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+    rm -rf NaaVRE-helm
+    echo "Cloning NaaVRE-helm repository"
+    git clone https://github.com/NaaVRE/NaaVRE-helm.git
+    cd NaaVRE-helm
+    git checkout 108-error-installation-failed-template-naavretemplateskeycloakyaml
+    cp "../$VALUES_FILE" .
+fi
+
+# Add the third-party Helm repos
+./deploy.sh repo-add
+
+context="minikube"
+namespace="naavre"
+kubectl delete ns $namespace --ignore-not-found=true
+./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+# Exit if the installation fails
+if [ $? -ne 0 ]; then
+    echo "Helm installation failed"
+    exit 1
+else
+    echo "Helm installation succeeded"
+fi
+if [ "$current_directory" != "NaaVRE-helm" ]; then
+  cd ../
+fi
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
@@ -242,24 +242,6 @@ AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/proto
   --data-urlencode "username=$USERNAME" \
   --data-urlencode "password=$USER_PASSWORD" \
   --data-urlencode "scope=openid"| jq -r '.access_token')
-
-
-#curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
-#    -H 'Content-Type: application/x-www-form-urlencoded' \
-#    --data-urlencode "grant_type=password" \
-#    --data-urlencode "client_id=$CLIENT_ID" \
-#    --data-urlencode "client_secret=$KEYCLOAK_CLIENT_SECRET" \
-#    --data-urlencode "username=$USERNAME" \
-#    --data-urlencode "password=$USER_PASSWORD" \
-#    --data-urlencode "scope=openid"
-#
-#TOKEN_RESPONSE=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
-#  -H 'Content-Type: application/x-www-form-urlencoded' \
-#  --data-urlencode "grant_type=password" \
-#  --data-urlencode "client_id=$CLIENT_ID" \
-#  --data-urlencode "username=$USERNAME" \
-#  --data-urlencode "password=$USER_PASSWORD" \
-#  --data-urlencode "scope=openid")
 
 echo "Setting the AUTH_TOKEN environment variable"
 # Make sure AUTH_TOKEN is not empty

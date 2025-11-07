@@ -142,6 +142,11 @@ jupyterhub:
         mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
         stringData: |
           {
+            "@jupyterlab/docmanager-extension:plugin": {
+              "defaultViewers": {
+                "markdown": "Markdown Preview"
+              }
+            },
             "@naavre/containerizer-jupyterlab:plugin": {
               "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
               "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"

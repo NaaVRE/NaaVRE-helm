@@ -14,5 +14,7 @@ values/virtual-labs/*.yaml
 !values/virtual-labs/*.secrets.yaml
 *.dec
 
+naavre/rendered/
+
 *.drawio.bkp
 /NaaVRE-helm/

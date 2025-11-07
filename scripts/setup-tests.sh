@@ -157,6 +157,11 @@ done
 echo "Getting access token for the workflow service"
 AUTH_TOKEN="$(curl -k -X POST https://$MINIKUBE_HOST/auth/realms/vre/protocol/openid-connect/token -H 'Content-Type: application/x-www-form-urlencoded'   -d 'grant_type=password' -d 'client_id=naavre'   -d 'username=my-user'   -d 'password=USER_PASSWORD'   -d 'scope=openid' | jq -r '.access_token')"
 echo "Setting the AUTH_TOKEN environment variable"
+# Make sure AUTH_TOKEN is not empty
+if [ -z "$AUTH_TOKEN" ]; then
+    echo "Failed to get access token for the workflow service"
+    exit 1
+fi
 export AUTH_TOKEN
 echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
 
@@ -255,7 +260,7 @@ if [ -f "$CONFIG_FILE_URL" ]; then
     echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
 else
   export CONFIG_FILE_URL="minkube_configuration.json"
-  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV
+  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
 # Export environment variables to dev3.env

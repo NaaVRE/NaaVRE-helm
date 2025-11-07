@@ -22,3 +22,4 @@ jupyterhub:
         git_public:
           repo: https://github.com/QCDIS/Hackathon25.git
           branch: main
+        default_file_path: Virtual Labs/BioDT Hackathon/Git public/README.ipynb

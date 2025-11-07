@@ -47,6 +47,7 @@ metadata:
 data:
   django_script.py: |
     import json
+    from urllib.parse import quote as url_quote
     from base_assets.models import SharingScope
     from virtual_labs.models import VirtualLabLabel, VirtualLab
 
@@ -110,7 +111,15 @@ data:
 
     for vlab in vlabs.values():
         if vlab['enabled']:
-            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/?profile={vlab['slug']}"
+            default_file_path = vlab['configuration'].get('default_file_path')
+            if default_file_path:
+                path = url_quote(f'tree/{default_file_path}')
+            else:
+                path = ''
+            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
+            print(default_file_path)
+            print(path)
+            print(vlab['deployment_url'])
             vlab['container_image'] = f"{vlab['image']['name']}:{vlab['image']['tag']}"
             vlab['image'] = vlab.get("icon", "").strip()
 

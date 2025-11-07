@@ -142,6 +142,8 @@ jupyterhub:
           # Public git repo cloned when starting the lab
           # repo: https://example.org/my/repo.git
           # branch: main
+        # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
+        # default_file_path: Virtual Labs/Open Lab/Git public/tutorial/Your first workflow in Python.ipynb
       postStartShSnippet: |
         echo "Do something"
 

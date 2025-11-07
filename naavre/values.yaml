@@ -83,3 +83,4 @@ global:
         registry_url:
         # registry_token:
         git_public: {}
+        # default_file_path:

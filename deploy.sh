@@ -28,7 +28,7 @@ Actions:
   upgrade               render values/ and upgrade an existing deployment of naavre/
   rollback              rollback an existing deployment
   uninstall             uninstall an existing deployment
-  template              render values/ to values/rendered/, for debug purposes
+  template              render charts to values/rendered/ and naavre/rendered, for debug purposes
 
 Action options:
   Passed to \`helm <action>\`
@@ -104,7 +104,7 @@ gen_helm_common_options() {
   echo "$options"
 }
 
-gen_helm_template_cmd() {
+gen_helm_values_template_cmd() {
   f_args=""
   for file in "${g_value_files[@]}"; do
     f_args="$f_args -f \"$file\""
@@ -143,12 +143,16 @@ gen_helm_dependency_update() {
   echo "helm dependency update $1 naavre"
 }
 
-gen_helm_install_cmd() {
+gen_helm_naavre_install_cmd() {
   echo "helm $(gen_helm_common_options) install $1 $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
 }
 
-gen_helm_upgrade_cmd() {
+gen_helm_naavre_upgrade_cmd() {
   echo "helm $(gen_helm_common_options) upgrade $1 $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
+}
+
+gen_helm_naavre_template_cmd() {
+  echo "helm $(gen_helm_common_options) template $1 $g_release_name naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates)) --output-dir naavre/rendered"
 }
 
 gen_helm_rollback_cmd() {
@@ -279,14 +283,14 @@ main() {
     install)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
-      run_cmd "$(gen_helm_template_cmd)"
-      run_cmd "$(gen_helm_install_cmd "$action_options") ; $(gen_rm_values_cmd)"
+      run_cmd "$(gen_helm_values_template_cmd)"
+      run_cmd "$(gen_helm_naavre_install_cmd "$action_options") ; $(gen_rm_values_cmd)"
       ;;
     upgrade)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
-      run_cmd "$(gen_helm_template_cmd)"
-      run_cmd "$(gen_helm_upgrade_cmd "$action_options") ; $(gen_rm_values_cmd)"
+      run_cmd "$(gen_helm_values_template_cmd)"
+      run_cmd "$(gen_helm_naavre_upgrade_cmd "$action_options") ; $(gen_rm_values_cmd)"
       ;;
     rollback)
       check_k8s
@@ -297,12 +301,13 @@ main() {
       run_cmd "$(gen_helm_uninstall_cmd "$action_options")"
       ;;
     template)
-      run_cmd "$(gen_helm_template_cmd)"
+      run_cmd "$(gen_helm_values_template_cmd)"
+      run_cmd "$(gen_helm_naavre_template_cmd "$action_options")"
       if [[ "$g_use_vlic_secrets" -eq 1 ]]; then
         echo
-        echo "@@@@@@@@@@@@@@@@@    The files rendered to values/rendered/"
-        echo "@@@ IMPORTANT @@@    may contain unencrypted secrets."
-        echo "@@@@@@@@@@@@@@@@@    Clean them up after use!"
+        echo "@@@@@@@@@@@@@@@@@    The files rendered to values/rendered/ and"
+        echo "@@@ IMPORTANT @@@    naavre/rendered/ may contain unencrypted"
+        echo "@@@@@@@@@@@@@@@@@    secrets. Clean them up after use!"
       fi
       ;;
   esac

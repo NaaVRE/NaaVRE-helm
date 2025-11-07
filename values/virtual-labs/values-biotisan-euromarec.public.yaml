@@ -9,9 +9,7 @@ jupyterhub:
       description: |
         A virtual lab to compile comprehensive marine biodiversity time series in Europe
         and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic 
-        and functional diversity metrics, species traits, and environmental variables. 
-        A tutorial is available in the virtual lab in the directory 
-        _"Virtual Labs/Biodiversity Time Series Analyses/Git public/documentation"_
+        and functional diversity metrics, species traits, and environmental variables.
       dirname: Biodiversity Time Series Analyses
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-biotisan-euromarec-jupyter

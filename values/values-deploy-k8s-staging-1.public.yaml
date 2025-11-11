@@ -128,3 +128,5 @@ jupyterhub:
       enabled: true
     biotisan-euromarec:
       enabled: true
+    als-tree-ind:
+      enabled: true

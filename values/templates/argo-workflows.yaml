@@ -91,9 +91,7 @@ argo-workflows:
         key: client-secret
       redirectUrl: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/oauth2/callback"
       rbac:
-        enabled: true
-      scopes:
-       - roles
+        enabled: false
       insecureSkipVerify: {{ .Values.global.insecureSkipVerifySSL }}
     ingress:
       enabled: true

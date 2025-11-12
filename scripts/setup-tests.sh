@@ -91,13 +91,9 @@ echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
 export USER_LAST_NAME=$USERNAME
 echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
 
-
-set -e
-
-
-
 #Get the minikube IP and add it to /etc/hosts if not already present
 MINIKUBE_IP=$(minikube ip)
+
 export MINIKUBE_IP
 if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
     echo "Adding minikube IP to /etc/hosts"
@@ -273,7 +269,7 @@ while true; do
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $timeout ]; then
         echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
-        # Find the pods that are not running in the $namesapce namespace and contain the word argo. Then print their status logs and describe them
+        # Find the pods that are not running in the $namespace namespace and contain the word argo. Then print their status logs and describe them
         kubectl get pods -n $namespace | grep argo | grep -v Running
         for pod in $(kubectl get pods -n $namespace | grep argo | grep -v Running | awk '{print $1}'); do
             echo "Logs for pod $pod:"
@@ -287,7 +283,7 @@ while true; do
 done
 
 # Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf
-status_code=$(curl -o /dev/null -s -w "%{http_code}" -k https://$MINIKUBE_HOST/argowf/api/v1/workflows/$namesapce -H "Authorization: Bearer $ARGO_TOKEN")
+status_code=$(curl -o /dev/null -s -w "%{http_code}" -k "https://$MINIKUBE_HOST/argowf/api/v1/workflows/$namespace" -H "Authorization: Bearer $ARGO_TOKEN")
 echo "Argo API returned status code $status_code"
 if [ "$status_code" -ne 200 ]; then
     echo "Argo API returned status code $status_code"
@@ -298,7 +294,7 @@ fi
 timeout=200
 start_time=$(date +%s)
 while true; do
-    if kubectl get serviceaccount $ARGO_SERVICE_ACCOUNT_EXECUTOR -n $namesapce > /dev/null 2>&1; then
+    if kubectl get serviceaccount $ARGO_SERVICE_ACCOUNT_EXECUTOR -n $namespace > /dev/null 2>&1; then
         echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is available"
         break
     fi
@@ -315,7 +311,7 @@ done
 timeout=200
 start_time=$(date +%s)
 while true; do
-    if kubectl get serviceaccount $ARGO_VRE_API_SERVICE_ACCOUNT -n $namesapce > /dev/null 2>&1; then
+    if kubectl get serviceaccount $ARGO_VRE_API_SERVICE_ACCOUNT -n $namespace > /dev/null 2>&1; then
         echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is available"
         break
     fi
@@ -332,7 +328,7 @@ done
 if [ -f "configuration.json" ]; then
   jq --arg token "$ARGO_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set namespace in minkube_configuration.json in the virtual_lab_1
-  jq --arg namespace "$namesapce" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg namespace "$namespace" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set service_account in minkube_configuration.json in the virtual_lab_1
   jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the cell_github_token in minkube_configuration.json in the virtual_lab_1
@@ -363,7 +359,7 @@ echo "Exporting environment variables to dev3.env"
   echo "DISABLE_OAUTH=False"
   echo "CLIENT_ID=$CLIENT_ID"
   echo "USERNAME=$USERNAME"
-  echo "PASSWORD=$PASSWORD"
+  echo "USER_PASSWORD=$USER_PASSWORD"
 } > dev3.env
 
 

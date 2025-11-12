@@ -51,15 +51,56 @@ export MINIKUBE_HOST="naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
-export VIRTUAL_LAB_NAME=$(yq e '.jupyterhub.vlabs[0].slug' "$VALUES_FILE")
+export VIRTUAL_LAB_NAME="openlab"
 echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME" >> $GITHUB_ENV
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
 echo "REALM=$REALM" >> $GITHUB_ENV
 export USERNAME=$(yq e '.global.secrets.keycloak.users[0].username' "$VALUES_FILE")
 echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+if [ -z "$USERNAME" ]; then
+    echo "USERNAME is empty. Please check the values file."
+    exit 1
+fi
+
 export USER_PASSWORD=$(yq e '.global.secrets.keycloak.users[0].password' "$VALUES_FILE")
-echo "USER_PASSWORD=USER_PASSWORD" >> $GITHUB_ENV
+echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
+if [ -z "$USER_PASSWORD" ]; then
+    echo "USER_PASSWORD is empty. Please check the values file."
+    exit 1
+fi
+export CELL_GITHUB_TOKEN=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_token' "$VALUES_FILE")
+echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN" >> $GITHUB_ENV
+if [ -z "$CELL_GITHUB_TOKEN" ]; then
+    echo "CELL_GITHUB_TOKEN is empty. Please check the values file."
+    exit 1
+fi
+
+export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
+echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
+if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
+    echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
+    exit 1
+fi
+
+export MODULE_MAPPING_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.module_mapping_url' "$VALUES_FILE")
+echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
+if [ -z "$MODULE_MAPPING_URL" ]; then
+    echo "MODULE_MAPPING_URL is empty. Please check the values file."
+    exit 1
+fi
+export CELL_GITHUB_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_url' "$VALUES_FILE")
+echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
+if [ -z "$CELL_GITHUB_URL" ]; then
+    echo "CELL_GITHUB_URL is empty. Please check the values file."
+    exit 1
+fi
+export REGISTRY_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.registry_url' "$VALUES_FILE")
+echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
+if [ -z "$REGISTRY_URL" ]; then
+    echo "REGISTRY_URL is empty. Please check the values file."
+    exit 1
+fi
 export DISABLE_OAUTH=False
 echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
 export OIDC_CONFIGURATION_URL="https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration"
@@ -82,10 +123,19 @@ export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
 export KEYCLOAK_CLIENT_SECRET=$(yq e '.global.secrets.keycloak.naavreClientSecret' "$VALUES_FILE")
 echo "KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET" >> $GITHUB_ENV
+if [ -z "$KEYCLOAK_CLIENT_SECRET" ]; then
+    echo "KEYCLOAK_CLIENT_SECRET is empty. Please check the values file."
+    exit 1
+fi
+
 export KEYCLOAK_AMIN_USER=admin
 echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
 export KEYCLOAK_ADMIN_PASSWORD=$(yq e '.global.secrets.keycloak.adminPassword' "$VALUES_FILE")
 echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
+if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
+    echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
+    exit 1
+fi
 export USER_EMAIL=$USERNAME@nowhere.no
 echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
 export USER_FIRST_NAME=$USERNAME
@@ -336,8 +386,12 @@ if [ -f "configuration.json" ]; then
   # Set service_account in minkube_configuration.json in the virtual_lab_1
   jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the cell_github_token in minkube_configuration.json in the virtual_lab_
-  jq --arg cell_github_token "$CELL_GITHUB_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   jq --arg cell_github_token "$CELL_GITHUB_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg cell_github_url "$CELL_GITHUB_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_url = $cell_github_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg base_image_tags_url "$BASE_IMAGE_TAGS_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .base_image_tags_url = $base_image_tags_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg module_mapping_url "$MODULE_MAPPING_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .module_mapping_url = $module_mapping_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg registry_url "$REGISTRY_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .registry_url = $registry_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  echo "Updated minkube_configuration.json with ARGO_TOKEN and other values"
 else
     echo "configuration.json does not exist, skipping update"
 fi
@@ -365,6 +419,8 @@ echo "Exporting environment variables to dev3.env"
   echo "CLIENT_ID=$CLIENT_ID"
   echo "USERNAME=$USERNAME"
   echo "USER_PASSWORD=$USER_PASSWORD"
+  echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME"
+  echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
 } > dev3.env
 
 

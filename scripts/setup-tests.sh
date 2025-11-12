@@ -135,17 +135,17 @@ fi
 
 context="minikube"
 namespace="naavre"
-#kubectl delete ns $namespace --ignore-not-found=true
-#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-#./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
-## Exit if the installation fails
-#if [ $? -ne 0 ]; then
-#    echo "Helm installation failed"
-#    exit 1
-#else
-#    echo "Helm installation succeeded"
-#fi
+kubectl delete ns $namespace --ignore-not-found=true
+./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+# Exit if the installation fails
+if [ $? -ne 0 ]; then
+    echo "Helm installation failed"
+    exit 1
+else
+    echo "Helm installation succeeded"
+fi
 if [ "$current_directory" != "NaaVRE-helm" ]; then
   cd ../
 fi

@@ -51,6 +51,8 @@ export MINIKUBE_HOST="naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
+export VIRTUAL_LAB_NAME=$(yq e '.jupyterhub.vlabs[0].slug' "$VALUES_FILE")
+echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME" >> $GITHUB_ENV
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
 echo "REALM=$REALM" >> $GITHUB_ENV
@@ -133,17 +135,17 @@ fi
 
 context="minikube"
 namespace="naavre"
-kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
-# Exit if the installation fails
-if [ $? -ne 0 ]; then
-    echo "Helm installation failed"
-    exit 1
-else
-    echo "Helm installation succeeded"
-fi
+#kubectl delete ns $namespace --ignore-not-found=true
+#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+#./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+## Exit if the installation fails
+#if [ $? -ne 0 ]; then
+#    echo "Helm installation failed"
+#    exit 1
+#else
+#    echo "Helm installation succeeded"
+#fi
 if [ "$current_directory" != "NaaVRE-helm" ]; then
   cd ../
 fi
@@ -326,13 +328,16 @@ done
 
 # if configuration.json exists add the values, else skip
 if [ -f "configuration.json" ]; then
-  jq --arg token "$ARGO_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-virtual_lab_1}"
+  echo "Using virtual lab name: $VIRTUAL_LAB_NAME"
+  jq --arg token "$ARGO_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set namespace in minkube_configuration.json in the virtual_lab_1
-  jq --arg namespace "$namespace" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg namespace "$namespace" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set service_account in minkube_configuration.json in the virtual_lab_1
-  jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" '.vl_configurations |= map(if .name == "virtual_lab_1" then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set the cell_github_token in minkube_configuration.json in the virtual_lab_1
+  jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set the cell_github_token in minkube_configuration.json in the virtual_lab_
   jq --arg cell_github_token "$CELL_GITHUB_TOKEN" '.vl_configurations |= map(if .name == "virtual_lab_1" then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg cell_github_token "$CELL_GITHUB_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
 else
     echo "configuration.json does not exist, skipping update"
 fi

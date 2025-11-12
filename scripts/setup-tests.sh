@@ -228,6 +228,18 @@ if [ -z "$KEYCLOAK_ADMIN_TOKEN" ] || [ "$KEYCLOAK_ADMIN_TOKEN" == "null" ]; then
   exit 1
 fi
 
+#update realm token lifespan
+REALM_SETTINGS=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM")
+
+UPDATED_REALM=$(echo "$REALM_SETTINGS" | jq '.accessTokenLifespan = 36000 | .accessTokenLifespanForImplicitFlow = 36000')
+
+curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM" \
+  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$UPDATED_REALM"
+
+
 # find user id
 USER_ID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
   "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users?username=$USERNAME" | jq -r '.[0].id')

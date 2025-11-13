@@ -50,4 +50,3 @@ naavre-containerizer-service:
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
     {{- end }}
     CONFIG_FILE_URL: "/configuration.json"
-    DEBUG: "{{ .Values.naavreContainerizerService.debug | default "false" }}"

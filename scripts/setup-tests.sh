@@ -56,18 +56,7 @@ echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME" >> $GITHUB_ENV
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
 echo "REALM=$REALM" >> $GITHUB_ENV
-export USERNAME=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.users[0].username')
-echo "USERNAME=$USERNAME" >> $GITHUB_ENV
-if [ -z "$USERNAME" ]; then
-    echo "USERNAME is empty. Please check the values file."
-    exit 1
-fi
-export USER_PASSWORD=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.users[0].password')
-echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
-if [ -z "$USER_PASSWORD" ]; then
-    echo "USER_PASSWORD is empty. Please check the values file."
-    exit 1
-fi
+
 export CELL_GITHUB_TOKEN=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.cell_github_token')
 echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN" >> $GITHUB_ENV
 if [ -z "$CELL_GITHUB_TOKEN" ]; then
@@ -120,21 +109,6 @@ export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
-export KEYCLOAK_CLIENT_SECRET=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.naavreClientSecret')
-echo "KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET" >> $GITHUB_ENV
-if [ -z "$KEYCLOAK_CLIENT_SECRET" ]; then
-    echo "KEYCLOAK_CLIENT_SECRET is empty. Please check the values file."
-    exit 1
-fi
-
-export KEYCLOAK_AMIN_USER=admin
-echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
-export KEYCLOAK_ADMIN_PASSWORD=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.adminPassword')
-echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
-if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
-    echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
-    exit 1
-fi
 export USER_EMAIL=$USERNAME@nowhere.no
 echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
 export USER_FIRST_NAME=$USERNAME
@@ -196,6 +170,30 @@ else
 fi
 if [ "$current_directory" != "NaaVRE-helm" ]; then
   cd ../
+fi
+
+
+# Get credentials from secrets
+export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
+echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+if [ -z "$USERNAME" ]; then
+    echo "USERNAME is empty. Please check the values file."
+    exit 1
+fi
+export USER_PASSWORD=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].credentials[0].value')
+echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
+if [ -z "$USER_PASSWORD" ]; then
+    echo "USER_PASSWORD is empty. Please check the values file."
+    exit 1
+fi
+
+export KEYCLOAK_AMIN_USER=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.username}  -n $namespace | base64 --decode)
+echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
+export KEYCLOAK_ADMIN_PASSWORD=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.password}  -n $namespace | base64 --decode)
+echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
+if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
+    echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
+    exit 1
 fi
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN

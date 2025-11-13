@@ -196,6 +196,11 @@ if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
     exit 1
 fi
 
+
+vl_configurations=$(kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre)
+echo $vl_configurations > minkube_configuration.json
+
+
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
 echo "Waiting for OIDC configuration URL to be available"
@@ -383,26 +388,6 @@ while true; do
     fi
     sleep 5
 done
-
-# if configuration.json exists add the values, else skip
-if [ -f "configuration.json" ]; then
-  export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-virtual_lab_1}"
-  echo "Using virtual lab name: $VIRTUAL_LAB_NAME"
-  jq --arg token "$ARGO_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set namespace in minkube_configuration.json in the virtual_lab_1
-  jq --arg namespace "$namespace" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set service_account in minkube_configuration.json in the virtual_lab_1
-  jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set the cell_github_token in minkube_configuration.json in the virtual_lab_
-  jq --arg cell_github_token "$CELL_GITHUB_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  jq --arg cell_github_url "$CELL_GITHUB_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_url = $cell_github_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  jq --arg base_image_tags_url "$BASE_IMAGE_TAGS_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .base_image_tags_url = $base_image_tags_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  jq --arg module_mapping_url "$MODULE_MAPPING_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .module_mapping_url = $module_mapping_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  jq --arg registry_url "$REGISTRY_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .registry_url = $registry_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  echo "Updated minkube_configuration.json with ARGO_TOKEN and other values"
-else
-    echo "configuration.json does not exist, skipping update"
-fi
 
 # Check if CONFIG_FILE_URL exists
 if [ -f "$CONFIG_FILE_URL" ]; then

@@ -83,6 +83,13 @@ else
     echo "Minikube local test passed"
 fi
 
+if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+    rm -rf NaaVRE-helm
+    echo "Cloning NaaVRE-helm repository"
+    git clone https://github.com/NaaVRE/NaaVRE-helm.git
+    cd NaaVRE-helm
+    cp "../$VALUES_FILE" .
+fi
 
 #Install argo workflows from NaaVRE-helm
 git clone https://github.com/NaaVRE/NaaVRE-helm.git

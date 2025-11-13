@@ -6,7 +6,7 @@
 
 
 # Usage: ./setup-tests.sh -f <values-file>
-# Example: ./setup-tests.sh -f values/minikube-values.yaml
+# Example: ./setup-tests.sh -f values/minikube-values-deploy-naavre-containerizer-service-minikube-github-secrets.yaml
 
 # For example values file, see values/ in this repository.
 
@@ -56,46 +56,45 @@ echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME" >> $GITHUB_ENV
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
 echo "REALM=$REALM" >> $GITHUB_ENV
-export USERNAME=$(yq e '.global.secrets.keycloak.users[0].username' "$VALUES_FILE")
+export USERNAME=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.users[0].username')
 echo "USERNAME=$USERNAME" >> $GITHUB_ENV
 if [ -z "$USERNAME" ]; then
     echo "USERNAME is empty. Please check the values file."
     exit 1
 fi
-
-export USER_PASSWORD=$(yq e '.global.secrets.keycloak.users[0].password' "$VALUES_FILE")
+export USER_PASSWORD=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.users[0].password')
 echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
 if [ -z "$USER_PASSWORD" ]; then
     echo "USER_PASSWORD is empty. Please check the values file."
     exit 1
 fi
-export CELL_GITHUB_TOKEN=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_token' "$VALUES_FILE")
+export CELL_GITHUB_TOKEN=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.cell_github_token')
 echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN" >> $GITHUB_ENV
 if [ -z "$CELL_GITHUB_TOKEN" ]; then
     echo "CELL_GITHUB_TOKEN is empty. Please check the values file."
     exit 1
 fi
 
-export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
+export BASE_IMAGE_TAGS_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.base_image_tags_url')
 echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
 if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
     echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
     exit 1
 fi
 
-export MODULE_MAPPING_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.module_mapping_url' "$VALUES_FILE")
+export MODULE_MAPPING_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.module_mapping_url')
 echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
 if [ -z "$MODULE_MAPPING_URL" ]; then
     echo "MODULE_MAPPING_URL is empty. Please check the values file."
     exit 1
 fi
-export CELL_GITHUB_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_url' "$VALUES_FILE")
+export CELL_GITHUB_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.cell_github_url')
 echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
 if [ -z "$CELL_GITHUB_URL" ]; then
     echo "CELL_GITHUB_URL is empty. Please check the values file."
     exit 1
 fi
-export REGISTRY_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.registry_url' "$VALUES_FILE")
+export REGISTRY_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.registry_url')
 echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
 if [ -z "$REGISTRY_URL" ]; then
     echo "REGISTRY_URL is empty. Please check the values file."
@@ -121,7 +120,7 @@ export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
-export KEYCLOAK_CLIENT_SECRET=$(yq e '.global.secrets.keycloak.naavreClientSecret' "$VALUES_FILE")
+export KEYCLOAK_CLIENT_SECRET=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.naavreClientSecret')
 echo "KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET" >> $GITHUB_ENV
 if [ -z "$KEYCLOAK_CLIENT_SECRET" ]; then
     echo "KEYCLOAK_CLIENT_SECRET is empty. Please check the values file."
@@ -130,7 +129,7 @@ fi
 
 export KEYCLOAK_AMIN_USER=admin
 echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
-export KEYCLOAK_ADMIN_PASSWORD=$(yq e '.global.secrets.keycloak.adminPassword' "$VALUES_FILE")
+export KEYCLOAK_ADMIN_PASSWORD=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .global.secrets.keycloak.adminPassword')
 echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
 if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
     echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
@@ -187,7 +186,7 @@ namespace="naavre"
 kubectl delete ns $namespace --ignore-not-found=true
 ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" --use-vlic-secrets install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

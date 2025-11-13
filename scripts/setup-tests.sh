@@ -51,44 +51,9 @@ export MINIKUBE_HOST="naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
-export VIRTUAL_LAB_NAME="openlab"
-echo "VIRTUAL_LAB_NAME=$VIRTUAL_LAB_NAME" >> $GITHUB_ENV
 echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
 echo "REALM=$REALM" >> $GITHUB_ENV
-
-export CELL_GITHUB_TOKEN=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.cell_github_token')
-echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN" >> $GITHUB_ENV
-if [ -z "$CELL_GITHUB_TOKEN" ]; then
-    echo "CELL_GITHUB_TOKEN is empty. Please check the values file."
-    exit 1
-fi
-
-export BASE_IMAGE_TAGS_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.base_image_tags_url')
-echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
-if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
-    echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
-    exit 1
-fi
-
-export MODULE_MAPPING_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.module_mapping_url')
-echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
-if [ -z "$MODULE_MAPPING_URL" ]; then
-    echo "MODULE_MAPPING_URL is empty. Please check the values file."
-    exit 1
-fi
-export CELL_GITHUB_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.cell_github_url')
-echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
-if [ -z "$CELL_GITHUB_URL" ]; then
-    echo "CELL_GITHUB_URL is empty. Please check the values file."
-    exit 1
-fi
-export REGISTRY_URL=$(sops exec-file $VALUES_FILE -- 'cat {} | yq .jupyterhub.vlabs.openlab.configuration.registry_url')
-echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
-if [ -z "$REGISTRY_URL" ]; then
-    echo "REGISTRY_URL is empty. Please check the values file."
-    exit 1
-fi
 export DISABLE_OAUTH=False
 echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
 export OIDC_CONFIGURATION_URL="https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration"

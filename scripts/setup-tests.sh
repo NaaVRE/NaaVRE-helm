@@ -74,12 +74,6 @@ export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
-export USER_EMAIL=$USERNAME@nowhere.no
-echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
-export USER_FIRST_NAME=$USERNAME
-echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
-export USER_LAST_NAME=$USERNAME
-echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
 
 #Get the minikube IP and add it to /etc/hosts if not already present
 MINIKUBE_IP=$(minikube ip)
@@ -122,7 +116,7 @@ fi
 
 context="minikube"
 namespace="naavre"
-kubectl delete ns $namespace --ignore-not-found=true
+#kubectl delete ns $namespace --ignore-not-found=true
 ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" --use-vlic-secrets install
@@ -139,12 +133,20 @@ fi
 
 
 # Get credentials from secrets
+echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
 export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
 echo "USERNAME=$USERNAME" >> $GITHUB_ENV
 if [ -z "$USERNAME" ]; then
     echo "USERNAME is empty. Please check the values file."
     exit 1
 fi
+export USER_EMAIL=$USERNAME@nowhere.no
+echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
+export USER_FIRST_NAME=$USERNAME
+echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
+export USER_LAST_NAME=$USERNAME
+echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
+
 export USER_PASSWORD=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].credentials[0].value')
 echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
 if [ -z "$USER_PASSWORD" ]; then
@@ -153,7 +155,11 @@ if [ -z "$USER_PASSWORD" ]; then
 fi
 
 export KEYCLOAK_AMIN_USER=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.username}  -n $namespace | base64 --decode)
-echo "KEYCLOAK_AMIN_USER=admin" >> $GITHUB_ENV
+echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
+if [ -z "$KEYCLOAK_AMIN_USER" ]; then
+    echo "KEYCLOAK_AMIN_USER is empty. Please check the values file."
+    exit 1
+fi
 export KEYCLOAK_ADMIN_PASSWORD=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.password}  -n $namespace | base64 --decode)
 echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
 if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
@@ -161,9 +167,6 @@ if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
     exit 1
 fi
 
-
-vl_configurations=$(kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre)
-echo $vl_configurations > minkube_configuration.json
 
 
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
@@ -362,6 +365,14 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
+vl_configurations=$(kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre)
+echo kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre
+if [ -z "$vl_configurations" ]; then
+    echo "vl_configurations is empty. Please check the values file."
+    exit 1
+fi
+echo $vl_configurations > minkube_configuration.json
+
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
 {
@@ -370,6 +381,10 @@ echo "Exporting environment variables to dev3.env"
   echo "DISABLE_AUTH=$DISABLE_AUTH"
   echo "CONFIG_FILE_URL=$CONFIG_FILE_URL"
   echo "DISABLE_OAUTH=False"
+  echo "USERNAME=$USERNAME"
+  echo "USER_PASSWORD=$USER_PASSWORD"
+  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
+  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
 } > dev3.env
 
 

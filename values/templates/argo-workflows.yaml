@@ -93,7 +93,8 @@ argo-workflows:
       rbac:
         enabled: true
       scopes:
-       - roles
+#       - roles
+        - groups
       insecureSkipVerify: {{ .Values.global.insecureSkipVerifySSL }}
     ingress:
       enabled: true

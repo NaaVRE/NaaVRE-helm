@@ -102,6 +102,8 @@ jupyterhub:
       enabled: true
     biodt-hackathon25:
       enabled: true
+    blue-carbon:
+      enabled: true
     quadfavl:
       enabled: true
     veluwe-forest-model:

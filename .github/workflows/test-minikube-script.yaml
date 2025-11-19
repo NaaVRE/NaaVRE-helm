@@ -26,4 +26,4 @@ jobs:
         shell: bash -l {0}
         run: |
           chmod +x ./scripts/setup-tests.sh 
-          ./scripts/setup-tests.sh -f values/values-deploy-minikube-github.yaml
+          ./scripts/setup-tests.sh -f values/values-deploy-minikube.yaml

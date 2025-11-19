@@ -65,3 +65,15 @@ jupyterhub:
         cell_github_url: https://github.com/user/repo
         cell_github_token: fake-cell-github-token
         registry_url: ghcr.io/user/repo
+
+csi-s3:
+  enabled: true
+  secret:
+    # Specifies whether the secret should be created
+    create: true
+    # S3 Access Key
+    accessKey: "rw-access-key"
+    # S3 Secret Key
+    secretKey: "SECRET"
+    endpoint: https://HOSTNAME:9000
+    region: "REGION"

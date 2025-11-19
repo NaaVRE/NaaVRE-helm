@@ -188,6 +188,12 @@ kubectl delete ns $namespace --ignore-not-found=true
 ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f "$VALUES_FILE" install
+
+# Temporary fix: install  Install CSI-S3 storage class manually from here. We may later add more options to the values
+helm repo add yandex-s3 https://yandex-cloud.github.io/k8s-csi-s3/charts
+#Create the CSI-S3 storage class values
+
+
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

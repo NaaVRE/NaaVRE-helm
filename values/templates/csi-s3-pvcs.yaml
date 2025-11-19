@@ -1,0 +1,98 @@
+# Statically provisioned PVC:
+# An existing bucket or path inside bucket manually created
+# by the administrator beforehand will be bound to the PVC,
+# and it won't be removed when you remove the PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: naa-vre-public
+  namespace: naavre
+spec:
+  storageClassName: csi-s3
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadOnlyMany
+  claimRef:
+    namespace: naavre
+    name: csi-s3-naa-vre-public-bucket
+  csi:
+    driver: ru.yandex.s3.csi
+    controllerPublishSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    nodePublishSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    nodeStageSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    volumeAttributes:
+      capacity: 10Gi
+      mounter: geesefs
+      options: --memory-limit 1000 --dir-mode 0777 --file-mode 0666 --uid 1000 --gid 100
+    volumeHandle: naa-vre-public
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: csi-s3-naa-vre-public-bucket
+  namespace: naavre
+spec:
+  # Empty storage class disables dynamic provisioning
+  storageClassName: ""
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# Statically provisioned PVC:
+# An existing bucket or path inside a bucket manually created
+# by the administrator beforehand will be bound to the PVC,
+# and it won't be removed when you remove the PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: naa-vre-user-data
+  namespace: naavre
+spec:
+  storageClassName: csi-s3
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  claimRef:
+    namespace: naavre
+    name: csi-s3-naa-vre-user-data-bucket
+  csi:
+    driver: ru.yandex.s3.csi
+    controllerPublishSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    nodePublishSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    nodeStageSecretRef:
+      name: csi-s3-secret
+      namespace: csi-s3
+    volumeAttributes:
+      capacity: 10Gi
+      mounter: geesefs
+      options: --memory-limit 1000 --dir-mode 0777 --file-mode 0666 --uid 1000 --gid 100
+    volumeHandle: naa-vre-user-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: naavre
+  name: csi-s3-naa-vre-user-data-bucket
+spec:
+  # Empty storage class disables dynamic provisioning
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

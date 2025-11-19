@@ -192,7 +192,10 @@ kubectl delete ns $namespace --ignore-not-found=true
 # Temporary fix: install  Install CSI-S3 storage class manually from here. We may later add more options to the values
 helm repo add yandex-s3 https://yandex-cloud.github.io/k8s-csi-s3/charts
 #Create the CSI-S3 storage class values
-
+sops exec-file values/values-deploy-minikube-secrets.yaml -- 'cat {} | yq .csi-s3 > csi-s3-values.yaml && helm install csi-s3 yandex-s3/csi-s3 -f csi-s3-values.yaml -n csi-s3 --namespace csi-s3 --create-namespace || rm csi-s3-values.yaml'
+kubectl patch csidriver/ru.yandex.s3.csi -p '{"spec":{"fsGroupPolicy":"None"}}'
+# Create the static PVCs
+kubectl apply -f ../values/templates/csi-s3-pvcs.yaml -n "$namespace"
 
 # Exit if the installation fails
 if [ $? -ne 0 ]; then

@@ -34,10 +34,6 @@ naavre-containerizer-service:
           cell_github_url: "{{ $vlab.configuration.cell_github_url }}"
           cell_github_token: "{{ $vlab.configuration.cell_github_token }}"
           registry_url: "{{ $vlab.configuration.registry_url }}"
-          { { - if .Values.jupyterhub.singleuser.storage.extraVolumeMounts } }
-          extraVolumeMounts:
-            { { .Values.jupyterhub.singleuser.storage.extraVolumeMounts | toYaml | nindent 6 } }
-          { { - end } }
         {{- end }}
         {{- end }}
       {{- end }}

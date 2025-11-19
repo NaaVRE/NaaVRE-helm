@@ -108,6 +108,7 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     echo "Cloning NaaVRE-helm repository"
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
+    git checkout 127-install-csi-s3
     cp "../$VALUES_FILE" .
 fi
 

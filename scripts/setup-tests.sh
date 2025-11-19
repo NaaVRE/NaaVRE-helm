@@ -113,7 +113,7 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
 fi
 
 # Add the third-party Helm repos
-./deploy.sh repo-add
+#./deploy.sh repo-add
 
 context="minikube"
 namespace="naavre"
@@ -135,10 +135,10 @@ fi
 ## Temporary fix: install  Install CSI-S3 storage class manually from here. We may later add more options to the values
 helm repo add yandex-s3 https://yandex-cloud.github.io/k8s-csi-s3/charts
 #Create the CSI-S3 storage class values
-sops exec-file values/values-deploy-minikube-secrets.yaml -- 'cat {} | yq .csi-s3 > csi-s3-values.yaml && helm install csi-s3 yandex-s3/csi-s3 -f csi-s3-values.yaml -n csi-s3 --namespace csi-s3 --create-namespace || rm csi-s3-values.yaml'
+sops exec-file NaaVRE-helm/values/values-deploy-minikube-secrets.yaml -- 'cat {} | yq .csi-s3 > csi-s3-values.yaml && helm install csi-s3 yandex-s3/csi-s3 -f csi-s3-values.yaml -n csi-s3 --namespace csi-s3 --create-namespace || rm csi-s3-values.yaml'
 kubectl patch csidriver/ru.yandex.s3.csi -p '{"spec":{"fsGroupPolicy":"None"}}'
 # Create the static PVCs
-kubectl apply -f values/templates/csi-s3-pvcs.yaml -n "$namespace"
+kubectl apply -f NaaVRE-helm/values/templates/csi-s3-pvcs.yaml -n "$namespace"
 
 # Get credentials from secrets
 echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
@@ -373,8 +373,8 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
-vl_configurations=$(kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre)
-echo kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre
+vl_configurations=$(kubectl get cm $namespace-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n $namespace)
+echo kubectl get cm $namespace-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n $namespace
 if [ -z "$vl_configurations" ]; then
     echo "vl_configurations is empty. Please check the values file."
     exit 1

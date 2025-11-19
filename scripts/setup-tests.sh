@@ -117,8 +117,8 @@ fi
 
 context="minikube"
 namespace="naavre"
-kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+#kubectl delete ns $namespace --ignore-not-found=true
+#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" --use-vlic-secrets install
 # Exit if the installation fails
@@ -373,13 +373,23 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
-vl_configurations=$(kubectl get cm $namespace-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n $namespace)
+vl_configurations=$(kubectl get cm $namespace-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n $namespace | jq -r .)
 echo kubectl get cm $namespace-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n $namespace
 if [ -z "$vl_configurations" ]; then
     echo "vl_configurations is empty. Please check the values file."
     exit 1
 fi
 echo $vl_configurations > minkube_configuration.json
+
+vl_configurations=$(kubectl get cm $namespace-naavre-workflow-service -o jsonpath='{.data.configuration\.json}' -n $namespace | jq -r .)
+if [ -z "$vl_configurations" ]; then
+    echo "vl_configurations is empty. Please check the values file."
+    exit 1
+fi
+# Merge vl_configurations into minkube_configuration.json
+echo $vl_configurations > temp_configuration.json
+jq -s '.[0] * .[1]' minkube_configuration.json temp_configuration.json > merged_configuration.json
+mv merged_configuration.json minkube_configuration.json
 
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"

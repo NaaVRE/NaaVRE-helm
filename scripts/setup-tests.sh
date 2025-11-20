@@ -117,8 +117,8 @@ fi
 
 context="minikube"
 namespace="naavre"
-#kubectl delete ns $namespace --ignore-not-found=true
-#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+kubectl delete ns $namespace --ignore-not-found=true
+./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" --use-vlic-secrets install
 # Exit if the installation fails
@@ -380,6 +380,11 @@ if [ -z "$vl_configurations" ]; then
     exit 1
 fi
 echo $vl_configurations > minkube_configuration.json
+REGISTRY_TOKEN_FOR_TESTS=$(jq .vl_configurations[0].cell_github_token minkube_configuration.json)
+if [ -z "$REGISTRY_TOKEN_FOR_TESTS" ] || [ "$REGISTRY_TOKEN_FOR_TESTS" == "null" ]; then
+    echo "REGISTRY_TOKEN_FOR_TESTS is empty. Please check the values file."
+    exit 1
+fi
 
 vl_configurations=$(kubectl get cm $namespace-naavre-workflow-service -o jsonpath='{.data.configuration\.json}' -n $namespace | jq -r .)
 if [ -z "$vl_configurations" ]; then
@@ -390,6 +395,7 @@ fi
 echo $vl_configurations > temp_configuration.json
 jq -s '.[0] * .[1]' minkube_configuration.json temp_configuration.json > merged_configuration.json
 mv merged_configuration.json minkube_configuration.json
+rm temp_configuration.json
 
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
@@ -403,6 +409,8 @@ echo "Exporting environment variables to dev3.env"
   echo "USER_PASSWORD=$USER_PASSWORD"
   echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
   echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
+  echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
+  echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
 } > dev3.env
 
 

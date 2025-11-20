@@ -391,11 +391,6 @@ echo $vl_configurations > temp_configuration.json
 jq -s 'map(.vl_configurations) | add | reduce .[] as $item ({}; .[$item.name] = (.[$item.name] // {}) + $item) | {vl_configurations: [ .[] ] }' minkube_configuration.json temp_configuration.json > merged_configuration.json
 mv merged_configuration.json minkube_configuration.json
 rm temp_configuration.json
-REGISTRY_TOKEN_FOR_TESTS=$(jq .vl_configurations[0].cell_github_token minkube_configuration.json)
-if [ -z "$REGISTRY_TOKEN_FOR_TESTS" ] || [ "$REGISTRY_TOKEN_FOR_TESTS" == "null" ]; then
-    echo "REGISTRY_TOKEN_FOR_TESTS is empty. Please check the values file."
-    exit 1
-fi
 
 
 # Export environment variables to dev3.env

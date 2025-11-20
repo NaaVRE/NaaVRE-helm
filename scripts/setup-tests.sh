@@ -379,12 +379,7 @@ if [ -z "$vl_configurations" ]; then
     echo "vl_configurations is empty. Please check the values file."
     exit 1
 fi
-echo $vl_configurations > minkube_configuration.json
-REGISTRY_TOKEN_FOR_TESTS=$(jq .vl_configurations[0].cell_github_token minkube_configuration.json)
-if [ -z "$REGISTRY_TOKEN_FOR_TESTS" ] || [ "$REGISTRY_TOKEN_FOR_TESTS" == "null" ]; then
-    echo "REGISTRY_TOKEN_FOR_TESTS is empty. Please check the values file."
-    exit 1
-fi
+
 
 vl_configurations=$(kubectl get cm $namespace-naavre-workflow-service -o jsonpath='{.data.configuration\.json}' -n $namespace | jq -r .)
 if [ -z "$vl_configurations" ]; then
@@ -396,6 +391,14 @@ echo $vl_configurations > temp_configuration.json
 jq -s '.[0] * .[1]' minkube_configuration.json temp_configuration.json > merged_configuration.json
 mv merged_configuration.json minkube_configuration.json
 rm temp_configuration.json
+
+echo $vl_configurations > minkube_configuration.json
+REGISTRY_TOKEN_FOR_TESTS=$(jq .vl_configurations[0].cell_github_token minkube_configuration.json)
+if [ -z "$REGISTRY_TOKEN_FOR_TESTS" ] || [ "$REGISTRY_TOKEN_FOR_TESTS" == "null" ]; then
+    echo "REGISTRY_TOKEN_FOR_TESTS is empty. Please check the values file."
+    exit 1
+fi
+
 
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"

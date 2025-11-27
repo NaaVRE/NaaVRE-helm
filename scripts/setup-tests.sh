@@ -112,7 +112,7 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
 fi
 
 # Add the third-party Helm repos
-#./deploy.sh repo-add
+./deploy.sh repo-add
 
 context="minikube"
 namespace="naavre"

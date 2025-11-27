@@ -127,9 +127,7 @@ if [ $? -ne 0 ]; then
 else
     echo "Helm installation succeeded"
 fi
-current_directory=$(basename "$(pwd)")
-if [ "$current_directory" != "NaaVRE-helm" ]; then
-  echo "Currebt directory is $current_directory, returning to previous directory"
+if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
   cd ../
 fi
 

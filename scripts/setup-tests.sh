@@ -116,7 +116,7 @@ fi
 
 context="minikube"
 namespace="naavre"
-kubectl delete ns $namespace --ignore-not-found=true
+#kubectl delete ns $namespace --ignore-not-found=true
 #./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
@@ -131,6 +131,24 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
   cd ../
 fi
 
+#Get user access token for the workflow service and set the environment variable AUTH_TOKEN
+# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
+echo "Waiting for OIDC configuration URL to be available"
+timeout=300
+start_time=$(date +%s)
+while true; do
+    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
+        echo "OIDC configuration URL is available"
+        break
+    fi
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - start_time))
+    if [ $elapsed_time -ge $timeout ]; then
+        echo "OIDC configuration URL is not available"
+        exit 1
+    fi
+    sleep 6
+done
 
 # Get credentials from secrets
 echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
@@ -167,26 +185,6 @@ if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
     exit 1
 fi
 
-
-
-#Get user access token for the workflow service and set the environment variable AUTH_TOKEN
-# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
-echo "Waiting for OIDC configuration URL to be available"
-timeout=300
-start_time=$(date +%s)
-while true; do
-    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
-        echo "OIDC configuration URL is available"
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "OIDC configuration URL is not available"
-        exit 1
-    fi
-    sleep 6
-done
 
 echo "Getting AUTH_TOKEN token"
 

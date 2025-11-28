@@ -117,9 +117,9 @@ fi
 context="minikube"
 namespace="naavre"
 kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" --use-vlic-secrets install
+./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"
@@ -127,7 +127,7 @@ if [ $? -ne 0 ]; then
 else
     echo "Helm installation succeeded"
 fi
-if [ "$current_directory" != "NaaVRE-helm" ]; then
+if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
   cd ../
 fi
 
@@ -365,13 +365,77 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
-vl_configurations=$(kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre)
-echo kubectl get cm naavre-naavre-containerizer-service -o jsonpath='{.data.configuration\.json}' -n naavre
-if [ -z "$vl_configurations" ]; then
-    echo "vl_configurations is empty. Please check the values file."
+# Build minkube_configuration.json environment values
+if [ -f "$VALUES_FILE" ]; then
+    echo "Building minkube_configuration.json from $VALUES_FILE"
+else
+    VALUES_FILE=../$VALUES_FILE
+fi
+export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
+echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
+if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
+    echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
     exit 1
 fi
-echo $vl_configurations > minkube_configuration.json
+
+export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
+echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
+if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
+    echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
+    exit 1
+fi
+export MODULE_MAPPING_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.module_mapping_url' "$VALUES_FILE")
+echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
+if [ -z "$MODULE_MAPPING_URL" ]; then
+    echo "MODULE_MAPPING_URL is empty. Please check the values file."
+    exit 1
+fi
+
+export CELL_GITHUB_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_url' "$VALUES_FILE")
+echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
+if [ -z "$CELL_GITHUB_URL" ]; then
+    echo "CELL_GITHUB_URL is empty. Please check the values file."
+    exit 1
+fi
+
+export REGISTRY_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.registry_url' "$VALUES_FILE")
+echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
+if [ -z "$REGISTRY_URL" ]; then
+    echo "REGISTRY_URL is empty. Please check the values file."
+    exit 1
+fi
+
+# if configuration.json exists add the values, else skip
+if [ -f "configuration.json" ]; then
+  export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-virtual_lab_1}"
+  echo "Using virtual lab name: $VIRTUAL_LAB_NAME"
+  jq --arg token "$ARGO_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set namespace in minkube_configuration.json in the virtual_lab_1
+  jq --arg namespace "$namespace" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set service_account in minkube_configuration.json in the virtual_lab_1
+  jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set the cell_github_token in minkube_configuration.json in the virtual_lab_
+  jq --arg cell_github_token "$CELL_GITHUB_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg cell_github_url "$CELL_GITHUB_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_url = $cell_github_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg base_image_tags_url "$BASE_IMAGE_TAGS_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .base_image_tags_url = $base_image_tags_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg module_mapping_url "$MODULE_MAPPING_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .module_mapping_url = $module_mapping_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  jq --arg registry_url "$REGISTRY_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .registry_url = $registry_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  echo "Updated minkube_configuration.json with ARGO_TOKEN and other values"
+else
+    echo "configuration.json does not exist, skipping update"
+fi
+
+# Check if CONFIG_FILE_URL exists
+if [ -f "$CONFIG_FILE_URL" ]; then
+    echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
+else
+  export CONFIG_FILE_URL="minkube_configuration.json"
+  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
+fi
+
+
+# Merge vl_configurations into minkube_configuration.json
+echo $vl_configurations > temp_configuration.json
 
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
@@ -385,6 +449,8 @@ echo "Exporting environment variables to dev3.env"
   echo "USER_PASSWORD=$USER_PASSWORD"
   echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
   echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
+  echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
+  echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
 } > dev3.env
 
 

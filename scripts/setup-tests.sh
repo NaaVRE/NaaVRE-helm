@@ -431,10 +431,6 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
-
-# Merge vl_configurations into minkube_configuration.json
-echo $vl_configurations > temp_configuration.json
-
 # Export environment variables to dev3.env
 echo "Exporting environment variables to dev3.env"
 {

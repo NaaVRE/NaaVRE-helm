@@ -131,13 +131,6 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
   cd ../
 fi
 
-## Temporary fix: install  Install CSI-S3 storage class manually from here. We may later add more options to the values
-helm repo add yandex-s3 https://yandex-cloud.github.io/k8s-csi-s3/charts
-#Create the CSI-S3 storage class values
-helm install csi-s3 yandex-s3/csi-s3 -f csi-s3-values.yaml -n csi-s3 --namespace csi-s3 --create-namespace
-kubectl patch csidriver/ru.yandex.s3.csi -p '{"spec":{"fsGroupPolicy":"None"}}'
-# Create the static PVCs
-kubectl apply -f NaaVRE-helm/values/templates/csi-s3-pvcs.yaml -n "$namespace"
 
 # Get credentials from secrets
 echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'

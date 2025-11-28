@@ -403,14 +403,25 @@ if [ -z "$REGISTRY_URL" ]; then
     exit 1
 fi
 
+# if dev.env file exists, source it to get CELL_GITHUB_TOKEN
+if [ -f "dev.env" ]; then
+  echo "Sourcing dev.env to get CELL_GITHUB_TOKEN"
+  source dev.env
+fi
+
+if [ -z "$CELL_GITHUB_TOKEN" ]; then
+    echo "CELL_GITHUB_TOKEN is empty. Please check the values file."
+    exit 1
+fi
+
 # if configuration.json exists add the values, else skip
 if [ -f "configuration.json" ]; then
-  export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-virtual_lab_1}"
+  export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-openlab}"
   echo "Using virtual lab name: $VIRTUAL_LAB_NAME"
   jq --arg token "$ARGO_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set namespace in minkube_configuration.json in the virtual_lab_1
+  # Set namespace in minkube_configuration.json in the openlab
   jq --arg namespace "$namespace" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  # Set service_account in minkube_configuration.json in the virtual_lab_1
+  # Set service_account in minkube_configuration.json in the openlab
   jq --arg service_account "$ARGO_SERVICE_ACCOUNT_EXECUTOR" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.service_account = $service_account else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the cell_github_token in minkube_configuration.json in the virtual_lab_
   jq --arg cell_github_token "$CELL_GITHUB_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .cell_github_token = $cell_github_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
@@ -431,8 +442,8 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
-# Export environment variables to dev3.env
-echo "Exporting environment variables to dev3.env"
+# Export environment variables to dev-setup.env
+echo "Exporting environment variables to dev-setup.env"
 {
   echo "AUTH_TOKEN=$AUTH_TOKEN"
   echo "VERIFY_SSL=$VERIFY_SSL"
@@ -445,8 +456,14 @@ echo "Exporting environment variables to dev3.env"
   echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
   echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
   echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
-} > dev3.env
+  echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
+} > dev-setup.env
 
+# Marge dev-setup.env to dev.env
+if [ -f "dev.env" ]; then
+  echo "Merging dev-setup.env to dev.env"
+  cat dev-setup.env >> dev.env
+fi
 
 # Print services urls
 echo "NaaVRE services are set up in Minikube. Access them at:"

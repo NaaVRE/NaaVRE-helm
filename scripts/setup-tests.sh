@@ -132,6 +132,25 @@ if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
 fi
 
 
+#Get user access token for the workflow service and set the environment variable AUTH_TOKEN
+# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
+echo "Waiting for OIDC configuration URL to be available"
+timeout=300
+start_time=$(date +%s)
+while true; do
+    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
+        echo "OIDC configuration URL is available"
+        break
+    fi
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - start_time))
+    if [ $elapsed_time -ge $timeout ]; then
+        echo "OIDC configuration URL is not available"
+        exit 1
+    fi
+    sleep 6
+done
+
 # Get credentials from secrets
 echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
 export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
@@ -166,27 +185,6 @@ if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
     echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
     exit 1
 fi
-
-
-
-#Get user access token for the workflow service and set the environment variable AUTH_TOKEN
-# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
-echo "Waiting for OIDC configuration URL to be available"
-timeout=300
-start_time=$(date +%s)
-while true; do
-    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
-        echo "OIDC configuration URL is available"
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "OIDC configuration URL is not available"
-        exit 1
-    fi
-    sleep 6
-done
 
 echo "Getting AUTH_TOKEN token"
 

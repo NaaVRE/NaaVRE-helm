@@ -118,8 +118,8 @@ context="minikube"
 namespace="naavre"
 #kubectl delete ns $namespace --ignore-not-found=true
 #./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-#./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
+./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

@@ -118,8 +118,8 @@ context="minikube"
 namespace="naavre"
 #kubectl delete ns $namespace --ignore-not-found=true
 #./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
+#./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+#./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"
@@ -434,6 +434,40 @@ if [ -f "configuration.json" ]; then
   jq --arg module_mapping_url "$MODULE_MAPPING_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .module_mapping_url = $module_mapping_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   jq --arg registry_url "$REGISTRY_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .registry_url = $registry_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   echo "Updated minkube_configuration.json with ARGO_TOKEN and other values"
+  # Create a PV and PVC volume mount from the extraVolumeMounts in minkube_configuration.json
+  # Save the name of the extraVolumeMounts in a bash array
+  jq . minkube_configuration.json | jq -r --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations[] | select(.name == $vl) | .wf_engine_config.extraVolumeMounts[] .name' > volume_names
+  # Loop through the volume names and create a PV and PVC for each
+  while read volume_name; do
+    echo "Creating PV and PVC for volume: $volume_name"
+    kubectl apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: $volume_name
+      spec:
+        accessModes:
+          - ReadWriteMany
+        capacity:
+          storage: 5Gi
+        hostPath:
+          path: /tmp/$volume_name
+EOF
+    kubectl apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: $volume_name
+        namespace: $namespace
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 5Gi
+EOF
+  done < volume_names
+  rm volume_names
 else
     echo "configuration.json does not exist, skipping update"
 fi
@@ -445,6 +479,9 @@ else
   export CONFIG_FILE_URL="minkube_configuration.json"
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
+
+
+
 
 # Export environment variables to dev-setup.env
 echo "Exporting environment variables to dev-setup.env"

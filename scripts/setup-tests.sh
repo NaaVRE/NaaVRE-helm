@@ -288,7 +288,6 @@ if [ -z "$ARGO_TOKEN" ]; then
     exit 1
 fi
 
-export ARGO_TOKEN
 # Wait for the Argo workflow service to be available
 timeout=200
 start_time=$(date +%s)
@@ -313,6 +312,7 @@ while true; do
     sleep 5
 done
 
+
 # Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf
 status_code=$(curl -o /dev/null -s -w "%{http_code}" -k "https://$MINIKUBE_HOST/argowf/api/v1/workflows/$namespace" -H "Authorization: Bearer $ARGO_TOKEN")
 echo "Argo API returned status code $status_code"
@@ -320,6 +320,10 @@ if [ "$status_code" -ne 200 ]; then
     echo "Argo API returned status code $status_code"
     exit 1
 fi
+
+
+export ARGO_TOKEN
+echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
 
 # Wait for the executor service account to be created
 timeout=200
@@ -457,6 +461,7 @@ echo "Exporting environment variables to dev-setup.env"
   echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
   echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
   echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
+  echo "ARGO_TOKEN=$ARGO_TOKEN"
 } > dev-setup.env
 
 # Marge dev-setup.env to dev.env

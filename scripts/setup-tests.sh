@@ -469,6 +469,7 @@ if [ -f "dev.env" ]; then
   # If a variable exists in both files, overwrite it with the value from dev-setup.env
   echo "Merging dev-setup.env to dev.env"
   cat dev.env dev-setup.env | sort -u > mergedfile
+  mv mergedfile dev-setup.env
 else
   echo "Creating dev.env from dev-setup.env"
   cat dev-setup.env >> dev.env

@@ -114,12 +114,27 @@ fi
 # Add the third-party Helm repos
 ./deploy.sh repo-add
 
+cp "$VALUES_FILE" secrets-minikube.yaml
+# Read CELL_GITHUB_TOKEN from dev.env if it exists
+if [ -f "../dev.env" ]; then
+  echo "Sourcing ../dev.env to get CELL_GITHUB_TOKEN"
+  source ../dev.env
+fi
+
+#Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
+if [ -n "$CELL_GITHUB_TOKEN" ]; then
+  echo "Replacing cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN"
+  export CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN
+  yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
+fi
+rm secrets-minikube.yaml
+
 context="minikube"
 namespace="naavre"
-#kubectl delete ns $namespace --ignore-not-found=true
-#./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+kubectl delete ns $namespace --ignore-not-found=true
+./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "$VALUES_FILE" install
+./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"
@@ -480,8 +495,16 @@ else
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
+# Test CELL_GITHUB_TOKEN with CELL_GITHUB_URL
+echo "Testing CELL_GITHUB_TOKEN with CELL_GITHUB_URL"
+GITHUB_API_PREFIX='https://api.github.com/repos'
+GITHUB_WORKFLOW_FILENAME='build-push-docker.yml'
 
 
+# Get the owner and repo from CELL_GITHUB_URL
+OWNER=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $(NF-1)}')
+REPO=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $NF}' | sed 's/.git$//')
+API="$GITHUB_API_PREFIX/$OWNER/$REPO/actions/workflows/$GITHUB_WORKFLOW_FILENAME"
 
 # Export environment variables to dev-setup.env
 echo "Exporting environment variables to dev-setup.env"

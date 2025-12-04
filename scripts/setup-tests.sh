@@ -127,7 +127,6 @@ if [ -n "$CELL_GITHUB_TOKEN" ]; then
   export CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN
   yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
 fi
-rm secrets-minikube.yaml
 
 context="minikube"
 namespace="naavre"
@@ -135,6 +134,7 @@ kubectl delete ns $namespace --ignore-not-found=true
 ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
 ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
+rm secrets-minikube.yaml
 # Exit if the installation fails
 if [ $? -ne 0 ]; then
     echo "Helm installation failed"

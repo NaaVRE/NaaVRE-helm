@@ -121,6 +121,7 @@ if [ -f "../dev.env" ]; then
   source ../dev.env
 fi
 
+
 #Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
 if [ -n "$CELL_GITHUB_TOKEN" ]; then
   echo "Replacing cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN"
@@ -426,11 +427,6 @@ fi
 if [ -f "dev.env" ]; then
   echo "Sourcing dev.env to get CELL_GITHUB_TOKEN"
   source dev.env
-fi
-
-if [ -z "$CELL_GITHUB_TOKEN" ]; then
-    echo "CELL_GITHUB_TOKEN is empty. Please check the values file."
-    exit 1
 fi
 
 # if configuration.json exists add the values, else skip

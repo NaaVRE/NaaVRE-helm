@@ -181,9 +181,9 @@ to update [naavre/Chart.lock](naavre/Chart.lock).
 
 ## Advanced setups
 
-### Add MinIO mount to user home directory 
+### Add MinIO mount to user containers
 
-To add MinIO mounts to the user's home directory, you can use the `extraVolumes` and `extraVolumeMounts` options in the Jupyter Hub configuration.
+To add MinIO mounts to the user's containers (Jupyter Lab and Argo workflow components), you can use the `.global.common.userPods.extraVolumeMounts` option.
 This is an example of how to add a MinIO mount to the user's home directory:
 [values-example-mount-minio-buckets.yaml](values/values-example-mount-minio-buckets.yaml)
 

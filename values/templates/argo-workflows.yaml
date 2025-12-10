@@ -75,6 +75,13 @@ argo-workflows:
     enabled: true
     baseHref: "/{{ trimAll "/" .Values.argoWorkflows.ingress.basePath }}/"
     serviceType: ClusterIP
+    extraEnv:
+      - name: FIRST_TIME_USER_MODAL
+        value: "false"
+      - name: FEEDBACK_MODAL
+        value: "false"
+      - name: NEW_VERSION_MODAL
+        value: "false"
     sso:
       enabled: true
       {{- if .Values.global.externalServices.keycloak.useExternal }}

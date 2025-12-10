@@ -202,13 +202,15 @@ jupyterhub:
       dynamic:
         {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.jupyterhub.singleuser.storage.extraVolumes }}
+      {{- if .Values.global.common.userPods.extraVolumeMounts }}
       extraVolumes:
-        {{ .Values.jupyterhub.singleuser.storage.extraVolumes | toYaml | nindent 6 }}
+      {{- range .Values.global.common.userPods.extraVolumeMounts }}
+      - name: {{ .name }}
+        persistentVolumeClaim:
+          claimName: {{ .name }}
       {{- end }}
-      {{- if .Values.jupyterhub.singleuser.storage.extraVolumeMounts }}
       extraVolumeMounts:
-        {{ .Values.jupyterhub.singleuser.storage.extraVolumeMounts | toYaml | nindent 6 }}
+        {{- .Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 6 }}
       {{- end }}
 
     extraEnv:

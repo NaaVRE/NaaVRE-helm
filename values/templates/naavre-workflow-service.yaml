@@ -43,6 +43,10 @@ naavre-workflow-service:
             service_account: "argo-executor"
             {{- end }}
             workdir_storage_size: "1Gi"
+            {{- if $.Values.global.common.userPods.extraVolumeMounts }}
+            extraVolumeMounts:
+              {{- $.Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 14 }}
+            {{- end }}
         {{- end }}
         {{- end }}
       {{- end }}

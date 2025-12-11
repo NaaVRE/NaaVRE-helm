@@ -151,7 +151,7 @@ fi
 #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
 # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
 echo "Waiting for OIDC configuration URL to be available"
-timeout=300
+timeout=700
 start_time=$(date +%s)
 while true; do
     if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then

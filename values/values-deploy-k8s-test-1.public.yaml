@@ -9,6 +9,16 @@ global:
       enabled: true
     redirectDomainToPaasFrontend: true
 
+  common:
+    userPods:
+      extraVolumeMounts:
+        - name: naa-vre-public-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+          readOnly: true
+        - name: naa-vre-user-data-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+          subPath: '{unescaped_username}'
+
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
 

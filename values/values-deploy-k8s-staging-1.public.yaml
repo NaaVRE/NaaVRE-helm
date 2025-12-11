@@ -9,6 +9,16 @@ global:
       enabled: true
     redirectDomainToPaasFrontend: true
 
+  common:
+    userPods:
+      extraVolumeMounts:
+        - name: naa-vre-public-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+          readOnly: true
+        - name: naa-vre-user-data-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+          subPath: '{unescaped_username}'
+
   externalServices:
     argoWorkflows:
       useExternal: true
@@ -81,20 +91,6 @@ jupyterhub:
     storage:
       dynamic:
         storageClass: zfs-generic-nfs
-      extraVolumes:
-        - name: naa-vre-public
-          persistentVolumeClaim:
-            claimName: naa-vre-public-pvc
-        - name: naa-vre-user-data
-          persistentVolumeClaim:
-            claimName: naa-vre-user-data-pvc
-      extraVolumeMounts:
-        - name: naa-vre-public
-          readOnly: true
-          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
-        - name: naa-vre-user-data
-          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
-          subPath: '{unescaped_username}'
   vlabs:
     openlab:
       enabled: true

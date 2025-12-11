@@ -44,6 +44,13 @@ global:
     velero:
       podAnnotations:
         backup.velero.io/backup-volumes: pvc-volume,emptydir-volume
+    userPods:
+      # See documentation README.md#add-minio-mount-to-user-containers
+      extraVolumeMounts: []
+        # - name: my-pvc
+        #   mountPath: /path/to/my-mount-point
+        #   readOnly: true  # optional
+        #   subPath: 'path/in/pv'  # optional
 
   externalServices:
     # The PaaS as well as all VLs must use the same Argo Workflows instance
@@ -101,8 +108,6 @@ jupyterhub:
     storage:
       capacity: 10Gi
       dynamic: {}
-      extraVolumes: [] # See documentation README.md#add-minio-mount-to-user-home-directory
-      extraVolumeMounts: []
 
   communities: {}
   # myCommunity:

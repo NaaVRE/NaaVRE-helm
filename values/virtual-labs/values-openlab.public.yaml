@@ -5,7 +5,7 @@ jupyterhub:
       slug: openlab
       title: NaaVRE Open Lab
       communities: [naavre]
-      labels: [tutorial]
+      labels: [naavre_tutorial]
       description: Open experimentation with virtual labs
       dirname: Open Lab
       image:

@@ -1,9 +1,13 @@
 jupyterhub:
   vlabLabels:
 
+    naavre_tutorial:
+      title: NaaVRE Tutorial
+      color: "#3c8f49"
+
     tutorial:
       title: Tutorial
-      color: "#3c8f49"
+      color: "97D077"
 
     experimental_features:
       title: Experimental features

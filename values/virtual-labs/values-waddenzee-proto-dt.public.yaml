@@ -5,7 +5,7 @@ jupyterhub:
       slug: waddenzee-proto-dt
       title:  Waddenzee proto DT
       communities: [naavre, lter-life]
-      labels: []
+      labels: [lter-life]
       description:  Waddenzee Digital Twin prototype for LTER-LIFE
       dirname: Waddenzee proto DT
       image:

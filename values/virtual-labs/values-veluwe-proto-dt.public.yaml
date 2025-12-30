@@ -5,7 +5,7 @@ jupyterhub:
       slug: veluwe-proto-dt
       title:  Veluwe proto DT
       communities: [naavre, lter-life]
-      labels: []
+      labels: [lter-life]
       description:  Veluwe Digital Twin prototype for LTER-LIFE
       dirname: Veluwe proto DT
       image:

@@ -12,3 +12,11 @@ jupyterhub:
     experimental_features:
       title: Experimental features
       color: "#e6dc69"
+
+    lter-life:
+      title: LTER-LIFE
+      color: "#0d8eb3"
+
+    marco-bolo:
+      title: Marco-Bolo
+      color: "#6ec1e4"

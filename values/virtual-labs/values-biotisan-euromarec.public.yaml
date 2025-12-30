@@ -5,7 +5,7 @@ jupyterhub:
       slug: biotisan-euromarec
       title:  Biodiversity Time Series Analyses from European Marine Ecosystems Virtual Lab
       communities: [naavre]
-      labels: [tutorial]
+      labels: [tutorial, marco-bolo]
       description: |
         A virtual lab to compile comprehensive marine biodiversity time series in Europe
         and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic 

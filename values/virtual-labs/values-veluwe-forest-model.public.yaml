@@ -5,7 +5,7 @@ jupyterhub:
       slug: veluwe-forest-model
       title: Veluwe forest model
       communities: [naavre, lter-life]
-      labels: []
+      labels: [lter-life]
       description: Forest landscape modeling of the Veluwe
       dirname: Veluwe forest model
       icon: >

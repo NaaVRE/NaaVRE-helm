@@ -5,7 +5,7 @@ jupyterhub:
       slug: blue-carbon
       title:  Seagrass carbon stock model Virtual Lab
       communities: [naavre]
-      labels: [tutorial]
+      labels: [tutorial, marco-bolo]
       description: |
         A virtual lab to compile estimates of blue carbon storage by using essential variables and 
         satellite remote sensing at regional scales within European coastal systems .

@@ -38,6 +38,14 @@ global:
 keycloak:
   enabled: false
 
+naavreCatalogueService:
+  conf:
+    s3:
+      endpoint_url: "<S3-compatible API endpoint, e.g. https://example.com:9000>"
+      bucket_name: "<bucket name>"
+      access_key: "<access key for the bucket>"
+      secret_key: "<secret key for the bucket>"
+
 jupyterhub:
   vlabs:
     openlab:

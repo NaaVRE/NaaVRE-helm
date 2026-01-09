@@ -42,6 +42,15 @@ k8sSecretCreator:
 keycloak:
   enabled: false
 
+# TODO
+naavreCatalogueService:
+  conf:
+    s3:
+      endpoint_url: ""
+      bucket_name: ""
+      access_key: ""
+      secret_key: ""
+
 jupyterhub:
   scheduling:
     userPods:

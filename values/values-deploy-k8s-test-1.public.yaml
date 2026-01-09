@@ -22,6 +22,15 @@ global:
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
 
+# TODO
+naavreCatalogueService:
+  conf:
+    s3:
+      endpoint_url: ""
+      bucket_name: ""
+      access_key: ""
+      secret_key: ""
+
 jupyterhub:
   vlabs:
     openlab:

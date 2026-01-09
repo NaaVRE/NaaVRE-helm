@@ -169,6 +169,15 @@ naavreCatalogueService:
     basePath: /naavre-catalogue-service
   conf:
     dev_mode: false
+    s3:
+      # S3-compatible object storage configuration.
+      # The key should grant permission for:
+      # s3:GetObject, s3:PutObject, s3:DeleteObject, and s3:ListBucket on
+      # `arn:aws:s3:::example-bucket-name/*` and `arn:aws:s3:::example-bucket-name`
+      endpoint_url: nil
+      bucket_name: nil
+      access_key: nil
+      secret_key: nil
 
 naavreContainerizerService:
   enabled: true

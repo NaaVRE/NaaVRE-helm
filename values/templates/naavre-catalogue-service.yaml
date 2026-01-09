@@ -37,6 +37,10 @@ naavre-catalogue-service:
       superuser_email: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.email }}"
       superuser_username: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.username }}"
       superuser_password: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.password }}"
+    {{- with .Values.naavreCatalogueService.conf.s3 }}
+    s3:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 
   postgresql:
     nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"

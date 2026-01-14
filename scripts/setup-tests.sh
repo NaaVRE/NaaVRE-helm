@@ -88,6 +88,10 @@ else
     echo "Minikube IP already present in /etc/hosts"
 fi
 
+# Configure in-cluster DNS resolution for ingress-dns (https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/)
+cm=$(kubectl  -n kube-system get configmap/coredns -o json | jq ".data.Corefile += \"\ntest:53 {\n    errors\n    cache 30\n    forward . $MINIKUBE_IP\n}\"" | jq 'del(.metadata)')
+kubectl -n kube-system patch configmap/coredns --type merge -p "$cm"
+
 # Test $MINIKUBE_HOST
 minikube_status=$(minikube status --format '{{.Host}}')
 if [ "$minikube_status" != "Running" ]; then

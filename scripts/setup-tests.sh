@@ -10,6 +10,11 @@
 
 # For example values file, see values/ in this repository.
 
+set -e
+if [ -z "$GITHUB_ENV" ]; then
+  GITHUB_ENV=/dev/stdout
+fi
+
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do

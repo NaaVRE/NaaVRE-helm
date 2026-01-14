@@ -33,11 +33,10 @@ global:
       url: https://lifewatch.lab.uvalight.net/auth/
       realm: vre
     s3:
-      # TODO
       useExternal: true
       catalogueBucket:
-        endpoint_url: ""
-        bucket_name: ""
+        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
+        bucket_name: "naavre-catalogue-k8s-staging-1"
 
 argoWorkflows:
   enabled: false

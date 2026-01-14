@@ -15,6 +15,10 @@ global:
       naavreClientSecret: nil
       postgresql:
         password: nil
+    seaweedfs:
+      catalogueBucket:
+        access_key: <a random secret>
+        secret_key: <a random secret>
     naavreCatalogueService:
       secretKey: <a random secret>
       auth:
@@ -38,13 +42,8 @@ global:
 keycloak:
   enabled: false
 
-naavreCatalogueService:
-  conf:
-    s3:
-      endpoint_url: "<S3-compatible API endpoint, e.g. https://example.com:9000>"
-      bucket_name: "<bucket name>"
-      access_key: "<access key for the bucket>"
-      secret_key: "<secret key for the bucket>"
+seaweedfs:
+  domain: s3.example.com
 
 jupyterhub:
   vlabs:

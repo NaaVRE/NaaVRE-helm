@@ -31,6 +31,9 @@ global:
         username: "{{ .Values.global.secrets.keycloak.postgresql.username }}"
         password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"
       {{- end }}
+    seaweedfs:
+      access_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.access_key }}"
+      secret_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.secret_key }}"
 
   keycloak:
     image: {{ .Values.keycloak.image }}

@@ -25,6 +25,10 @@ global:
           password: user
       postgresql:
         password: fake-keycloak-postgresql-password
+    seaweedfs:
+      catalogueBucket:
+        access_key: fake-s3-access-key
+        secret_key: fake-s3-secret-key
     naavreCatalogueService:
       secretKey: fake-naavreCatalogueService-secretKey
       auth:
@@ -37,14 +41,8 @@ global:
     naavrePaasFrontend:
       secretKey: fake-naavrePaasFrontend-secretKey
 
-# TODO
-naavreCatalogueService:
-  conf:
-    s3:
-      endpoint_url: ""
-      bucket_name: ""
-      access_key: ""
-      secret_key: ""
+seaweedfs:
+  domain: s3.naavre-dev.minikube.test
 
 jupyterhub:
   vlabLabels:

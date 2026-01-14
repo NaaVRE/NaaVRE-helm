@@ -21,8 +21,8 @@ global:
         password: <a random password>
     seaweedfs:
       catalogueBucket:
-        access_key: <a random secret>
-        secret_key: <a random secret>
+        access_key: nil
+        secret_key: nil
     naavreCatalogueService:
       secretKey: <a random secret>
       auth:
@@ -35,8 +35,17 @@ global:
     naavrePaasFrontend:
       secretKey: <a random secret>
 
+  externalServices:
+    s3:
+      useExternal: true
+      catalogueBucket:
+        endpoint_url: "https://s3.example.org"
+        bucket_name: "my-bucket"
+        access_key: "my-access-key"
+        secret_key: "my-secret-key"
+
 seaweedfs:
-  domain: s3.example.com
+  enabled: false
 
 jupyterhub:
   vlabs:

@@ -1,0 +1,44 @@
+seaweedfs:
+  enabled: {{ .Values.seaweedfs.enabled }}
+
+  master:
+    data:
+      type: "persistentVolumeClaim"
+      size: "30Gi"
+      storageClass: ""
+
+  volume:
+    dataDirs:
+      - name: data1
+        type: "persistentVolumeClaim"
+        storageClass: ""
+        size: "30Gi"
+        maxVolumes: 0
+
+  filer:
+    data:
+      type: "persistentVolumeClaim"
+      size: "30Gi"
+      storageClass: ""
+
+    s3:
+      # We don't need the embedded S3 gateway, but it needs to be enabled for
+      # createBuckets to work.
+      enabled: true
+      createBuckets:
+        - name: "{{ .Values.seaweedfs.catalogueBucket.bucket_name }}"
+          anonymousRead: false
+
+  s3:
+    enabled: true
+
+    enableAuth: true
+    # set to the name of an existing kubernetes Secret with the s3 json config file
+    # should have a secret key called seaweedfs_s3_config with an inline json config
+    existingConfigSecret: "{{ include "values.fullname" . }}-s3-config"
+
+    ingress:
+      enabled: true
+      className: "nginx"
+      host: "{{ .Values.seaweedfs.domain }}"
+      path: "/"

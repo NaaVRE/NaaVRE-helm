@@ -133,38 +133,7 @@ Examples:
 
 ### Create a new deployment
 
-#### Prerequisite: provision a S3-compatible bucket
-
-NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to store files uploaded to the assets catalogue.
-
-Provision the bucket and generate an access- and secret with permission to list, get, put and delete objects. This can be achieved through the following policy (replace "BUCKET_NAME" with the actual value):
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:s3:::BUCKET_NAME",
-        "arn:aws:s3:::BUCKET_NAME/*"
-      ]
-    }
-  ]
-}
-```
-
-Write down the S3 API endpoint URL, bucket name, access key and secret key.
-
-#### Create values for the deployment
-
-##### Without VLIC secrets
+#### Without VLIC secrets
 
 Create a new root values file and fill in your values. This can be done by copying one of the examples:
 
@@ -176,7 +145,7 @@ vim values/values-deploy-my-k8s-context.yaml
 > [!CAUTION]
 > Values files (`values/values-deploy-*.yaml`) contain secrets. They are ignored by default by Git. Never commit them!
 
-##### With VLIC secrets
+#### With VLIC secrets
 
 A deployment consists of two files:
 
@@ -199,11 +168,6 @@ helm secrets edit my-file.secrets.yaml
 ```
 
 Or in Pycharm using the [Simple Sops Edit plugin](https://plugins.jetbrains.com/plugin/21317-simple-sops-edit) (read our [documentation](https://github.com/QCDIS/infrastructure/blob/main/secrets/README.md#pycharm-integration)).
-
-#### Customize the values for your deployment
-
-Fill in the values as indicated in the file that you copied.
-Under `naavreCatalogueService.conf.s3`, use the values for the bucket provisioned above.
 
 ## Maintenance
 
@@ -372,6 +336,43 @@ For ghcr.io, this is a personal access token (classic) with the `read:packages` 
 
 The above only works when Argo workflows is deployed by this chart.
 For [external Argo instances](./values/values-example-external-argo.yaml), you will need to manually create an image pull secret and configure your instance Argo to use it by default (e.g. by adding it to Helm value `controller.workflowDefaults.spec.imagePullSecrets`).
+
+### Using an external object storage
+
+#### Prerequisite: provision a S3-compatible bucket
+
+NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to store files uploaded to the assets catalogue. A lightweight object storage (SeaweedFS) is deployed by default alongside NaaVRE. To use an external service instead, follow these steps:
+
+1. Provision the bucket and generate an access- and secret with permission to list, get, put and delete objects. This can be achieved through the following policy (replace "BUCKET_NAME" with the actual value):
+
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Effect": "Allow",
+        "Resource": [
+          "arn:aws:s3:::BUCKET_NAME",
+          "arn:aws:s3:::BUCKET_NAME/*"
+        ]
+      }
+    ]
+  }
+  ```
+
+2. Write down the S3 API endpoint URL, bucket name, access key and secret key.
+3. Update your helm values for `global.externalServices.s3` and `seaweedfs.enabled`. The file [values/values-example-external-s3.yaml](./values/values-example-external-s3.yaml) can be used as an example.
+
+#### Create values for the deployment
+
+##### Without VLIC secrets
+
 
 ## Limitations
 

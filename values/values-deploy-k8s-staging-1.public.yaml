@@ -32,6 +32,12 @@ global:
       useExternal: true
       url: https://lifewatch.lab.uvalight.net/auth/
       realm: vre
+    s3:
+      # TODO
+      useExternal: true
+      catalogueBucket:
+        endpoint_url: ""
+        bucket_name: ""
 
 argoWorkflows:
   enabled: false
@@ -42,14 +48,8 @@ k8sSecretCreator:
 keycloak:
   enabled: false
 
-# TODO
-naavreCatalogueService:
-  conf:
-    s3:
-      endpoint_url: ""
-      bucket_name: ""
-      access_key: ""
-      secret_key: ""
+seaweedfs:
+  enabled: false
 
 jupyterhub:
   scheduling:

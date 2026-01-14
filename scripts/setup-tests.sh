@@ -48,6 +48,7 @@ CURRENT_DIR=$(basename "$(pwd)")
 
 # Variables
 export MINIKUBE_HOST="naavre-dev.minikube.test"
+export MINIKUBE_S3_HOST="s3.naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
@@ -82,6 +83,7 @@ export MINIKUBE_IP
 if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
     echo "Adding minikube IP to /etc/hosts"
     echo "$MINIKUBE_IP $MINIKUBE_HOST" | sudo tee -a /etc/hosts > /dev/null
+    echo "$MINIKUBE_IP $MINIKUBE_S3_HOST" | sudo tee -a /etc/hosts > /dev/null
 else
     echo "Minikube IP already present in /etc/hosts"
 fi

@@ -28,6 +28,10 @@ global:
         database: bitnami_keycloak
         username: bn_keycloak
         password:
+    seaweedfs:
+      catalogueBucket:
+        access_key:
+        secret_key:
     naavreCatalogueService:
       secretKey:
       auth:
@@ -76,6 +80,18 @@ global:
       realm: nil
       client_id: nil
       client_secret: nil
+    s3:
+      # Use an external S3-compatible object storage in replacement of the local seaweedfs.
+      useExternal: false
+      catalogueBucket:
+        # S3-compatible object storage configuration.
+        # The key should grant permission for:
+        # s3:GetObject, s3:PutObject, s3:DeleteObject, and s3:ListBucket on
+        # `arn:aws:s3:::example-bucket-name/*` and `arn:aws:s3:::example-bucket-name`
+        endpoint_url: nil
+        bucket_name: nil
+        access_key: nil
+        secret_key: nil
 
 argoWorkflows:
   enabled: true
@@ -163,21 +179,18 @@ keycloak:
   ingress:
     basePath: /auth
 
+seaweedfs:
+  enabled: true
+  domain:
+  catalogueBucket:
+    bucket_name: naavre-catalogue
+
 naavreCatalogueService:
   enabled: true
   ingress:
     basePath: /naavre-catalogue-service
   conf:
     dev_mode: false
-    s3:
-      # S3-compatible object storage configuration.
-      # The key should grant permission for:
-      # s3:GetObject, s3:PutObject, s3:DeleteObject, and s3:ListBucket on
-      # `arn:aws:s3:::example-bucket-name/*` and `arn:aws:s3:::example-bucket-name`
-      endpoint_url: nil
-      bucket_name: nil
-      access_key: nil
-      secret_key: nil
 
 naavreContainerizerService:
   enabled: true

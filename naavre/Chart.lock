@@ -5,6 +5,9 @@ dependencies:
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart/
   version: 4.1.0
+- name: seaweedfs
+  repository: https://seaweedfs.github.io/seaweedfs/helm
+  version: 4.0.406
 - name: k8s-secret-creator
   repository: oci://ghcr.io/qcdis/charts
   version: 0.1.0
@@ -23,5 +26,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.2
-digest: sha256:52e756b06dd2b312121083441cf0fbaac172736a345d29930e40642ecb463f73
-generated: "2026-01-09T15:34:27.878591459+01:00"
+digest: sha256:16a17edcbac2266aa0afce24f7a2605a5bbcb74544581eb8c5c653d4dea39e86
+generated: "2026-01-13T14:49:32.398623893+01:00"

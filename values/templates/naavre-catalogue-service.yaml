@@ -45,7 +45,7 @@ naavre-catalogue-service:
       secret_key: "{{ .Values.global.externalServices.s3.catalogueBucket.secret_key }}"
     {{- else }}
     s3:
-      endpoint_url: "https://{{ .Values.seaweedfs.domain }}"
+      endpoint_url: "https://{{ .Values.global.ingress.seaweedfsS3Domain }}"
       bucket_name: "{{ .Values.seaweedfs.catalogueBucket.bucket_name }}"
       access_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.access_key }}"
       secret_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.secret_key }}"

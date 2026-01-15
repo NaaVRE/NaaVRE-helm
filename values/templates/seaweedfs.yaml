@@ -40,5 +40,15 @@ seaweedfs:
     ingress:
       enabled: true
       className: "nginx"
-      host: "{{ .Values.seaweedfs.domain }}"
+      {{- with .Values.global.ingress.commonAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      host: "{{ .Values.global.ingress.seaweedfsS3Domain }}"
       path: "/"
+      {{- if .Values.global.ingress.tls.enabled }}
+      tls:
+        - hosts:
+            - "{{ .Values.global.ingress.seaweedfsS3Domain }}"
+          secretName: "{{ .Values.global.ingress.seaweedfsS3Domain }}-tls"
+      {{- end }}

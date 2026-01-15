@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: beta.naavre.net
+    seaweedfsS3Domain: nil
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:

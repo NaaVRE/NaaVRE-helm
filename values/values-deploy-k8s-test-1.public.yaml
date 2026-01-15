@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: alpha.naavre.net
+    seaweedfsS3Domain: s3.alpha.naavre.net
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:
@@ -21,9 +22,6 @@ global:
 
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
-
-seaweedfs:
-  domain: s3.alpha.naavre.net
 
 jupyterhub:
   vlabs:

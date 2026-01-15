@@ -9,6 +9,7 @@ global:
 
   ingress:
     domain: example.org
+    seaweedfsS3Domain: s3.example.org
     commonAnnotations: {}
     tls:
       enabled: false
@@ -181,7 +182,6 @@ keycloak:
 
 seaweedfs:
   enabled: true
-  domain:
   catalogueBucket:
     bucket_name: naavre-catalogue
 

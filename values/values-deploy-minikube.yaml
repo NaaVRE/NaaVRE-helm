@@ -12,6 +12,7 @@ global:
 
   ingress:
     domain: naavre-dev.minikube.test
+    seaweedfsS3Domain: s3.naavre-dev.minikube.test
     redirectDomainToPaasFrontend: true
 
   secrets:
@@ -40,9 +41,6 @@ global:
         password: fake-naavreCatalogueService-postgresql-password
     naavrePaasFrontend:
       secretKey: fake-naavrePaasFrontend-secretKey
-
-seaweedfs:
-  domain: s3.naavre-dev.minikube.test
 
 jupyterhub:
   vlabLabels:

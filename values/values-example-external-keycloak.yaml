@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: example.com
+    seaweedfsS3Domain: s3.example.com
     commonAnnotations: {}
     tls:
       enabled: false
@@ -41,9 +42,6 @@ global:
 
 keycloak:
   enabled: false
-
-seaweedfs:
-  domain: s3.example.com
 
 jupyterhub:
   vlabs:

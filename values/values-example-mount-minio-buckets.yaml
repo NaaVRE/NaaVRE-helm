@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: example.com
+    seaweedfsS3Domain: s3.example.com
     commonAnnotations: {}
     tls:
       enabled: false
@@ -48,9 +49,6 @@ global:
         - name: naa-vre-user-data-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
-
-seaweedfs:
-  domain: s3.example.com
 
 jupyterhub:
   vlabs:

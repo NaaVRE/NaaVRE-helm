@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: example.com
+    seaweedfsS3Domain: s3.example.com
     commonAnnotations: {}
     tls:
       enabled: false
@@ -34,9 +35,6 @@ global:
         password: <a random password>
     naavrePaasFrontend:
       secretKey: <a random secret>
-
-seaweedfs:
-  domain: s3.example.com
 
 jupyterhub:
   vlabs:

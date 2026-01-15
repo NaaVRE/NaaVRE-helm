@@ -369,10 +369,27 @@ NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to st
 2. Write down the S3 API endpoint URL, bucket name, access key and secret key.
 3. Update your helm values for `global.externalServices.s3` and `seaweedfs.enabled`. The file [values/values-example-external-s3.yaml](./values/values-example-external-s3.yaml) can be used as an example.
 
-#### Create values for the deployment
+## Troubleshooting
 
-##### Without VLIC secrets
+### Catalogue service doesn't start after enabling Seaweedfs
 
+When enabling Seaweedfs and redeploying the chart (`./deploy ... upgrade ...`), the `naavre-catalogue-service` doesn't start. This is because the helm hook responsible for creating the bucket in the `seaweedfs` subchart only runs on install, and not on deploy.
+
+Workaround:
+
+1. Manually run the bucket creation hook:
+  ```console
+  $ ./deploy.sh --kube-context <deployment name> -n <namespace> [--use-vlic-secrets] template
+  ...
+  @@@@@@@@@@@@@@@@@    The files rendered to values/rendered/ and
+  @@@ IMPORTANT @@@    naavre/rendered/ may contain unencrypted
+  @@@@@@@@@@@@@@@@@    secrets. Clean them up after use!
+  $ kubectl --context <deployment name> -n <namespace> apply -f naavre/rendered/naavre/charts/seaweedfs/templates/shared/post-install-bucket-hook.yaml
+  job.batch/naavre-bucket-hook created
+  $ rm -r values/rendered naavre/rendered
+  ```
+2. Make sure that the job `naavre-bucket-hook` runs successfully
+3. Restart the `naavre-catalogue-service` pod
 
 ## Limitations
 

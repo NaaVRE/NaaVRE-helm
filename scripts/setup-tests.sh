@@ -10,6 +10,11 @@
 
 # For example values file, see values/ in this repository.
 
+set -e
+if [ -z "$GITHUB_ENV" ]; then
+  GITHUB_ENV=/dev/stdout
+fi
+
 VALUES_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -48,6 +53,7 @@ CURRENT_DIR=$(basename "$(pwd)")
 
 # Variables
 export MINIKUBE_HOST="naavre-dev.minikube.test"
+export MINIKUBE_S3_HOST="s3.naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
@@ -82,9 +88,14 @@ export MINIKUBE_IP
 if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
     echo "Adding minikube IP to /etc/hosts"
     echo "$MINIKUBE_IP $MINIKUBE_HOST" | sudo tee -a /etc/hosts > /dev/null
+    echo "$MINIKUBE_IP $MINIKUBE_S3_HOST" | sudo tee -a /etc/hosts > /dev/null
 else
     echo "Minikube IP already present in /etc/hosts"
 fi
+
+# Configure in-cluster DNS resolution for ingress-dns (https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/)
+cm=$(kubectl  -n kube-system get configmap/coredns -o json | jq ".data.Corefile += \"\ntest:53 {\n    errors\n    cache 30\n    forward . $MINIKUBE_IP\n}\"" | jq 'del(.metadata)')
+kubectl -n kube-system patch configmap/coredns --type merge -p "$cm"
 
 # Test $MINIKUBE_HOST
 minikube_status=$(minikube status --format '{{.Host}}')

@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: alpha.naavre.net
+    seaweedfsS3Domain: s3.alpha.naavre.net
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:

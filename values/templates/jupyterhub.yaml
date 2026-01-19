@@ -147,6 +147,9 @@ jupyterhub:
                 "markdown": "Markdown Preview"
               }
             },
+            "@naavre/catalogue-jupyterlab:plugin": {
+              "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+            },
             "@naavre/containerizer-jupyterlab:plugin": {
               "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
               "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
@@ -174,7 +177,7 @@ jupyterhub:
           fi
 
           # Plugin settings
-          for ext in "containerizer" "workflow"; do
+          for ext in "catalogue" "containerizer" "workflow"; do
             dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
             mkdir -p "$dir"
             echo "{\"virtualLab\":\"$slug\"}" > "$dir/plugin.jupyterlab-settings"

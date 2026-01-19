@@ -12,6 +12,7 @@ global:
 
   ingress:
     domain: naavre-dev.minikube.test
+    seaweedfsS3Domain: s3.naavre-dev.minikube.test
     redirectDomainToPaasFrontend: true
 
   secrets:
@@ -25,6 +26,10 @@ global:
           password: user
       postgresql:
         password: fake-keycloak-postgresql-password
+    seaweedfs:
+      catalogueBucket:
+        access_key: fake-s3-access-key
+        secret_key: fake-s3-secret-key
     naavreCatalogueService:
       secretKey: fake-naavreCatalogueService-secretKey
       auth:
@@ -53,9 +58,9 @@ jupyterhub:
       dirname: Open Lab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.0.20
+        tag: v0.1.1
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.20/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.1/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         log_queries: true
         # WARNING: with the values below, the deployment will work but containerizing cells won't.

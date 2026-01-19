@@ -37,6 +37,19 @@ naavre-catalogue-service:
       superuser_email: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.email }}"
       superuser_username: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.username }}"
       superuser_password: "{{ .Values.global.secrets.naavreCatalogueService.auth.superuser.password }}"
+    {{- if .Values.global.externalServices.s3.useExternal }}
+    s3:
+      endpoint_url: "{{ .Values.global.externalServices.s3.catalogueBucket.endpoint_url }}"
+      bucket_name: "{{ .Values.global.externalServices.s3.catalogueBucket.bucket_name }}"
+      access_key: "{{ .Values.global.externalServices.s3.catalogueBucket.access_key }}"
+      secret_key: "{{ .Values.global.externalServices.s3.catalogueBucket.secret_key }}"
+    {{- else }}
+    s3:
+      endpoint_url: "https://{{ .Values.global.ingress.seaweedfsS3Domain }}"
+      bucket_name: "{{ .Values.seaweedfs.catalogueBucket.bucket_name }}"
+      access_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.access_key }}"
+      secret_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.secret_key }}"
+    {{ end }}
 
   postgresql:
     nameOverride: "{{ include "values.fullname" . }}-naavre-catalogue-db"

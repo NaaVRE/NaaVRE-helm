@@ -13,6 +13,9 @@ k8s-secret-creator:
 keycloak-db:
   enabled: true
 
+seaweedfs:
+  enabled: true
+
 naavre-catalogue-service:
   enabled: true
 
@@ -46,6 +49,9 @@ global:
         database:
         username:
         password:
+    seaweedfs:
+      access_key:
+      secret_key:
 
   keycloak:
     image:

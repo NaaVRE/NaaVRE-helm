@@ -3,6 +3,7 @@ global:
 
   ingress:
     domain: beta.naavre.net
+    seaweedfsS3Domain: nil
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     tls:
@@ -32,6 +33,11 @@ global:
       useExternal: true
       url: https://lifewatch.lab.uvalight.net/auth/
       realm: vre
+    s3:
+      useExternal: true
+      catalogueBucket:
+        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
+        bucket_name: "naavre-catalogue-k8s-staging-1"
 
 argoWorkflows:
   enabled: false
@@ -40,6 +46,9 @@ k8sSecretCreator:
   enabled: false
 
 keycloak:
+  enabled: false
+
+seaweedfs:
   enabled: false
 
 jupyterhub:

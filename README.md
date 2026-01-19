@@ -337,6 +337,60 @@ For ghcr.io, this is a personal access token (classic) with the `read:packages` 
 The above only works when Argo workflows is deployed by this chart.
 For [external Argo instances](./values/values-example-external-argo.yaml), you will need to manually create an image pull secret and configure your instance Argo to use it by default (e.g. by adding it to Helm value `controller.workflowDefaults.spec.imagePullSecrets`).
 
+### Using an external object storage
+
+#### Prerequisite: provision a S3-compatible bucket
+
+NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to store files uploaded to the assets catalogue. A lightweight object storage (SeaweedFS) is deployed by default alongside NaaVRE. To use an external service instead, follow these steps:
+
+1. Provision the bucket and generate an access- and secret with permission to list, get, put and delete objects. This can be achieved through the following policy (replace "BUCKET_NAME" with the actual value):
+
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Effect": "Allow",
+        "Resource": [
+          "arn:aws:s3:::BUCKET_NAME",
+          "arn:aws:s3:::BUCKET_NAME/*"
+        ]
+      }
+    ]
+  }
+  ```
+
+2. Write down the S3 API endpoint URL, bucket name, access key and secret key.
+3. Update your helm values for `global.externalServices.s3` and `seaweedfs.enabled`. The file [values/values-example-external-s3.yaml](./values/values-example-external-s3.yaml) can be used as an example.
+
+## Troubleshooting
+
+### Catalogue service doesn't start after enabling Seaweedfs
+
+When enabling Seaweedfs and redeploying the chart (`./deploy ... upgrade ...`), the `naavre-catalogue-service` doesn't start. This is because the helm hook responsible for creating the bucket in the `seaweedfs` subchart only runs on install, and not on deploy.
+
+Workaround:
+
+1. Manually run the bucket creation hook:
+  ```console
+  $ ./deploy.sh --kube-context <deployment name> -n <namespace> [--use-vlic-secrets] template
+  ...
+  @@@@@@@@@@@@@@@@@    The files rendered to values/rendered/ and
+  @@@ IMPORTANT @@@    naavre/rendered/ may contain unencrypted
+  @@@@@@@@@@@@@@@@@    secrets. Clean them up after use!
+  $ kubectl --context <deployment name> -n <namespace> apply -f naavre/rendered/naavre/charts/seaweedfs/templates/shared/post-install-bucket-hook.yaml
+  job.batch/naavre-bucket-hook created
+  $ rm -r values/rendered naavre/rendered
+  ```
+2. Make sure that the job `naavre-bucket-hook` runs successfully
+3. Restart the `naavre-catalogue-service` pod
+
 ## Limitations
 
 - Assumes that all components are served from one domain

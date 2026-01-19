@@ -132,6 +132,7 @@ gen_helm_repo_add() {
   cmd="helm repo add $1 argo https://argoproj.github.io/argo-helm"
   cmd+=" && helm repo add $1 jupyterhub https://jupyterhub.github.io/helm-chart/"
   cmd+=" && helm repo add $1 bitnami https://charts.bitnami.com/bitnami"
+  cmd+=" && helm repo add $1 seaweedfs https://seaweedfs.github.io/seaweedfs/helm"
   echo "$cmd"
 }
 

@@ -40,11 +40,10 @@ Add the third-party Helm repos:
 ./deploy.sh repo-add
 ```
 
-Deploy the Keycloak operator ([documentation](https://www.keycloak.org/operator/installation)) in the namespace.
-Example with Keycloak `26.4.2` in the `new-naavre` namespace:
+Deploy the Keycloak operator ([documentation](https://www.keycloak.org/operator/installation)):
 
 ```shell
-./deploy.sh --kube-context <deployment name> -n <namespace> install-keycloak-operator
+./deploy.sh --kube-context <k8s context> -n <namespace> install-keycloak-operator
 ```
 
 _Note: this can be skipped when using an external Keycloak instance (e.g. [values-example-external-keycloak.yaml](values/values-example-external-keycloak.yaml))._
@@ -84,19 +83,19 @@ helm plugin install https://github.com/jkroepke/helm-secrets
 To install or upgrade an existing deployment, use:
 
 ```shell
-./deploy.sh --kube-context <deployment name> -n <namespace> [--use-vlic-secrets] upgrade --install
+./deploy.sh --kube-context <k8s context> -n <namespace> [--use-vlic-secrets] -f <root values file> [-f <additional root values file>] upgrade --install
 ```
 
 For example, to install or upgrade the `minikube` deployment ([values/values-deploy-minikube.yaml](values/values-deploy-minikube.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context minikube -n new-naavre upgrade --install
+./deploy.sh --kube-context minikube -n new-naavre -f values/values-deploy-minikube.yaml upgrade --install
 ```
 
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets upgrade --install --timeout 30m
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-test-1.public.yaml -f values/values-deploy-k8s-test-1.public.yaml upgrade --install --timeout 30m
 ```
 
 Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAILED: pre-upgrade hooks failed: 1 error occurred: * timed out waiting for the condition`.
@@ -106,7 +105,7 @@ Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAI
 To rollback an existing deployment, use:
 
 ```shell
-./deploy.sh --kube-context <deployment name> -n <namespace> rollback [REVISION]
+./deploy.sh --kube-context <k8s context> -n <namespace> rollback [REVISION]
 ```
 
 Examples:
@@ -121,7 +120,7 @@ Examples:
 To uninstall an existing deployment, use:
 
 ```shell
-./deploy.sh --kube-context <deployment name> -n <namespace> uninstall
+./deploy.sh --kube-context <k8s context> -n <namespace> uninstall
 ```
 
 Examples:
@@ -379,12 +378,12 @@ Workaround:
 
 1. Manually run the bucket creation hook:
   ```console
-  $ ./deploy.sh --kube-context <deployment name> -n <namespace> [--use-vlic-secrets] template
+  $ ./deploy.sh --kube-context <k8s context> -n <namespace> [--use-vlic-secrets] template
   ...
   @@@@@@@@@@@@@@@@@    The files rendered to values/rendered/ and
   @@@ IMPORTANT @@@    naavre/rendered/ may contain unencrypted
   @@@@@@@@@@@@@@@@@    secrets. Clean them up after use!
-  $ kubectl --context <deployment name> -n <namespace> apply -f naavre/rendered/naavre/charts/seaweedfs/templates/shared/post-install-bucket-hook.yaml
+  $ kubectl --context <k8s context> -n <namespace> apply -f naavre/rendered/naavre/charts/seaweedfs/templates/shared/post-install-bucket-hook.yaml
   job.batch/naavre-bucket-hook created
   $ rm -r values/rendered naavre/rendered
   ```

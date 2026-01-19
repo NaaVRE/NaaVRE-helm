@@ -182,22 +182,10 @@ check_sops() {
   fi
 }
 
-set_default_value_files() {
-  if [[ ${#g_value_files[@]} -eq 0 ]]; then
-    if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
-      g_value_files=(
-        "./values/values-deploy-$g_context.yaml"
-      )
-    else
-      g_value_files=(
-        "./values/values-deploy-$g_context.public.yaml"
-        "./values/values-deploy-$g_context.secrets.yaml"
-      )
-    fi
-  fi
-}
-
 check_value_files() {
+  if [[ ${#g_value_files[@]} -eq 0 ]]; then
+    exit_error "No value file(s) provided. Provide them with -f <file.yaml>"
+  fi
   error=0
   for value_file in "${g_value_files[@]}"; do
     if [[ ! -f "$value_file" ]]; then
@@ -205,7 +193,7 @@ check_value_files() {
     fi
   done
   if [[ "$error" -ne 0 ]]; then
-    exit_error "File(s) ${g_value_files[*]} not found, check context configuration and --use-vlic-secrets option"
+    exit_error "File(s) ${g_value_files[*]} not found."
   fi
 }
 
@@ -265,8 +253,6 @@ main() {
 
   action_options="$*"
 
-  set_default_value_files
-
   case "$g_action" in
     repo-add)
       run_cmd "$(gen_helm_repo_add "$action_options")"
@@ -302,6 +288,8 @@ main() {
       run_cmd "$(gen_helm_uninstall_cmd "$action_options")"
       ;;
     template)
+      check_value_files
+      check_sops
       run_cmd "$(gen_helm_values_template_cmd)"
       run_cmd "$(gen_helm_naavre_template_cmd "$action_options")"
       if [[ "$g_use_vlic_secrets" -eq 1 ]]; then

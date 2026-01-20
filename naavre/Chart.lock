@@ -25,6 +25,6 @@ dependencies:
   version: v0.1.6
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
-  version: v0.2.2
-digest: sha256:1b9173c7e2341e7680a8461a1da6ae49ffbd2d1bb173dcab364cb757e7c279ff
-generated: "2026-01-14T16:04:14.708391529+01:00"
+  version: v0.2.3
+digest: sha256:f2fe469b0e3b84599a56e254689ac07e8cfc286e60a733d4a6b1c6765b8ff979
+generated: "2026-01-19T19:49:18.116108735+01:00"

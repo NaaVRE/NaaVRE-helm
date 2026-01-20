@@ -58,6 +58,6 @@ dependencies:
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-workflow-service.enabled
   - name: "naavre-paas-frontend"
-    version: "v0.2.2"
+    version: "v0.2.3"
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-paas-frontend.enabled

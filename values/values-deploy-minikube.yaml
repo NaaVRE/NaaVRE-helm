@@ -58,9 +58,9 @@ jupyterhub:
       dirname: Open Lab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.1.1
+        tag: v0.1.2
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.1/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.2/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         log_queries: true
         # WARNING: with the values below, the deployment will work but containerizing cells won't.

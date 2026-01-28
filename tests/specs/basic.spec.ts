@@ -6,23 +6,29 @@ import { test, expect } from '@playwright/test';
  */
 test.describe('NaaVRE UI Basic Tests', () => {
   
-  test('should load the VRE app page', async ({ page }) => {
+  test('should load the VRE app page successfully', async ({ page }) => {
     // Navigate to the VRE app
-    await page.goto('/vreapp');
+    const response = await page.goto('/vreapp');
+    
+    // Verify the page loaded successfully with a valid HTTP status
+    expect(response?.status()).toBeLessThan(400);
     
     // Wait for the page to load
     await page.waitForLoadState('networkidle');
     
-    // Take a screenshot for verification
-    await page.screenshot({ path: 'screenshots/vreapp-loaded.png', fullPage: true });
+    // Take a screenshot for verification (Playwright creates directories automatically)
+    await page.screenshot({ path: 'test-results/screenshots/vreapp-loaded.png', fullPage: true });
     
-    // Verify the page loaded successfully (status should not be 404 or 500)
+    // Verify the URL contains vreapp
     expect(page.url()).toContain('vreapp');
   });
 
   test('should have a valid page title', async ({ page }) => {
     // Navigate to the VRE app
-    await page.goto('/vreapp');
+    const response = await page.goto('/vreapp');
+    
+    // Verify the page loaded successfully
+    expect(response?.status()).toBeLessThan(400);
     
     // Wait for the page to load
     await page.waitForLoadState('domcontentloaded');
@@ -33,17 +39,20 @@ test.describe('NaaVRE UI Basic Tests', () => {
     expect(title.length).toBeGreaterThan(0);
   });
 
-  test('should be able to access the main page', async ({ page }) => {
+  test('should navigate to the root URL and display main page', async ({ page }) => {
     // Navigate to the base URL
-    await page.goto('/');
+    const response = await page.goto('/');
+    
+    // Verify the page loaded successfully with a valid HTTP status
+    expect(response?.status()).toBeLessThan(400);
     
     // Wait for the page to load
     await page.waitForLoadState('networkidle');
     
-    // Take a screenshot
-    await page.screenshot({ path: 'screenshots/main-page.png', fullPage: true });
+    // Take a screenshot (Playwright creates directories automatically)
+    await page.screenshot({ path: 'test-results/screenshots/main-page.png', fullPage: true });
     
-    // Verify we can access the page
+    // Verify we can access the page with the correct domain
     expect(page.url()).toContain('minikube.test');
   });
 });

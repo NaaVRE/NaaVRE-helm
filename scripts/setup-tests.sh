@@ -171,6 +171,8 @@ while true; do
     fi
     current_time=$(date +%s)
     elapsed_time=$((current_time - start_time))
+    echo "Waiting for OIDC configuration URL (${elapsed_time}s / ${timeout}s)"
+    kubectl get po -A
     if [ $elapsed_time -ge $timeout ]; then
         echo "OIDC configuration URL is not available"
         exit 1

@@ -165,10 +165,10 @@ echo "Waiting for OIDC configuration URL to be available"
 timeout=700
 start_time=$(date +%s)
 while true; do
-    echo curl -k --fail https://$MINIKUBE_HOST/vreapp
-    curl -k --fail https://$MINIKUBE_HOST/vreapp
-    echo curl -k --fail https://$MINIKUBE_HOST/auth/realms/$REALM/
-    curl -k --fail https://$MINIKUBE_HOST/auth/realms/$REALM/
+    echo curl -k https://$MINIKUBE_HOST/vreapp
+    curl -k https://$MINIKUBE_HOST/vreapp
+    echo curl -k https://$MINIKUBE_HOST/auth/realms/$REALM/
+    curl -k https://$MINIKUBE_HOST/auth/realms/$REALM/
     if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
         echo "OIDC configuration URL is available"
         break

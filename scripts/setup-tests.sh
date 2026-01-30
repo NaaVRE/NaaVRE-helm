@@ -168,6 +168,7 @@ while true; do
     echo curl -k https://$MINIKUBE_HOST/vreapp
     curl -k https://$MINIKUBE_HOST/vreapp
     echo curl -k https://$MINIKUBE_HOST/auth/admin/console/
+    curl -k https://$MINIKUBE_HOST/auth/admin/console/
     echo curl -k https://$MINIKUBE_HOST/auth/realms/$REALM/
     curl -k https://$MINIKUBE_HOST/auth/realms/$REALM/
     if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then

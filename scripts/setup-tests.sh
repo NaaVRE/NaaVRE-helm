@@ -167,7 +167,7 @@ start_time=$(date +%s)
 while true; do
     curl -k --fail https://$MINIKUBE_HOST/vreapp
     curl -k --fail https://$MINIKUBE_HOST/auth/realms/$REALM/
-    if $?; then
+    if [ $? -eq 0 ]; then
         echo "OIDC configuration URL is available"
         break
     fi

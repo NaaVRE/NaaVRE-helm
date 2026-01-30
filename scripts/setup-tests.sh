@@ -165,8 +165,6 @@ echo "Waiting for OIDC configuration URL to be available"
 timeout=700
 start_time=$(date +%s)
 while true; do
-    echo curl -k https://$MINIKUBE_HOST/vreapp
-    curl -k https://$MINIKUBE_HOST/vreapp
     echo curl -k https://$MINIKUBE_HOST/auth/admin/console/
     curl -k https://$MINIKUBE_HOST/auth/admin/console/
     echo curl -k https://$MINIKUBE_HOST/auth/realms/$REALM/
@@ -179,8 +177,14 @@ while true; do
     elapsed_time=$((current_time - start_time))
     echo "Waiting for OIDC configuration URL (${elapsed_time}s / ${timeout}s)"
     kubectl get po -A
+    kubectl get ing -A
+    kubectl get Keycloak -A
+    kubectl get KeycloakRealmImport -A
     if [ $elapsed_time -ge $timeout ]; then
         echo "OIDC configuration URL is not available"
+        kubectl -n naavre describe keycloaks.k8s.keycloak.org naavre-keycloak
+        kubectl -n naavre describe keycloakrealmimports.k8s.keycloak.org naavre-keycloak-realm-import
+        kubectl -n ingress-nginx logs -l app.kubernetes.io/instance=ingress-nginx -l app.kubernetes.io/component=controller --tail=-1
         exit 1
     fi
     sleep 6

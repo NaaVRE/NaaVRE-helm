@@ -42,11 +42,33 @@ global:
     naavrePaasFrontend:
       secretKey: fake-naavrePaasFrontend-secretKey
 
+
+argoWorkflows:
+  enabled: false
+
+k8sSecretCreator:
+  enabled: false
+
+keycloak:
+  enabled: true
+
+seaweedfs:
+  enabled: false
+
+naavreCatalogueService:
+  enabled: false
+
+naavreContainerizerService:
+  enabled: false
+
+naavreWorkflowService:
+  enabled: false
+
+naavrePaasFrontend:
+  enabled: false
+
 jupyterhub:
-  vlabLabels:
-    sampleLabel:
-      title: Sample Label
-      color: "#3c8f49"
+  enabled: false
 
   vlabs:
     openlab:

@@ -10,6 +10,7 @@ This directory contains Playwright tests for the NaaVRE UI to replicate user beh
 
 ## Setup
 
+
 1. Navigate to the tests directory:
    ```bash
    cd tests
@@ -22,6 +23,7 @@ This directory contains Playwright tests for the NaaVRE UI to replicate user beh
 
 3. Install Playwright browsers:
    ```bash
+   sudo npx playwright install-deps
    npx playwright install
    ```
 

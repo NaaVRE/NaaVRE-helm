@@ -1,0 +1,8 @@
+name: naavre-helm
+channels:
+  - conda-forge
+dependencies:
+  - minikube
+  - kubernetes-helm
+  - nodejs
+  - playwright

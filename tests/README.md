@@ -1,31 +1,11 @@
 # NaaVRE UI Tests
 
-This directory contains Playwright tests for the NaaVRE UI to replicate user behavior in a Minikube environment.
 
-## Prerequisites
+## Installation
 
-- Node.js (v18 or later recommended)
-- npm or yarn
-- Access to a running NaaVRE instance (e.g., Minikube with NaaVRE deployed)
-
-## Setup
-
-
-1. Navigate to the tests directory:
-   ```bash
-   cd tests
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Install Playwright browsers:
-   ```bash
-   sudo npx playwright install-deps
-   npx playwright install
-   ```
+```bash
+npm i -D @playwright/test
+```
 
 ## Running Tests
 
@@ -35,7 +15,7 @@ This directory contains Playwright tests for the NaaVRE UI to replicate user beh
 npm test
 ```
 
-### Using a custom URL
+### Run tests in UI mode (interactive)### Using a custom URL
 
 ```bash
 BASE_URL=https://your-custom-url.test npm test
@@ -63,17 +43,17 @@ npm run test:debug
 
 - `playwright.config.ts` - Playwright configuration
 - `specs/` - Test specifications
-  - `basic.spec.ts` - Basic UI tests for navigating to VRE app
+- `basic.spec.ts` - Basic UI tests for navigating to VRE app
 
 ## Planned Test Coverage
 
 The following features are planned to be tested:
 
 - [x] Basic navigation to VRE app
-- [ ] Login functionality
+- [x] Login functionality
 - [ ] Browse labs
-- [ ] Create notebook
-- [ ] Create containers
+- [x] Create notebook
+- [x] Create containers
 - [ ] Build workflow
 - [ ] Execute workflow
 

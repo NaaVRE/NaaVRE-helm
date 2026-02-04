@@ -2,7 +2,7 @@ name: naavre-helm
 channels:
   - conda-forge
 dependencies:
-  - minikube
+  - minikube==1.38.0
   - kubernetes-helm
   - nodejs
   - playwright

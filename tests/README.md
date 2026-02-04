@@ -3,47 +3,54 @@
 
 ## Installation
 
+
 ```bash
-npm i -D @playwright/test
+cd tests
+npm init playwright@latest
 ```
 
 ## Running Tests
 
-### Using the default URL (https://naavre-dev.minikube.test)
+First go to the tests' directory:
 
 ```bash
-npm test
+cd tests
 ```
-
-### Run tests in UI mode (interactive)### Using a custom URL
-
+end-to-end tests:
 ```bash
-BASE_URL=https://your-custom-url.test npm test
-```
-
-### Run tests in headed mode (see the browser)
-
+npx playwright test
+```    
+Interactive UI mode:
 ```bash
-npm run test:headed
-```
+  npx playwright test --ui
+``` 
 
-### Run tests in UI mode (interactive)
-
+Test only on Desktop Chrome:
 ```bash
-npm run test:ui
+  npx playwright test --project=chromium
 ```
-
-### Debug tests
-
+Run the tests in a specific file:
 ```bash
-npm run test:debug
+npx playwright test example
+```
+Run the tests in debug mode:
+```bash
+  npx playwright test --debug
 ```
 
-## Test Structure
+Auto generate tests with Codegen:
+```bash
+  npx playwright codegen
+```
 
-- `playwright.config.ts` - Playwright configuration
-- `specs/` - Test specifications
-- `basic.spec.ts` - Basic UI tests for navigating to VRE app
+
+And check out the following files:
+  - ./e2e/example.spec.ts - Example end-to-end test
+  - ./playwright.config.ts - Playwright Test configuration
+
+Visit https://playwright.dev/docs/intro for more information. 
+
+
 
 ## Planned Test Coverage
 
@@ -61,31 +68,4 @@ The following features are planned to be tested:
 
 Test screenshots are saved to the `screenshots/` directory during test runs.
 
-## Configuration
 
-The tests use the following default configuration:
-- Base URL: `https://naavre-dev.minikube.test` (can be overridden with `BASE_URL` env var)
-- HTTPS errors are ignored (for self-signed certificates in test environments)
-- Tests run in Chromium by default
-
-You can modify these settings in `playwright.config.ts`.
-
-## Troubleshooting
-
-### HTTPS Certificate Errors
-
-If you encounter certificate errors, make sure `ignoreHTTPSErrors: true` is set in `playwright.config.ts`.
-
-### Connection Refused
-
-If tests fail with connection refused errors:
-1. Verify the NaaVRE instance is running
-2. Check that the URL is accessible from your machine
-3. Verify DNS/hosts file configuration for Minikube domains
-
-### Running in CI
-
-When running in CI (GitHub Actions), set the `CI` environment variable. This will:
-- Enable test retries (2 retries)
-- Run tests sequentially (workers: 1)
-- Forbid `.only` in test files

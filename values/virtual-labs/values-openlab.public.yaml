@@ -20,4 +20,4 @@ jupyterhub:
         git_public:
           repo: https://github.com/NaaVRE/vl-openlab.git
           branch: main
-        default_file_path: Virtual Labs/Open Lab/Git public/tutorial/Your first workflow in Python.ipynb
+        default_file_path: Virtual Labs/Open Lab/Git public/README.md

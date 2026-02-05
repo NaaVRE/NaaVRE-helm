@@ -22,7 +22,7 @@ npx playwright test
 ```    
 Interactive UI mode:
 ```bash
-  npx playwright test --ui
+npx playwright test --ui
 ``` 
 
 Test only on Desktop Chrome:

@@ -1,4 +1,4 @@
-name: test-minikube-script
+name: e2e-tests-minikube
 on:
   push:
     branches:
@@ -8,12 +8,12 @@ on:
 
 
 jobs:
-  test-minikube-script:
+  e2e-tests-minikube:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: start minikube
+      - name: start Minikube
         id: minikube
         uses: medyagh/setup-minikube@v0.0.19
         with:

@@ -1,0 +1,27 @@
+jupyterhub:
+  vlabs:
+    dt-codesign:
+      enabled: false
+      slug: dt-codesign
+      title: Digital twin co-design
+      communities: [naavre, lter-life]
+      labels: [lter-life]
+      description:  Co-design digital twins virtual lab
+      dirname: Digital Twin Co-Design
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.1.6
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.6/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-dt-codesign
+        registry_url: ghcr.io/naavre/cells-vl-dt-codesign
+        log_queries: true
+        git_public:
+          repo: https://github.com/NaaVRE/vl-dt-codesign.git
+          branch: main
+        default_file_path: Virtual Labs/Digital Twin Co-Design/Git public/tutorial/Co-design of Digital Twins.ipynb
+        # TODO: enable this after https://github.com/NaaVRE/flavors/pull/139 is released
+#      postStartShSnippet: |
+#        f=".jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
+#        cat <<< $(jq '.isDraftDefault |= true' "$f") > "$f"

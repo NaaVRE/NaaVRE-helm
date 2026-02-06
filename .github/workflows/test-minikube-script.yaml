@@ -1,4 +1,4 @@
-name: test-minikube-script
+name: e2e-tests-minikube
 on:
   push:
     branches:
@@ -8,16 +8,17 @@ on:
 
 
 jobs:
-  test-minikube-script:
+  e2e-tests-minikube:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: start minikube
+      - name: start Minikube
         id: minikube
         uses: medyagh/setup-minikube@v0.0.19
         with:
           addons: ingress,ingress-dns
+          minikube-version: '1.38.0'
 
       - name: Try the cluster
         run: kubectl get pods -A
@@ -27,3 +28,30 @@ jobs:
         run: |
           chmod +x ./scripts/setup-tests.sh 
           ./scripts/setup-tests.sh -f values/values-deploy-minikube.yaml
+
+      - name: Run playwright tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: |
+          cd tests
+          npm ci
+
+      - name: Install Playwright Browsers
+        run: |
+          cd tests
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          cd tests
+          npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: tests/playwright-report/
+          retention-days: 5

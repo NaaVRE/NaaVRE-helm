@@ -368,6 +368,22 @@ NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to st
 2. Write down the S3 API endpoint URL, bucket name, access key and secret key.
 3. Update your helm values for `global.externalServices.s3` and `seaweedfs.enabled`. The file [values/values-example-external-s3.yaml](./values/values-example-external-s3.yaml) can be used as an example.
 
+## Testing
+
+### UI Tests
+
+UI tests using Playwright are available to test the NaaVRE interface in a Minikube environment.
+
+See [tests/README.md](tests/README.md) for detailed instructions on running UI tests.
+
+Quick start:
+```shell
+cd tests
+npm install
+npx playwright install
+npm test
+```
+
 ## Troubleshooting
 
 ### Catalogue service doesn't start after enabling Seaweedfs

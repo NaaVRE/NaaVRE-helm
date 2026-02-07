@@ -21,7 +21,6 @@ jupyterhub:
           repo: https://github.com/NaaVRE/vl-dt-codesign.git
           branch: main
         default_file_path: Virtual Labs/DT Co-Design/Git public/tutorial/Co-design of Digital Twins.ipynb
-        # TODO: enable this after https://github.com/NaaVRE/flavors/pull/139 is released
-#      postStartShSnippet: |
-#        f=".jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
-#        cat <<< $(jq '.isDraftDefault |= true' "$f") > "$f"
+      postStartShSnippet: |
+        f=".jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
+        cat <<< $(jq '.isDraftDefault |= true' "$f") > "$f"

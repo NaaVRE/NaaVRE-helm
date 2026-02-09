@@ -40,11 +40,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: "{{ include "naavre.fullname" . }}-keycloak-ingress"
+  name: "{{ include "naavre.fullname" . }}-keycloak"
+  labels:
+    {{- include "naavre.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     {{- with .Values.global.ingress.commonAnnotations }}
-    {{- toYaml .Values.global.ingress.commonAnnotations | nindent 6}}
+    {{- toYaml . | nindent 4}}
     {{- end }}
 spec:
   ingressClassName: nginx

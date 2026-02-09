@@ -10,9 +10,9 @@ jupyterhub:
       dirname: DT Co-Design
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.1.6
+        tag: v0.1.9
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.6/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.9/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-dt-codesign
         registry_url: ghcr.io/naavre/cells-vl-dt-codesign
@@ -22,5 +22,7 @@ jupyterhub:
           branch: main
         default_file_path: Virtual Labs/DT Co-Design/Git public/tutorial/Co-design of Digital Twins.ipynb
       postStartShSnippet: |
-        f=".jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
-        cat <<< $(jq '.isDraftDefault |= true' "$f") > "$f"
+        f="/home/jovyan/.jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
+        cp "$f" "$f.old"
+        /opt/conda/envs/vanilla/bin/jq '.isDraftDefault |= true' "$f.old" > "$f"
+        rm "$f.old"

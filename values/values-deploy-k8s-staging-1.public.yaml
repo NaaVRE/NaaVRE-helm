@@ -117,6 +117,8 @@ jupyterhub:
       enabled: true
     cnr-phytoplankton:
       enabled: true
+    dt-codesign:
+      enabled: true
     jupyter-quality:
       enabled: true
     pclake:

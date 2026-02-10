@@ -4,10 +4,11 @@ naavre-paas-frontend:
   ingress:
     enabled: true
     className: "nginx"
-    {{- with .Values.global.ingress.commonAnnotations }}
     annotations:
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+      {{- with .Values.global.ingress.commonAnnotations }}
       {{- toYaml . | nindent 6 }}
-    {{- end }}
+      {{- end }}
     hosts:
       - host: "{{ .Values.global.ingress.domain }}"
         paths:

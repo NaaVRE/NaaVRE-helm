@@ -1,14 +1,6 @@
 # NaaVRE UI Tests
 
 
-## Installation
-
-
-```bash
-cd tests
-npm init playwright@latest
-```
-
 ## Running Tests
 
 First go to the tests' directory:

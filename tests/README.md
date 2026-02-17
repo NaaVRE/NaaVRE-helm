@@ -51,8 +51,8 @@ The following features are planned to be tested:
 - [x] Basic navigation to VRE app
 - [x] Login functionality
 - [ ] Browse labs
-- [x] Create notebook
-- [x] Create containers
+- [ ] Create notebook
+- [ ] Create containers
 - [ ] Build workflow
 - [ ] Execute workflow
 

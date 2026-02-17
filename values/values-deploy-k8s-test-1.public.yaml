@@ -37,9 +37,9 @@ jupyterhub:
       configuration:
         cell_github_url: https://github.com/NaaVRE/cells-test
         registry_url: ghcr.io/naavre/cells-test
-    biodt-hackathon25:
+    dt-codesign:
       enabled: true
-      # Overrides the configuration in virtual-labs/values-biodt-hackathon25.public.yaml
+      # Overrides the configuration in virtual-labs/values-dt-codesign.public.yaml
       configuration:
         cell_github_url: https://github.com/NaaVRE/cells-test
         registry_url: ghcr.io/naavre/cells-test

@@ -70,7 +70,7 @@ jupyterhub:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: latest
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.9/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         log_queries: true
         # WARNING: with the values below, the deployment will work but containerizing cells won't.

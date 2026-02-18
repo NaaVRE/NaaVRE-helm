@@ -68,7 +68,7 @@ jupyterhub:
       dirname: Open Lab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.1.9
+        tag: latest
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.9/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

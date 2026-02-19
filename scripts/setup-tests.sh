@@ -52,6 +52,9 @@ fi
 CURRENT_DIR=$(basename "$(pwd)")
 
 # Variables
+context="minikube"
+namespace="naavre"
+
 export MINIKUBE_HOST="naavre-dev.minikube.test"
 export MINIKUBE_S3_HOST="s3.naavre-dev.minikube.test"
 export AUTH_TOKEN=""
@@ -72,8 +75,7 @@ export CONFIG_FILE_URL="$CURRENT_DIR/minkube_configuration.json"
 echo "CONFIG_FILE_URL=$CURRENT_DIR/minkube_configuration.json" >> $GITHUB_ENV
 export SECRETS_CREATOR_API_ENDPOINT="https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0"
 echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
-export SECRETS_CREATOR_API_TOKEN="fake-k8sSecretCreator-apiToken"
-echo "SECRETS_CREATOR_API_TOKEN=fake-k8sSecretCreator-apiToken" >> $GITHUB_ENV
+export "SECRETS_CREATOR_SECRET_NAME=$namespace-k8s-secret-creator"
 export ARGO_SERVICE_ACCOUNT_EXECUTOR="argo-executor"
 echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
 export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
@@ -140,8 +142,7 @@ if [ -n "$CELL_GITHUB_TOKEN" ]; then
   yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
 fi
 
-context="minikube"
-namespace="naavre"
+
 kubectl delete ns $namespace --ignore-not-found=true
 ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
 ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
@@ -386,6 +387,10 @@ while true; do
     sleep 5
 done
 
+
+# Get the SECRETS_CREATOR_API_TOKEN from the secret created in the cluster and set it to the environment variable SECRETS_CREATOR_API_TOKEN
+SECRETS_CREATOR_API_TOKEN="$(kubectl get secret ${SECRETS_CREATOR_SECRET_NAME} -o=jsonpath='{.data.API_TOKEN}' -n $namespace | base64 --decode)"
+
 # Check if CONFIG_FILE_URL exists
 if [ -f "$CONFIG_FILE_URL" ]; then
     echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
@@ -490,6 +495,11 @@ EOF
 EOF
   done < volume_names
   rm volume_names
+  # Set the SECRETS_CREATOR_API_TOKEN in minkube_configuration.json in wf_engine_config
+  jq --arg secrets_creator_api_token "$SECRETS_CREATOR_API_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_token = $secrets_creator_api_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+  # Set the SECRETS_CREATOR_API_ENDPOINT in minkube_configuration.json in wf_engine_config
+  jq --arg secrets_creator_api_endpoint "$SECRETS_CREATOR_API_ENDPOINT" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_endpoint = $secrets_creator_api_endpoint else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
+
 else
     echo "configuration.json does not exist, skipping update"
 fi

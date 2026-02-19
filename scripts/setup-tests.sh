@@ -539,8 +539,6 @@ echo "Exporting environment variables to dev-setup.env"
   echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
   echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
   echo "ARGO_TOKEN=$ARGO_TOKEN"
-  echo "SECRETS_CREATOR_API_ENDPOINT=$SECRETS_CREATOR_API_ENDPOINT"
-  echo "SECRETS_CREATOR_API_TOKEN=$SECRETS_CREATOR_API_TOKEN"
 } > dev-setup.env
 
 # Marge dev-setup.env to dev.env

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+yarn.lock
+
+# Test results
+test-results/
+playwright-report/
+screenshots/
+
+# Playwright cache
+.cache/
+
+# Environment variables
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

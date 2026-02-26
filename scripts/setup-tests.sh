@@ -543,7 +543,9 @@ EOF
 
     # Check that the mount path contains files (non-empty). Treat absence or empty as failure.
     echo "Checking mount path /usr/share/nginx/html/s3 in pod $pod_name"
-    if ! kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3 > /dev/null 2>&1; then
+    return_code=$(kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3)
+    # If return_code is not 0, or the output is empty, then fail
+    if [ $? -ne 0 ] || [ -z "$return_code" ]; then
       echo kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3
       echo "ERROR: Volume $volume_name is not mounted or mount path /usr/share/nginx/html/s3 is not accessible in pod $pod_name"
       kubectl delete pod test-pod -n $namespace --ignore-not-found

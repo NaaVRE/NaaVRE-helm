@@ -494,7 +494,70 @@ EOF
             storage: 5Gi
 EOF
   done < volume_names
-  rm volume_names
+
+#  Check that the PVC and PV are created:
+  while read volume_name; do
+    echo "Checking PV and PVC for volume: $volume_name"
+    kubectl get pv $volume_name
+    kubectl get pvc $volume_name -n $namespace
+    # Test PVC
+        kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  namespace: $namespace
+spec:
+  containers:
+   - name: test-pod
+     image: nginx
+     volumeMounts:
+       - mountPath: /usr/share/nginx/html/s3
+         name: webroot
+  securityContext:
+    fsGroup: 100
+  volumes:
+   - name: webroot
+     persistentVolumeClaim:
+       claimName: $volume_name
+       readOnly: true
+EOF
+
+    # Wait for the pod to be Running (timeout 60s)
+    timeout=60
+    start_time=$(date +%s)
+    while true; do
+      phase=$(kubectl get pod test-pod -n $namespace -o jsonpath='{.status.phase}')
+      if [ "$phase" = "Running" ]; then
+        echo "Pod test-podis Running"
+        break
+      fi
+      current_time=$(date +%s)
+      elapsed_time=$((current_time - start_time))
+      if [ $elapsed_time -ge $timeout ]; then
+#        kubectl delete pod test-pod -n $namespace --ignore-not-found
+        exit 1
+      fi
+      break
+    done
+
+    # Check that the mount path contains files (non-empty). Treat absence or empty as failure.
+    echo "Checking mount path /usr/share/nginx/html/s3 in pod $pod_name"
+    if ! kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3 > /dev/null 2>&1; then
+      echo kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3
+      echo "ERROR: Volume $volume_name is not mounted or mount path /usr/share/nginx/html/s3 is not accessible in pod $pod_name"
+      kubectl delete pod test-pod -n $namespace --ignore-not-found
+      exit 1
+    fi
+    echo "Volume $volume_name mounted in pod $pod_name"
+
+    # Clean up the test pod
+    kubectl delete pod test-pod-n $namespace --ignore-not-found
+  done < volume_names
+
+
+
+
   # Set the SECRETS_CREATOR_API_TOKEN in minkube_configuration.json in wf_engine_config
   jq --arg secrets_creator_api_token "$SECRETS_CREATOR_API_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_token = $secrets_creator_api_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the SECRETS_CREATOR_API_ENDPOINT in minkube_configuration.json in wf_engine_config
@@ -560,3 +623,4 @@ echo "K8s Secret Creator Service: https://$MINIKUBE_HOST/k8s-secret-creator/"
 echo "Keycloak Service: https://$MINIKUBE_HOST/auth/"
 echo "Argo Workflows UI: https://$MINIKUBE_HOST/argowf/"
 echo "Setup complete."
+

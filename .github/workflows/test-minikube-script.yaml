@@ -26,4 +26,5 @@ jobs:
         shell: bash -l {0}
         run: |
           chmod +x ./scripts/setup-tests.sh 
+          helm dependencies update
           ./scripts/setup-tests.sh -f values/values-deploy-minikube.yaml

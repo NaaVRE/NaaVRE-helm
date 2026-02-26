@@ -546,19 +546,14 @@ EOF
     return_code=$(kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3)
     # If return_code is not 0, or the output is empty, then fail
     if [ $? -ne 0 ] || [ -z "$return_code" ]; then
-      echo kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3
       echo "ERROR: Volume $volume_name is not mounted or mount path /usr/share/nginx/html/s3 is not accessible in pod $pod_name"
       kubectl delete pod test-pod -n $namespace --ignore-not-found
       exit 1
     fi
     echo "Volume $volume_name mounted in pod $pod_name"
-
     # Clean up the test pod
-    kubectl delete pod test-pod-n $namespace --ignore-not-found
   done < volume_names
-
-
-
+  kubectl delete pod test-pod-n $namespace --ignore-not-found
 
   # Set the SECRETS_CREATOR_API_TOKEN in minkube_configuration.json in wf_engine_config
   jq --arg secrets_creator_api_token "$SECRETS_CREATOR_API_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_token = $secrets_creator_api_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json

@@ -19,6 +19,7 @@ print_usage() {
   echo "  -c, --clone-naavre-dir   Clone the NaaVRE-helm repository if it does not exist"
   echo "  -n, --delete-namespace        Delete the NaaVRE namespace before installation"
   echo "  -u, --uninstall-naavre        Uninstall NaaVRE before installation"
+  echo "  -p, --delete-pv-pvc        Delete PV and PVC before creating them again"
   exit 1
 }
 
@@ -52,6 +53,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -u|--uninstall-naavre)
       UNINSTALL_NAAAVRE="true"
+      shift # past argument
+      ;;
+    -p|--delete-pv-pvc)
+      DELETE_PV_PVC="true"
       shift # past argument
       ;;
     -*|--*)
@@ -340,7 +345,6 @@ setup_authentication() {
 }
 
 setup_argo(){
-  echo "Setting the AUTH_TOKEN environment variable"
   # Make sure AUTH_TOKEN is not empty
   if [ -z "$AUTH_TOKEN" ]; then
       echo "Failed to get AUTH_TOKEN"
@@ -350,7 +354,6 @@ setup_argo(){
   echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
 
   #Get Argo workflow summation token and set it to configuration.json
-  echo "Getting Argo workflow submission token"
   ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n $namespace | base64 --decode)"
   # Make sure ARGO_TOKEN is not empty
   if [ -z "$ARGO_TOKEN" ]; then
@@ -400,7 +403,6 @@ setup_argo(){
   start_time=$(date +%s)
   while true; do
       if kubectl get serviceaccount $ARGO_SERVICE_ACCOUNT_EXECUTOR -n $namespace > /dev/null 2>&1; then
-          echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is available"
           break
       fi
       current_time=$(date +%s)
@@ -417,7 +419,6 @@ setup_argo(){
   start_time=$(date +%s)
   while true; do
       if kubectl get serviceaccount $ARGO_VRE_API_SERVICE_ACCOUNT -n $namespace > /dev/null 2>&1; then
-          echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is available"
           break
       fi
       current_time=$(date +%s)
@@ -429,6 +430,49 @@ setup_argo(){
       sleep 5
   done
 }
+
+create_pv_pvc(){
+  echo $1
+  # Delete existing PV and PVC with the same name if they exist
+  if [ "$DELETE_PV_PVC" == "true" ]; then
+    while read volume_name; do
+      echo "Deleting existing PV and PVC for volume: $volume_name"
+      kubectl delete pvc $volume_name -n $namespace --ignore-not-found=true
+      kubectl delete pv  $volume_name -n $namespace --ignore-not-found=true
+    done < volume_names
+  fi
+  while read volume_name; do
+    echo "Creating PV and PVC for volume: $volume_name"
+    kubectl apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: $volume_name
+      spec:
+        accessModes:
+          - ReadWriteMany
+        capacity:
+          storage: 5Gi
+        hostPath:
+          path: /tmp/$volume_name
+EOF
+    kubectl apply -f - <<EOF
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: $volume_name
+        namespace: $namespace
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 5Gi
+EOF
+  done < volume_names
+  rm volume_names
+}
+
 
 setup_configuration_json(){
 
@@ -509,36 +553,7 @@ if [ -f "configuration.json" ]; then
   # Save the name of the extraVolumeMounts in a bash array
   jq . minkube_configuration.json | jq -r --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations[] | select(.name == $vl) | .wf_engine_config.extraVolumeMounts[] .name' > volume_names
   # Loop through the volume names and create a PV and PVC for each
-  while read volume_name; do
-    echo "Creating PV and PVC for volume: $volume_name"
-    kubectl apply -f - <<EOF
-      apiVersion: v1
-      kind: PersistentVolume
-      metadata:
-        name: $volume_name
-      spec:
-        accessModes:
-          - ReadWriteMany
-        capacity:
-          storage: 5Gi
-        hostPath:
-          path: /tmp/$volume_name
-EOF
-    kubectl apply -f - <<EOF
-      apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: $volume_name
-        namespace: $namespace
-      spec:
-        accessModes:
-          - ReadWriteMany
-        resources:
-          requests:
-            storage: 5Gi
-EOF
-  done < volume_names
-  rm volume_names
+  create_pv_pvc volume_names
   # Set the SECRETS_CREATOR_API_TOKEN in minkube_configuration.json in wf_engine_config
   jq --arg secrets_creator_api_token "$SECRETS_CREATOR_API_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_token = $secrets_creator_api_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the SECRETS_CREATOR_API_ENDPOINT in minkube_configuration.json in wf_engine_config

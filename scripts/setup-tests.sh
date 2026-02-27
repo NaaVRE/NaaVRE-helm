@@ -469,6 +469,34 @@ EOF
           requests:
             storage: 5Gi
 EOF
+  kubectl create -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-nginx-$volume_name
+  namespace: $namespace
+spec:
+  containers:
+   - name: csi-s3-test-nginx
+     image: nginx
+     volumeMounts:
+       - mountPath: /usr/share/nginx/html/s3
+         name: webroot
+  securityContext:
+    fsGroup: 100
+  volumes:
+   - name: webroot
+     persistentVolumeClaim:
+       claimName: $volume_name
+       readOnly: false
+EOF
+  kubectl wait --for=condition=Ready pod/test-nginx-$volume_name -n $namespace --timeout=120s
+  kubectl exec -it test-nginx-$volume_name -n $namespace  -- ls /usr/share/nginx/html/s3
+  if [ $? -ne 0 ]; then
+      echo "Failed to access the mounted volume in the test pod for volume: $volume_name"
+      exit 1
+  fi
+  kubectl delete pod test-nginx-$volume_name -n $namespace --ignore-not-found=true
   done < volume_names
   rm volume_names
 }

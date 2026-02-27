@@ -83,310 +83,319 @@ echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
 echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
 
-#Get the minikube IP and add it to /etc/hosts if not already present
-MINIKUBE_IP=$(minikube ip)
 
-export MINIKUBE_IP
-if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
-    echo "Adding minikube IP to /etc/hosts"
-    echo "$MINIKUBE_IP $MINIKUBE_HOST" | sudo tee -a /etc/hosts > /dev/null
-    echo "$MINIKUBE_IP $MINIKUBE_S3_HOST" | sudo tee -a /etc/hosts > /dev/null
-else
-    echo "Minikube IP already present in /etc/hosts"
-fi
+setup_minikube(){
+  #Get the minikube IP and add it to /etc/hosts if not already present
+  MINIKUBE_IP=$(minikube ip)
 
-# Configure in-cluster DNS resolution for ingress-dns (https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/)
-cm=$(kubectl  -n kube-system get configmap/coredns -o json | jq ".data.Corefile += \"\ntest:53 {\n    errors\n    cache 30\n    forward . $MINIKUBE_IP\n}\"" | jq 'del(.metadata)')
-kubectl -n kube-system patch configmap/coredns --type merge -p "$cm"
+  export MINIKUBE_IP
+  if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
+      echo "Adding minikube IP to /etc/hosts"
+      echo "$MINIKUBE_IP $MINIKUBE_HOST" | sudo tee -a /etc/hosts > /dev/null
+      echo "$MINIKUBE_IP $MINIKUBE_S3_HOST" | sudo tee -a /etc/hosts > /dev/null
+  else
+      echo "Minikube IP already present in /etc/hosts"
+  fi
 
-# Test $MINIKUBE_HOST
-minikube_status=$(minikube status --format '{{.Host}}')
-if [ "$minikube_status" != "Running" ]; then
-    echo "Minikube is not running. Please start minikube and try again."
+  # Configure in-cluster DNS resolution for ingress-dns (https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/)
+  cm=$(kubectl  -n kube-system get configmap/coredns -o json | jq ".data.Corefile += \"\ntest:53 {\n    errors\n    cache 30\n    forward . $MINIKUBE_IP\n}\"" | jq 'del(.metadata)')
+  kubectl -n kube-system patch configmap/coredns --type merge -p "$cm"
+
+  # Test $MINIKUBE_HOST
+  minikube_status=$(minikube status --format '{{.Host}}')
+  if [ "$minikube_status" != "Running" ]; then
+      echo "Minikube is not running. Please start minikube and try again."
+      exit 1
+  fi
+
+  minikube_http_code=$(curl -o /dev/null -s -w "%{http_code}" -k https://$MINIKUBE_HOST)
+  echo "Minikube host $MINIKUBE_HOST returned HTTP status code $minikube_http_code"
+
+  if ! [[ "$minikube_http_code" -ge 200 || "$minikube_http_code" -lt 500 ]]; then
+      echo "Minikube local test failed"
+      exit 1
+  else
+      echo "Minikube local test passed"
+  fi
+}
+
+deploy_naavre(){
+  if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+      rm -rf NaaVRE-helm
+      echo "Cloning NaaVRE-helm repository"
+      git clone https://github.com/NaaVRE/NaaVRE-helm.git
+      cd NaaVRE-helm
+      cp "../$VALUES_FILE" .
+  fi
+
+  # Add the third-party Helm repos
+  ./deploy.sh repo-add
+
+  cp "$VALUES_FILE" secrets-minikube.yaml
+  # Read CELL_GITHUB_TOKEN from dev.env if it exists
+  if [ -f "../dev.env" ]; then
+    echo "Sourcing ../dev.env to get CELL_GITHUB_TOKEN"
+    source ../dev.env
+  fi
+
+
+  #Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
+  if [ -n "$CELL_GITHUB_TOKEN" ]; then
+    echo "Replacing cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN"
+    export CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN
+    yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
+  fi
+
+
+  kubectl delete ns $namespace --ignore-not-found=true
+  ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+  ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+  ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
+  rm secrets-minikube.yaml
+  # Exit if the installation fails
+  if [ $? -ne 0 ]; then
+      echo "Helm installation failed"
+      exit 1
+  else
+      echo "Helm installation succeeded"
+  fi
+  if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+    cd ../
+  fi
+}
+
+setup_authentication() {
+  #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
+  # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
+  echo "Waiting for OIDC configuration URL to be available"
+  timeout=700
+  start_time=$(date +%s)
+  while true; do
+      if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
+          echo "OIDC configuration URL is available"
+          break
+      fi
+      current_time=$(date +%s)
+      elapsed_time=$((current_time - start_time))
+      if [ $elapsed_time -ge $timeout ]; then
+          echo "OIDC configuration URL is not available"
+          exit 1
+      fi
+      sleep 6
+  done
+
+  # Get credentials from secrets
+  echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
+  export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
+  echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+  if [ -z "$USERNAME" ]; then
+      echo "USERNAME is empty. Please check the values file."
+      exit 1
+  fi
+  export USER_EMAIL=$USERNAME@nowhere.no
+  echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
+  export USER_FIRST_NAME=$USERNAME
+  echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
+  export USER_LAST_NAME=$USERNAME
+  echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
+
+  export USER_PASSWORD=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].credentials[0].value')
+  echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
+  if [ -z "$USER_PASSWORD" ]; then
+      echo "USER_PASSWORD is empty. Please check the values file."
+      exit 1
+  fi
+
+  export KEYCLOAK_AMIN_USER=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.username}  -n $namespace | base64 --decode)
+  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
+  if [ -z "$KEYCLOAK_AMIN_USER" ]; then
+      echo "KEYCLOAK_AMIN_USER is empty. Please check the values file."
+      exit 1
+  fi
+  export KEYCLOAK_ADMIN_PASSWORD=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.password}  -n $namespace | base64 --decode)
+  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
+  if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
+      echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
+      exit 1
+  fi
+
+  echo "Getting AUTH_TOKEN token"
+
+  # Get admin token
+  KEYCLOAK_ADMIN_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/master/protocol/openid-connect/token" -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "grant_type=password"   --data-urlencode "client_id=admin-cli"   --data-urlencode "username=$KEYCLOAK_AMIN_USER"   --data-urlencode "password=$KEYCLOAK_ADMIN_PASSWORD" | jq -r '.access_token')
+  if [ -z "$KEYCLOAK_ADMIN_TOKEN" ] || [ "$KEYCLOAK_ADMIN_TOKEN" == "null" ]; then
+    echo "Failed to get admin token"
     exit 1
-fi
+  fi
 
-minikube_http_code=$(curl -o /dev/null -s -w "%{http_code}" -k https://$MINIKUBE_HOST)
-echo "Minikube host $MINIKUBE_HOST returned HTTP status code $minikube_http_code"
+  #update realm token lifespan
+  REALM_SETTINGS=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    "https://$MINIKUBE_HOST/auth/admin/realms/$REALM")
 
-if ! [[ "$minikube_http_code" -ge 200 || "$minikube_http_code" -lt 500 ]]; then
-    echo "Minikube local test failed"
+  UPDATED_REALM=$(echo "$REALM_SETTINGS" | jq '.accessTokenLifespan = 36000 | .accessTokenLifespanForImplicitFlow = 36000')
+
+  curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM" \
+    -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$UPDATED_REALM"
+
+
+  # find user id
+  USER_ID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users?username=$USERNAME" | jq -r '.[0].id')
+
+  if [[ -z "$USER_ID" || "$USER_ID" == "null" ]]; then
+    echo "User $USERNAME not found"
     exit 1
-else
-    echo "Minikube local test passed"
-fi
+  fi
 
-if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-    rm -rf NaaVRE-helm
-    echo "Cloning NaaVRE-helm repository"
-    git clone https://github.com/NaaVRE/NaaVRE-helm.git
-    cd NaaVRE-helm
-    cp "../$VALUES_FILE" .
-fi
+  # fetch user JSON and clear required actions + mark verified/enabled
+  USER_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID")
 
-# Add the third-party Helm repos
-./deploy.sh repo-add
+  UPDATED_JSON=$(echo "$USER_JSON" | jq --arg email "$USER_EMAIL" --arg first "$USER_FIRST_NAME" --arg last "$USER_LAST_NAME" \
+    '.requiredActions = [] |
+     .emailVerified = true |
+     .enabled = true |
+     .email = (if $email == "" then .email else $email end) |
+     .firstName = (if $first == "" then .firstName else $first end) |
+     .lastName = (if $last == "" then .lastName else $last end)')
 
-cp "$VALUES_FILE" secrets-minikube.yaml
-# Read CELL_GITHUB_TOKEN from dev.env if it exists
-if [ -f "../dev.env" ]; then
-  echo "Sourcing ../dev.env to get CELL_GITHUB_TOKEN"
-  source ../dev.env
-fi
+  curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID" \
+    -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$UPDATED_JSON"
 
-
-#Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
-if [ -n "$CELL_GITHUB_TOKEN" ]; then
-  echo "Replacing cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN"
-  export CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN
-  yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
-fi
+  # ensure password is set and not temporary
+  curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID/reset-password" \
+    -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "{\"type\":\"password\",\"temporary\":false,\"value\":\"$USER_PASSWORD\"}"
 
 
-kubectl delete ns $namespace --ignore-not-found=true
-./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
-./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
-rm secrets-minikube.yaml
-# Exit if the installation fails
-if [ $? -ne 0 ]; then
-    echo "Helm installation failed"
+  #Find Keycloak internal client UUID
+  CLIENT_UUID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients?clientId=$CLIENT_ID" | jq -r '.[0].id')
+
+  if [ -z "$CLIENT_UUID" ] || [ "$CLIENT_UUID" == "null" ]; then
+    echo "Client $CLIENT_ID not found in realm $REALM"
     exit 1
-else
-    echo "Helm installation succeeded"
-fi
-if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-  cd ../
-fi
+  fi
+
+  #Get full client JSON, set directAccessGrantsEnabled=true and PUT it back
+  CLIENT_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID")
+
+  UPDATED_JSON=$(echo "$CLIENT_JSON" | jq '.directAccessGrantsEnabled = true')
+
+  curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID" \
+    -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$UPDATED_JSON"
 
 
-#Get user access token for the workflow service and set the environment variable AUTH_TOKEN
-# Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
-echo "Waiting for OIDC configuration URL to be available"
-timeout=700
-start_time=$(date +%s)
-while true; do
-    if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
-        echo "OIDC configuration URL is available"
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "OIDC configuration URL is not available"
-        exit 1
-    fi
-    sleep 6
-done
+  echo "Requesting user token"
+  AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    --data-urlencode "grant_type=password" \
+    --data-urlencode "client_id=$CLIENT_ID" \
+    --data-urlencode "username=$USERNAME" \
+    --data-urlencode "password=$USER_PASSWORD" \
+    --data-urlencode "scope=openid"| jq -r '.access_token')
+}
 
-# Get credentials from secrets
-echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
-export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
-echo "USERNAME=$USERNAME" >> $GITHUB_ENV
-if [ -z "$USERNAME" ]; then
-    echo "USERNAME is empty. Please check the values file."
-    exit 1
-fi
-export USER_EMAIL=$USERNAME@nowhere.no
-echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
-export USER_FIRST_NAME=$USERNAME
-echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
-export USER_LAST_NAME=$USERNAME
-echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
+setup_argo(){
+  echo "Setting the AUTH_TOKEN environment variable"
+  # Make sure AUTH_TOKEN is not empty
+  if [ -z "$AUTH_TOKEN" ]; then
+      echo "Failed to get AUTH_TOKEN"
+      exit 1
+  fi
+  export AUTH_TOKEN
+  echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
 
-export USER_PASSWORD=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].credentials[0].value')
-echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
-if [ -z "$USER_PASSWORD" ]; then
-    echo "USER_PASSWORD is empty. Please check the values file."
-    exit 1
-fi
+  #Get Argo workflow summation token and set it to configuration.json
+  echo "Getting Argo workflow submission token"
+  ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n $namespace | base64 --decode)"
+  # Make sure ARGO_TOKEN is not empty
+  if [ -z "$ARGO_TOKEN" ]; then
+      echo "Failed to get Argo workflow submission token"
+      exit 1
+  fi
 
-export KEYCLOAK_AMIN_USER=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.username}  -n $namespace | base64 --decode)
-echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
-if [ -z "$KEYCLOAK_AMIN_USER" ]; then
-    echo "KEYCLOAK_AMIN_USER is empty. Please check the values file."
-    exit 1
-fi
-export KEYCLOAK_ADMIN_PASSWORD=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.password}  -n $namespace | base64 --decode)
-echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
-if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
-    echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
-    exit 1
-fi
-
-echo "Getting AUTH_TOKEN token"
-
-# Get admin token
-KEYCLOAK_ADMIN_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/master/protocol/openid-connect/token" -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "grant_type=password"   --data-urlencode "client_id=admin-cli"   --data-urlencode "username=$KEYCLOAK_AMIN_USER"   --data-urlencode "password=$KEYCLOAK_ADMIN_PASSWORD" | jq -r '.access_token')
-if [ -z "$KEYCLOAK_ADMIN_TOKEN" ] || [ "$KEYCLOAK_ADMIN_TOKEN" == "null" ]; then
-  echo "Failed to get admin token"
-  exit 1
-fi
-
-#update realm token lifespan
-REALM_SETTINGS=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM")
-
-UPDATED_REALM=$(echo "$REALM_SETTINGS" | jq '.accessTokenLifespan = 36000 | .accessTokenLifespanForImplicitFlow = 36000')
-
-curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM" \
-  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$UPDATED_REALM"
+  # Wait for the Argo workflow service to be available
+  timeout=200
+  start_time=$(date +%s)
+  while true; do
+      if curl -k --silent --fail https://$MINIKUBE_HOST/argowf/; then
+          break
+      fi
+      current_time=$(date +%s)
+      elapsed_time=$((current_time - start_time))
+      if [ $elapsed_time -ge $timeout ]; then
+          echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
+          # Find the pods that are not running in the $namespace namespace and contain the word argo. Then print their status logs and describe them
+          kubectl get pods -n $namespace | grep argo | grep -v Running
+          for pod in $(kubectl get pods -n $namespace | grep argo | grep -v Running | awk '{print $1}'); do
+              echo "Logs for pod $pod:"
+              kubectl logs $pod -n $namespace
+              echo "Describe for pod $pod:"
+              kubectl describe pod $pod -n $namespace
+          done
+          exit 1
+      fi
+      sleep 5
+  done
 
 
-# find user id
-USER_ID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users?username=$USERNAME" | jq -r '.[0].id')
-
-if [[ -z "$USER_ID" || "$USER_ID" == "null" ]]; then
-  echo "User $USERNAME not found"
-  exit 1
-fi
-
-# fetch user JSON and clear required actions + mark verified/enabled
-USER_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID")
-
-UPDATED_JSON=$(echo "$USER_JSON" | jq --arg email "$USER_EMAIL" --arg first "$USER_FIRST_NAME" --arg last "$USER_LAST_NAME" \
-  '.requiredActions = [] |
-   .emailVerified = true |
-   .enabled = true |
-   .email = (if $email == "" then .email else $email end) |
-   .firstName = (if $first == "" then .firstName else $first end) |
-   .lastName = (if $last == "" then .lastName else $last end)')
-
-curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID" \
-  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$UPDATED_JSON"
-
-# ensure password is set and not temporary
-curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/users/$USER_ID/reset-password" \
-  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "{\"type\":\"password\",\"temporary\":false,\"value\":\"$USER_PASSWORD\"}"
+  # Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf
+  status_code=$(curl -o /dev/null -s -w "%{http_code}" -k "https://$MINIKUBE_HOST/argowf/api/v1/workflows/$namespace" -H "Authorization: Bearer $ARGO_TOKEN")
+  echo "Argo API returned status code $status_code"
+  if [ "$status_code" -ne 200 ]; then
+      echo "Argo API returned status code $status_code"
+      exit 1
+  fi
 
 
-#Find Keycloak internal client UUID
-CLIENT_UUID=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients?clientId=$CLIENT_ID" | jq -r '.[0].id')
+  export ARGO_TOKEN
+  echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
 
-if [ -z "$CLIENT_UUID" ] || [ "$CLIENT_UUID" == "null" ]; then
-  echo "Client $CLIENT_ID not found in realm $REALM"
-  exit 1
-fi
+  # Wait for the executor service account to be created
+  timeout=200
+  start_time=$(date +%s)
+  while true; do
+      if kubectl get serviceaccount $ARGO_SERVICE_ACCOUNT_EXECUTOR -n $namespace > /dev/null 2>&1; then
+          echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is available"
+          break
+      fi
+      current_time=$(date +%s)
+      elapsed_time=$((current_time - start_time))
+      if [ $elapsed_time -ge $timeout ]; then
+          echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is not available"
+          exit 1
+      fi
+      sleep 5
+  done
 
-#Get full client JSON, set directAccessGrantsEnabled=true and PUT it back
-CLIENT_JSON=$(curl -s -k -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID")
+  # Wait for $ARGO_VRE_API_SERVICE_ACCOUNT service account to be created
+  timeout=200
+  start_time=$(date +%s)
+  while true; do
+      if kubectl get serviceaccount $ARGO_VRE_API_SERVICE_ACCOUNT -n $namespace > /dev/null 2>&1; then
+          echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is available"
+          break
+      fi
+      current_time=$(date +%s)
+      elapsed_time=$((current_time - start_time))
+      if [ $elapsed_time -ge $timeout ]; then
+          echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is not available"
+          exit 1
+      fi
+      sleep 5
+  done
+}
 
-UPDATED_JSON=$(echo "$CLIENT_JSON" | jq '.directAccessGrantsEnabled = true')
-
-curl -s -k -X PUT "https://$MINIKUBE_HOST/auth/admin/realms/$REALM/clients/$CLIENT_UUID" \
-  -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$UPDATED_JSON"
-
-
-echo "Requesting user token"
-AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data-urlencode "grant_type=password" \
-  --data-urlencode "client_id=$CLIENT_ID" \
-  --data-urlencode "username=$USERNAME" \
-  --data-urlencode "password=$USER_PASSWORD" \
-  --data-urlencode "scope=openid"| jq -r '.access_token')
-
-echo "Setting the AUTH_TOKEN environment variable"
-# Make sure AUTH_TOKEN is not empty
-if [ -z "$AUTH_TOKEN" ]; then
-    echo "Failed to get AUTH_TOKEN"
-    exit 1
-fi
-export AUTH_TOKEN
-echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
-
-#Get Argo workflow summation token and set it to configuration.json
-echo "Getting Argo workflow submission token"
-ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n $namespace | base64 --decode)"
-# Make sure ARGO_TOKEN is not empty
-if [ -z "$ARGO_TOKEN" ]; then
-    echo "Failed to get Argo workflow submission token"
-    exit 1
-fi
-
-# Wait for the Argo workflow service to be available
-timeout=200
-start_time=$(date +%s)
-while true; do
-    if curl -k --silent --fail https://$MINIKUBE_HOST/argowf/; then
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "Argo workflow service at " https://$MINIKUBE_HOST/argowf/ "is not available"
-        # Find the pods that are not running in the $namespace namespace and contain the word argo. Then print their status logs and describe them
-        kubectl get pods -n $namespace | grep argo | grep -v Running
-        for pod in $(kubectl get pods -n $namespace | grep argo | grep -v Running | awk '{print $1}'); do
-            echo "Logs for pod $pod:"
-            kubectl logs $pod -n $namespace
-            echo "Describe for pod $pod:"
-            kubectl describe pod $pod -n $namespace
-        done
-        exit 1
-    fi
-    sleep 5
-done
-
-
-# Test if the ARGO_TOKEN works on https://$MINIKUBE_HOST/argowf
-status_code=$(curl -o /dev/null -s -w "%{http_code}" -k "https://$MINIKUBE_HOST/argowf/api/v1/workflows/$namespace" -H "Authorization: Bearer $ARGO_TOKEN")
-echo "Argo API returned status code $status_code"
-if [ "$status_code" -ne 200 ]; then
-    echo "Argo API returned status code $status_code"
-    exit 1
-fi
-
-
-export ARGO_TOKEN
-echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
-
-# Wait for the executor service account to be created
-timeout=200
-start_time=$(date +%s)
-while true; do
-    if kubectl get serviceaccount $ARGO_SERVICE_ACCOUNT_EXECUTOR -n $namespace > /dev/null 2>&1; then
-        echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is available"
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "Service account $ARGO_SERVICE_ACCOUNT_EXECUTOR is not available"
-        exit 1
-    fi
-    sleep 5
-done
-
-# Wait for $ARGO_VRE_API_SERVICE_ACCOUNT service account to be created
-timeout=200
-start_time=$(date +%s)
-while true; do
-    if kubectl get serviceaccount $ARGO_VRE_API_SERVICE_ACCOUNT -n $namespace > /dev/null 2>&1; then
-        echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is available"
-        break
-    fi
-    current_time=$(date +%s)
-    elapsed_time=$((current_time - start_time))
-    if [ $elapsed_time -ge $timeout ]; then
-        echo "Service account $ARGO_VRE_API_SERVICE_ACCOUNT is not available"
-        exit 1
-    fi
-    sleep 5
-done
-
+setup_configuration_json(){
 
 # Get the SECRETS_CREATOR_API_TOKEN from the secret created in the cluster and set it to the environment variable SECRETS_CREATOR_API_TOKEN
 SECRETS_CREATOR_API_TOKEN="$(kubectl get secret ${SECRETS_CREATOR_SECRET_NAME} -o=jsonpath='{.data.API_TOKEN}' -n $namespace | base64 --decode)"
@@ -494,67 +503,7 @@ EOF
             storage: 5Gi
 EOF
   done < volume_names
-
-#  Check that the PVC and PV are created:
-  while read volume_name; do
-    echo "Checking PV and PVC for volume: $volume_name"
-    kubectl get pv $volume_name
-    kubectl get pvc $volume_name -n $namespace
-    # Test PVC
-        kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pod
-  namespace: $namespace
-spec:
-  containers:
-   - name: test-pod
-     image: nginx
-     volumeMounts:
-       - mountPath: /usr/share/nginx/html/s3
-         name: webroot
-  securityContext:
-    fsGroup: 100
-  volumes:
-   - name: webroot
-     persistentVolumeClaim:
-       claimName: $volume_name
-       readOnly: true
-EOF
-
-    # Wait for the pod to be Running (timeout 60s)
-    timeout=60
-    start_time=$(date +%s)
-    while true; do
-      phase=$(kubectl get pod test-pod -n $namespace -o jsonpath='{.status.phase}')
-      if [ "$phase" = "Running" ]; then
-        echo "Pod test-podis Running"
-        break
-      fi
-      current_time=$(date +%s)
-      elapsed_time=$((current_time - start_time))
-      if [ $elapsed_time -ge $timeout ]; then
-#        kubectl delete pod test-pod -n $namespace --ignore-not-found
-        exit 1
-      fi
-      break
-    done
-
-    # Check that the mount path contains files (non-empty). Treat absence or empty as failure.
-    echo "Checking mount path /usr/share/nginx/html/s3 in pod $pod_name"
-    return_code=$(kubectl exec -n naavre test-pod -- ls /usr/share/nginx/html/s3)
-    # If return_code is not 0, or the output is empty, then fail
-    if [ $? -ne 0 ] || [ -z "$return_code" ]; then
-      echo "ERROR: Volume $volume_name is not mounted or mount path /usr/share/nginx/html/s3 is not accessible in pod $pod_name"
-      kubectl delete pod test-pod -n $namespace --ignore-not-found
-      exit 1
-    fi
-    echo "Volume $volume_name mounted in pod $pod_name"
-    # Clean up the test pod
-  done < volume_names
-  kubectl delete pod test-pod-n $namespace --ignore-not-found
-
+  rm volume_names
   # Set the SECRETS_CREATOR_API_TOKEN in minkube_configuration.json in wf_engine_config
   jq --arg secrets_creator_api_token "$SECRETS_CREATOR_API_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.secrets_creator_api_token = $secrets_creator_api_token else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set the SECRETS_CREATOR_API_ENDPOINT in minkube_configuration.json in wf_engine_config
@@ -571,46 +520,63 @@ else
   export CONFIG_FILE_URL="minkube_configuration.json"
   echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
+}
 
-# Test CELL_GITHUB_TOKEN with CELL_GITHUB_URL
-echo "Testing CELL_GITHUB_TOKEN with CELL_GITHUB_URL"
-GITHUB_API_PREFIX='https://api.github.com/repos'
-GITHUB_WORKFLOW_FILENAME='build-push-docker.yml'
+test_github_token(){
+  # Test CELL_GITHUB_TOKEN with CELL_GITHUB_URL
+  echo "Testing CELL_GITHUB_TOKEN with CELL_GITHUB_URL"
+  GITHUB_API_PREFIX='https://api.github.com/repos'
+  GITHUB_WORKFLOW_FILENAME='build-push-docker.yml'
+  # Get the owner and repo from CELL_GITHUB_URL
+  OWNER=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $(NF-1)}')
+  REPO=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $NF}' | sed 's/.git$//')
+  API="$GITHUB_API_PREFIX/$OWNER/$REPO/actions/workflows/$GITHUB_WORKFLOW_FILENAME"
+}
+
+export_variables(){
+  # Export environment variables to dev-setup.env
+  echo "Exporting environment variables to dev-setup.env"
+  {
+    echo "AUTH_TOKEN=$AUTH_TOKEN"
+    echo "VERIFY_SSL=$VERIFY_SSL"
+    echo "DISABLE_AUTH=$DISABLE_AUTH"
+    echo "CONFIG_FILE_URL=$CONFIG_FILE_URL"
+    echo "DISABLE_OAUTH=False"
+    echo "USERNAME=$USERNAME"
+    echo "USER_PASSWORD=$USER_PASSWORD"
+    echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
+    echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
+    echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
+    echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
+    echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
+    echo "ARGO_TOKEN=$ARGO_TOKEN"
+  } > dev-setup.env
+
+  # Marge dev-setup.env to dev.env
+  if [ -f "dev.env" ]; then
+    # If a variable exists in both files, overwrite it with the value from dev-setup.env
+    echo "Merging dev-setup.env to dev.env"
+    cat dev.env dev-setup.env | sort -u > mergedfile
+    mv mergedfile dev-setup.env
+  else
+    echo "Creating dev.env from dev-setup.env"
+    cat dev-setup.env >> dev.env
+  fi
+}
 
 
-# Get the owner and repo from CELL_GITHUB_URL
-OWNER=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $(NF-1)}')
-REPO=$(echo "$CELL_GITHUB_URL" | awk -F'/' '{print $NF}' | sed 's/.git$//')
-API="$GITHUB_API_PREFIX/$OWNER/$REPO/actions/workflows/$GITHUB_WORKFLOW_FILENAME"
+setup_minikube
 
-# Export environment variables to dev-setup.env
-echo "Exporting environment variables to dev-setup.env"
-{
-  echo "AUTH_TOKEN=$AUTH_TOKEN"
-  echo "VERIFY_SSL=$VERIFY_SSL"
-  echo "DISABLE_AUTH=$DISABLE_AUTH"
-  echo "CONFIG_FILE_URL=$CONFIG_FILE_URL"
-  echo "DISABLE_OAUTH=False"
-  echo "USERNAME=$USERNAME"
-  echo "USER_PASSWORD=$USER_PASSWORD"
-  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
-  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
-  echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
-  echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
-  echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
-  echo "ARGO_TOKEN=$ARGO_TOKEN"
-} > dev-setup.env
+deploy_naavre
 
-# Marge dev-setup.env to dev.env
-if [ -f "dev.env" ]; then
-  # If a variable exists in both files, overwrite it with the value from dev-setup.env
-  echo "Merging dev-setup.env to dev.env"
-  cat dev.env dev-setup.env | sort -u > mergedfile
-  mv mergedfile dev-setup.env
-else
-  echo "Creating dev.env from dev-setup.env"
-  cat dev-setup.env >> dev.env
-fi
+setup_authentication
+
+setup_argo
+
+setup_configuration_json
+
+export_variables
+
 
 # Print services urls
 echo "NaaVRE services are set up in Minikube. Access them at:"
@@ -620,4 +586,3 @@ echo "K8s Secret Creator Service: https://$MINIKUBE_HOST/k8s-secret-creator/"
 echo "Keycloak Service: https://$MINIKUBE_HOST/auth/"
 echo "Argo Workflows UI: https://$MINIKUBE_HOST/argowf/"
 echo "Setup complete."
-

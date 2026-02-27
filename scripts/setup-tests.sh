@@ -10,6 +10,19 @@
 
 # For example values file, see values/ in this repository.
 
+print_usage() {
+  echo "Usage: $0 -f <values-file>"
+  echo "Example: $0 -f values/minikube-values-deploy-naavre-containerizer-service-minikube-github-secrets.yaml"
+  echo "Options:"
+  echo "  -f, --values        Path to the Helm values file to use for deployment"
+  echo "  -d, --delete-naavre-dir  Delete the NaaVRE-helm directory before cloning it again"
+  echo "  -c, --clone-naavre-dir   Clone the NaaVRE-helm repository if it does not exist"
+  echo "  -n, --delete-namespace        Delete the NaaVRE namespace before installation"
+  echo "  -u, --uninstall-naavre        Uninstall NaaVRE before installation"
+  exit 1
+}
+
+
 set -e
 if [ -z "$GITHUB_ENV" ]; then
   GITHUB_ENV=/dev/stdout
@@ -17,14 +30,37 @@ fi
 
 VALUES_FILE=""
 
+
 while [[ $# -gt 0 ]]; do
   case $1 in
     -f|--values)
       VALUES_FILE="$2"
-      shift 2
+      shift # past argument
+      shift # past value
+      ;;
+    -d|--delete-naavre-dir)
+      DELETE_NAAAVRE_DIR="true"
+      shift # past argument
+      ;;
+    -c|--clone-naavre-dir)
+      CLONE_NAAAVRE_DIR="true"
+      shift # past argument
+      ;;
+    -n|--delete-namespace)
+      DELETE_NAMESPACE="true"
+      shift # past argument
+      ;;
+    -u|--uninstall-naavre)
+      UNINSTALL_NAAAVRE="true"
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
       ;;
     *)
-      shift
+      print_usage
+      shift # past argument
       ;;
   esac
 done
@@ -32,8 +68,7 @@ done
 # If no values file is provided print help.
 if [[ -z "$VALUES_FILE" ]]; then
   echo "No values file provided. Using default values file: values/minikube-values.yaml"
-  echo "Usage: ./setup-tests.sh -f <values-file>"
-  echo "Example: ./setup-tests.sh -f values/minikube-values.yaml"
+  print_usage
   exit 1
 else
   # Check if the values file exists
@@ -121,10 +156,13 @@ setup_minikube(){
 
 deploy_naavre(){
   if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+    if [ "$DELETE_NAAAVRE_DIR" == "true" ]; then
       rm -rf NaaVRE-helm
-      echo "Cloning NaaVRE-helm repository"
+    fi
+    if [ "$CLONE_NAAAVRE_DIR" == "true" ]; then
       git clone https://github.com/NaaVRE/NaaVRE-helm.git
       cd NaaVRE-helm
+    fi
       cp "../$VALUES_FILE" .
   fi
 
@@ -146,9 +184,12 @@ deploy_naavre(){
     yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
   fi
 
-
-  kubectl delete ns $namespace --ignore-not-found=true
-  ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+  if ["$DELETE_NAMESPACE" == "true"]; then
+    kubectl delete ns $namespace --ignore-not-found=true
+  fi
+  if ["$UNINSTALL_NAAAVRE" == "true"]; then
+    ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
+  fi
   ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
   ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
   rm secrets-minikube.yaml
@@ -156,8 +197,6 @@ deploy_naavre(){
   if [ $? -ne 0 ]; then
       echo "Helm installation failed"
       exit 1
-  else
-      echo "Helm installation succeeded"
   fi
   if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     cd ../

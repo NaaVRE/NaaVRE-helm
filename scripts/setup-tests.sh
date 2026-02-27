@@ -128,8 +128,6 @@ setup_minikube(){
       echo "Adding minikube IP to /etc/hosts"
       echo "$MINIKUBE_IP $MINIKUBE_HOST" | sudo tee -a /etc/hosts > /dev/null
       echo "$MINIKUBE_IP $MINIKUBE_S3_HOST" | sudo tee -a /etc/hosts > /dev/null
-  else
-      echo "Minikube IP already present in /etc/hosts"
   fi
 
   # Configure in-cluster DNS resolution for ingress-dns (https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/)
@@ -149,8 +147,6 @@ setup_minikube(){
   if ! [[ "$minikube_http_code" -ge 200 || "$minikube_http_code" -lt 500 ]]; then
       echo "Minikube local test failed"
       exit 1
-  else
-      echo "Minikube local test passed"
   fi
 }
 
@@ -184,10 +180,10 @@ deploy_naavre(){
     yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
   fi
 
-  if ["$DELETE_NAMESPACE" == "true"]; then
+  if [ "$DELETE_NAMESPACE" == "true" ]; then
     kubectl delete ns $namespace --ignore-not-found=true
   fi
-  if ["$UNINSTALL_NAAAVRE" == "true"]; then
+  if [ "$UNINSTALL_NAAAVRE" == "true" ]; then
     ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
   fi
   ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator

@@ -20,6 +20,7 @@ print_usage() {
   echo "  -n, --delete-namespace        Delete the NaaVRE namespace before installation"
   echo "  -u, --uninstall-naavre        Uninstall NaaVRE before installation"
   echo "  -p, --delete-pv-pvc        Delete PV and PVC before creating them again"
+  echo "  -v, --deploy-naavre        Deploy NaaVRE "
   exit 1
 }
 
@@ -57,6 +58,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -p|--delete-pv-pvc)
       DELETE_PV_PVC="true"
+      shift # past argument
+      ;;
+    -v |--deploy-naavre)
+      DEPLOY_NAAAVRE="true"
       shift # past argument
       ;;
     -*|--*)
@@ -162,14 +167,12 @@ deploy_naavre(){
     fi
     if [ "$CLONE_NAAAVRE_DIR" == "true" ]; then
       git clone https://github.com/NaaVRE/NaaVRE-helm.git
-      cd NaaVRE-helm
     fi
-      cp "../$VALUES_FILE" .
+    cd NaaVRE-helm
+    cp "../$VALUES_FILE" .
   fi
-
   # Add the third-party Helm repos
   ./deploy.sh repo-add
-
   cp "$VALUES_FILE" secrets-minikube.yaml
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
@@ -191,8 +194,10 @@ deploy_naavre(){
   if [ "$UNINSTALL_NAAAVRE" == "true" ]; then
     ./deploy.sh --kube-context minikube -n "$namespace" uninstall || true
   fi
-  ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
-  ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
+    ./deploy.sh --kube-context "$context" -n "$namespace" install-keycloak-operator
+  if [ "$DEPLOY_NAAAVRE" == "true" ]; then
+    ./deploy.sh --kube-context "$context" -n "$namespace" -f values/values-deploy-minikube.yaml -f "secrets-minikube.yaml" install
+  fi
   rm secrets-minikube.yaml
   # Exit if the installation fails
   if [ $? -ne 0 ]; then
@@ -207,18 +212,16 @@ deploy_naavre(){
 setup_authentication() {
   #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
   # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
-  echo "Waiting for OIDC configuration URL to be available"
   timeout=700
   start_time=$(date +%s)
   while true; do
       if curl -k --silent --fail https://$MINIKUBE_HOST/auth/realms/$REALM/; then
-          echo "OIDC configuration URL is available"
           break
       fi
       current_time=$(date +%s)
       elapsed_time=$((current_time - start_time))
       if [ $elapsed_time -ge $timeout ]; then
-          echo "OIDC configuration URL is not available"
+          echo "OIDC configuration URL" https://$MINIKUBE_HOST/auth/realms/$REALM/ "is not available"
           exit 1
       fi
       sleep 6
@@ -432,12 +435,18 @@ setup_argo(){
 }
 
 create_pv_pvc(){
-  echo $1
+  if [ -z "$namespace" ]; then
+    echo "Namespace is not set. Please set the namespace variable."
+    exit 1
+  fi
+
   # Delete existing PV and PVC with the same name if they exist
   if [ "$DELETE_PV_PVC" == "true" ]; then
     while read volume_name; do
       echo "Deleting existing PV and PVC for volume: $volume_name"
+      echo kubectl delete pvc $volume_name -n $namespace --ignore-not-found=true
       kubectl delete pvc $volume_name -n $namespace --ignore-not-found=true
+      echo kubectl delete pv  $volume_name -n $namespace --ignore-not-found=true
       kubectl delete pv  $volume_name -n $namespace --ignore-not-found=true
     done < volume_names
   fi
@@ -490,17 +499,21 @@ spec:
        claimName: $volume_name
        readOnly: false
 EOF
-  kubectl wait --for=condition=Ready pod/test-nginx-$volume_name -n $namespace --timeout=120s
-  kubectl exec -it test-nginx-$volume_name -n $namespace  -- ls /usr/share/nginx/html/s3
+
+  echo kubectl get pvc $volume_name -n $namespace
+  kubectl get pvc $volume_name -n $namespace
+  echo kubectl get pv $volume_name -n $namespace
+  kubectl get pv $volume_name -n $namespace
+  echo kubectl exec -it test-nginx-$volume_name -n $namespace  -- ls /usr/share/nginx/html/s3
   if [ $? -ne 0 ]; then
       echo "Failed to access the mounted volume in the test pod for volume: $volume_name"
       exit 1
   fi
   kubectl delete pod test-nginx-$volume_name -n $namespace --ignore-not-found=true
   done < volume_names
-  rm volume_names
-}
+#  rm volume_names
 
+}
 
 setup_configuration_json(){
 
@@ -641,7 +654,6 @@ export_variables(){
     cat dev-setup.env >> dev.env
   fi
 }
-
 
 setup_minikube
 

@@ -119,8 +119,8 @@ export USER_EMAIL=$USERNAME@nowhere.no
 
 
 
-
 setup_minikube(){
+  echo "Setting up Minikube"
   #Get the minikube IP and add it to /etc/hosts if not already present
   MINIKUBE_IP=$(minikube ip)
   export MINIKUBE_IP
@@ -151,6 +151,7 @@ setup_minikube(){
 }
 
 deploy_naavre(){
+  echo "Deploying NaaVRE Helm chart"
   if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     if [ "$DELETE_NAAAVRE_DIR" == "true" ]; then
       rm -rf NaaVRE-helm
@@ -166,14 +167,12 @@ deploy_naavre(){
   cp "$VALUES_FILE" secrets-minikube.yaml
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
-    echo "Sourcing ../dev.env to get CELL_GITHUB_TOKEN"
     source ../dev.env
   fi
 
 
   #Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
   if [ -n "$CELL_GITHUB_TOKEN" ]; then
-    echo "Replacing cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN"
     export CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN
     yq e -i '.jupyterhub.vlabs.openlab.configuration.cell_github_token = strenv(CELL_GITHUB_TOKEN)' "secrets-minikube.yaml"
   fi
@@ -216,9 +215,8 @@ setup_authentication() {
       fi
       sleep 6
   done
-
   # Get credentials from secrets
-  echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
+  exit 1
   export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
   if [ -z "$USERNAME" ]; then
       echo "USERNAME is empty. Please check the values file."
@@ -637,7 +635,7 @@ export_variables_to_github_env() {
 #  echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 #  echo "REALM=$REALM" >> $GITHUB_ENV
   echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
-  echo "s=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
+  echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
   echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
 #  echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
 #  echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV

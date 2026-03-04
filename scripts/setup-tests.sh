@@ -105,28 +105,20 @@ export MINIKUBE_S3_HOST="s3.naavre-dev.minikube.test"
 export AUTH_TOKEN=""
 export ARGO_TOKEN=""
 export CLIENT_ID=naavre
-echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 export REALM=vre
-echo "REALM=$REALM" >> $GITHUB_ENV
 export DISABLE_OAUTH=False
-echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
 export OIDC_CONFIGURATION_URL="https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration"
-echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
 export VERIFY_SSL="False"
-echo "VERIFY_SSL=False" >> $GITHUB_ENV
 export DISABLE_AUTH="False"
-echo "DISABLE_AUTH=False" >> $GITHUB_ENV
 export CONFIG_FILE_URL="$CURRENT_DIR/minkube_configuration.json"
-echo "CONFIG_FILE_URL=$CURRENT_DIR/minkube_configuration.json" >> $GITHUB_ENV
 export SECRETS_CREATOR_API_ENDPOINT="https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0"
-echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
 export "SECRETS_CREATOR_SECRET_NAME=$namespace-k8s-secret-creator"
 export ARGO_SERVICE_ACCOUNT_EXECUTOR="argo-executor"
-echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
 export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
-echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
-echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
+export USER_EMAIL=$USERNAME@nowhere.no
+
+
 
 
 setup_minikube(){
@@ -230,33 +222,26 @@ setup_authentication() {
   # Get credentials from secrets
   echo kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username'
   export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
-  echo "USERNAME=$USERNAME" >> $GITHUB_ENV
   if [ -z "$USERNAME" ]; then
       echo "USERNAME is empty. Please check the values file."
       exit 1
   fi
-  export USER_EMAIL=$USERNAME@nowhere.no
-  echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
+
   export USER_FIRST_NAME=$USERNAME
-  echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
   export USER_LAST_NAME=$USERNAME
-  echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
 
   export USER_PASSWORD=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].credentials[0].value')
-  echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
   if [ -z "$USER_PASSWORD" ]; then
       echo "USER_PASSWORD is empty. Please check the values file."
       exit 1
   fi
 
   export KEYCLOAK_AMIN_USER=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.username}  -n $namespace | base64 --decode)
-  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
   if [ -z "$KEYCLOAK_AMIN_USER" ]; then
       echo "KEYCLOAK_AMIN_USER is empty. Please check the values file."
       exit 1
   fi
   export KEYCLOAK_ADMIN_PASSWORD=$(kubectl get secret $namespace-keycloak-admin -o=jsonpath={.data.password}  -n $namespace | base64 --decode)
-  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
   if [ -z "$KEYCLOAK_ADMIN_PASSWORD" ]; then
       echo "KEYCLOAK_ADMIN_PASSWORD is empty. Please check the values file."
       exit 1
@@ -345,17 +330,16 @@ setup_authentication() {
     --data-urlencode "username=$USERNAME" \
     --data-urlencode "password=$USER_PASSWORD" \
     --data-urlencode "scope=openid"| jq -r '.access_token')
-}
 
-setup_argo(){
   # Make sure AUTH_TOKEN is not empty
   if [ -z "$AUTH_TOKEN" ]; then
       echo "Failed to get AUTH_TOKEN"
       exit 1
   fi
   export AUTH_TOKEN
-  echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV || true
+}
 
+setup_argo(){
   #Get Argo workflow summation token and set it to configuration.json
   ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n $namespace | base64 --decode)"
   # Make sure ARGO_TOKEN is not empty
@@ -399,8 +383,6 @@ setup_argo(){
 
 
   export ARGO_TOKEN
-  echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
-
   # Wait for the executor service account to be created
   timeout=200
   start_time=$(date +%s)
@@ -520,17 +502,13 @@ setup_configuration_json(){
 # Get the SECRETS_CREATOR_API_TOKEN from the secret created in the cluster and set it to the environment variable SECRETS_CREATOR_API_TOKEN
 SECRETS_CREATOR_API_TOKEN="$(kubectl get secret ${SECRETS_CREATOR_SECRET_NAME} -o=jsonpath='{.data.API_TOKEN}' -n $namespace | base64 --decode)"
 export SECRETS_CREATOR_API_TOKEN="$SECRETS_CREATOR_API_TOKEN"
-echo "SECRETS_CREATOR_API_TOKEN=$SECRETS_CREATOR_API_TOKEN" >> $GITHUB_ENV
 
 export SECRETS_CREATOR_API_ENDPOINT="$SECRETS_CREATOR_API_ENDPOINT"
-echo "SECRETS_CREATOR_API_ENDPOINT=$SECRETS_CRE"ATOR_API_ENDPOINT >> $GITHUB_ENV
-
 # Check if CONFIG_FILE_URL exists
 if [ -f "$CONFIG_FILE_URL" ]; then
     echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
 else
   export CONFIG_FILE_URL="minkube_configuration.json"
-  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 
 # Build minkube_configuration.json environment values
@@ -540,34 +518,30 @@ else
     VALUES_FILE=../$VALUES_FILE
 fi
 export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
-echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
 if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
     echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
     exit 1
 fi
 
 export BASE_IMAGE_TAGS_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.base_image_tags_url' "$VALUES_FILE")
-echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
 if [ -z "$BASE_IMAGE_TAGS_URL" ]; then
     echo "BASE_IMAGE_TAGS_URL is empty. Please check the values file."
     exit 1
 fi
 export MODULE_MAPPING_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.module_mapping_url' "$VALUES_FILE")
-echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
+
 if [ -z "$MODULE_MAPPING_URL" ]; then
     echo "MODULE_MAPPING_URL is empty. Please check the values file."
     exit 1
 fi
 
 export CELL_GITHUB_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.cell_github_url' "$VALUES_FILE")
-echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
 if [ -z "$CELL_GITHUB_URL" ]; then
     echo "CELL_GITHUB_URL is empty. Please check the values file."
     exit 1
 fi
 
 export REGISTRY_URL=$(yq e '.jupyterhub.vlabs.openlab.configuration.registry_url' "$VALUES_FILE")
-echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
 if [ -z "$REGISTRY_URL" ]; then
     echo "REGISTRY_URL is empty. Please check the values file."
     exit 1
@@ -614,7 +588,6 @@ if [ -f "$CONFIG_FILE_URL" ]; then
     echo "Configuration file $CURRENT_DIR/minkube_configuration.json exists."
 else
   export CONFIG_FILE_URL="minkube_configuration.json"
-  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV || true
 fi
 }
 
@@ -662,6 +635,35 @@ export_variables(){
   fi
 }
 
+export_variables_to_github_env() {
+#  echo "CLIENT_ID=naavre" >> $GITHUB_ENV
+#  echo "REALM=$REALM" >> $GITHUB_ENV
+  echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
+#  echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
+  echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
+#  echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
+#  echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
+  echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
+  echo "VERIFY_SSL=False" >> $GITHUB_ENV
+  echo "DISABLE_AUTH=False" >> $GITHUB_ENV
+#  echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+#  echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
+#  echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
+#  echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
+#  echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
+#  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
+#  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
+  echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV
+  echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
+  echo "SECRETS_CREATOR_API_TOKEN=$SECRETS_CREATOR_API_TOKEN" >> $GITHUB_ENV
+  echo "SECRETS_CREATOR_API_ENDPOINT=$SECRETS_CRE"ATOR_API_ENDPOINT >> $GITHUB_ENV
+  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV
+#  echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
+#  echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
+#  echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
+#  echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
+}
+
 setup_minikube
 
 deploy_naavre
@@ -673,6 +675,8 @@ setup_argo
 setup_configuration_json
 
 export_variables
+
+
 
 
 # Print services urls

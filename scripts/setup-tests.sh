@@ -676,7 +676,7 @@ setup_configuration_json
 
 export_variables
 
-
+export_variables_to_github_env
 
 
 # Print services urls

@@ -95,7 +95,14 @@ For example, to install or upgrade the `minikube` deployment ([values/values-dep
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-test-1.public.yaml -f values/values-deploy-k8s-test-1.public.yaml upgrade --install --timeout 30m
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-test-1.secrets.yaml -f values/values-deploy-k8s-test-1.public.yaml upgrade --install --timeout 30m
+```
+
+
+For `k8s-staging-1` ([values/values-deploy-k8s-staging-1.public.yaml](values/values-deploy-k8s-staging-1.public.yaml) and [values/values-deploy-k8s-staging-1.secrets.yaml](values/values-deploy-k8s-staging-1.secrets.yaml)), run:
+
+```shell
+./deploy.sh --kube-context k8s-staging-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-staging-1.secrets.yaml -f values/values-deploy-k8s-staging-1.public.yaml upgrade --timeout 30m
 ```
 
 Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAILED: pre-upgrade hooks failed: 1 error occurred: * timed out waiting for the condition`.

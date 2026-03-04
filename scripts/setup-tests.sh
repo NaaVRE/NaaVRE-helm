@@ -216,7 +216,6 @@ setup_authentication() {
       sleep 6
   done
   # Get credentials from secrets
-  exit 1
   export USERNAME=$(kubectl get secret $namespace-keycloak-vre-realm -o=jsonpath={.data}  -n $namespace | jq -r '."vre-realm.json"' | base64 --decode |  jq -r '.users[0].username')
   if [ -z "$USERNAME" ]; then
       echo "USERNAME is empty. Please check the values file."

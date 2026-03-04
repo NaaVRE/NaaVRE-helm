@@ -32,7 +32,6 @@ fi
 
 VALUES_FILE=""
 
-
 while [[ $# -gt 0 ]]; do
   case $1 in
     -f|--values)
@@ -124,7 +123,6 @@ export USER_EMAIL=$USERNAME@nowhere.no
 setup_minikube(){
   #Get the minikube IP and add it to /etc/hosts if not already present
   MINIKUBE_IP=$(minikube ip)
-
   export MINIKUBE_IP
   if ! grep -q "$MINIKUBE_IP" /etc/hosts; then
       echo "Adding minikube IP to /etc/hosts"
@@ -639,7 +637,7 @@ export_variables_to_github_env() {
 #  echo "CLIENT_ID=naavre" >> $GITHUB_ENV
 #  echo "REALM=$REALM" >> $GITHUB_ENV
   echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
-#  echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
+  echo "s=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
   echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
 #  echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
 #  echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV

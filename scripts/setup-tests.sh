@@ -519,6 +519,11 @@ setup_configuration_json(){
 
 # Get the SECRETS_CREATOR_API_TOKEN from the secret created in the cluster and set it to the environment variable SECRETS_CREATOR_API_TOKEN
 SECRETS_CREATOR_API_TOKEN="$(kubectl get secret ${SECRETS_CREATOR_SECRET_NAME} -o=jsonpath='{.data.API_TOKEN}' -n $namespace | base64 --decode)"
+export SECRETS_CREATOR_API_TOKEN="$SECRETS_CREATOR_API_TOKEN"
+echo "SECRETS_CREATOR_API_TOKEN=$SECRETS_CREATOR_API_TOKEN" >> $GITHUB_ENV
+
+export SECRETS_CREATOR_API_ENDPOINT="$SECRETS_CREATOR_API_ENDPOINT"
+echo "SECRETS_CREATOR_API_ENDPOINT=$SECRETS_CRE"ATOR_API_ENDPOINT >> $GITHUB_ENV
 
 # Check if CONFIG_FILE_URL exists
 if [ -f "$CONFIG_FILE_URL" ]; then
@@ -641,6 +646,8 @@ export_variables(){
     echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
     echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
     echo "ARGO_TOKEN=$ARGO_TOKEN"
+    echo "SECRETS_CREATOR_API_ENDPOINT"="$SECRETS_CREATOR_API_ENDPOINT"
+    echo "SECRETS_CREATOR_API_TOKEN"="$SECRETS_CREATOR_API_TOKEN"
   } > dev-setup.env
 
   # Marge dev-setup.env to dev.env

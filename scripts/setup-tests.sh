@@ -198,6 +198,23 @@ deploy_naavre(){
   fi
 }
 
+get_auth_token(){
+  AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
+    -H 'Content-Type: application/x-www-form-urlencoded' \
+    --data-urlencode "grant_type=password" \
+    --data-urlencode "client_id=$CLIENT_ID" \
+    --data-urlencode "username=$USERNAME" \
+    --data-urlencode "password=$USER_PASSWORD" \
+    --data-urlencode "scope=openid"| jq -r '.access_token')
+
+  # Make sure AUTH_TOKEN is not empty
+  if [ -z "$AUTH_TOKEN" ]; then
+      echo "Failed to get AUTH_TOKEN"
+      exit 1
+  fi
+  export AUTH_TOKEN
+}
+
 setup_authentication() {
   #Get user access token for the workflow service and set the environment variable AUTH_TOKEN
   # Wait for https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration to be available and fail if it is not available
@@ -314,23 +331,10 @@ setup_authentication() {
     -H "Content-Type: application/json" \
     -d "$UPDATED_JSON"
 
-  AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
-    -H 'Content-Type: application/x-www-form-urlencoded' \
-    --data-urlencode "grant_type=password" \
-    --data-urlencode "client_id=$CLIENT_ID" \
-    --data-urlencode "username=$USERNAME" \
-    --data-urlencode "password=$USER_PASSWORD" \
-    --data-urlencode "scope=openid"| jq -r '.access_token')
-
-  # Make sure AUTH_TOKEN is not empty
-  if [ -z "$AUTH_TOKEN" ]; then
-      echo "Failed to get AUTH_TOKEN"
-      exit 1
-  fi
-  export AUTH_TOKEN
+  get_auth_token
 }
 
-setup_argo(){
+get_argo_token(){
   #Get Argo workflow summation token and set it to configuration.json
   ARGO_TOKEN="$(kubectl get secret ${ARGO_SERCERT_TOKEN_NAME} -o=jsonpath='{.data.token}' -n $namespace | base64 --decode)"
   # Make sure ARGO_TOKEN is not empty
@@ -338,7 +342,10 @@ setup_argo(){
       echo "Failed to get Argo workflow submission token"
       exit 1
   fi
+}
 
+setup_argo(){
+  get_argo_token
   # Wait for the Argo workflow service to be available
   timeout=200
   start_time=$(date +%s)
@@ -656,7 +663,11 @@ setup_authentication
 
 setup_argo
 
+get_argo_token
+
 setup_configuration_json
+
+get_auth_token
 
 export_variables
 

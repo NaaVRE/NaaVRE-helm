@@ -242,8 +242,6 @@ setup_authentication() {
       exit 1
   fi
 
-  echo "Getting AUTH_TOKEN token"
-
   # Get admin token
   KEYCLOAK_ADMIN_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/master/protocol/openid-connect/token" -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "grant_type=password"   --data-urlencode "client_id=admin-cli"   --data-urlencode "username=$KEYCLOAK_AMIN_USER"   --data-urlencode "password=$KEYCLOAK_ADMIN_PASSWORD" | jq -r '.access_token')
   if [ -z "$KEYCLOAK_ADMIN_TOKEN" ] || [ "$KEYCLOAK_ADMIN_TOKEN" == "null" ]; then
@@ -316,8 +314,6 @@ setup_authentication() {
     -H "Content-Type: application/json" \
     -d "$UPDATED_JSON"
 
-
-  echo "Requesting user token"
   AUTH_TOKEN=$(curl -s -k -X POST "https://$MINIKUBE_HOST/auth/realms/$REALM/protocol/openid-connect/token" \
     -H 'Content-Type: application/x-www-form-urlencoded' \
     --data-urlencode "grant_type=password" \
@@ -420,15 +416,11 @@ create_pv_pvc(){
   # Delete existing PV and PVC with the same name if they exist
   if [ "$DELETE_PV_PVC" == "true" ]; then
     while read volume_name; do
-      echo "Deleting existing PV and PVC for volume: $volume_name"
-      echo kubectl delete pvc $volume_name -n $namespace --ignore-not-found=true
       kubectl delete pvc $volume_name -n $namespace --ignore-not-found=true
-      echo kubectl delete pv  $volume_name -n $namespace --ignore-not-found=true
       kubectl delete pv  $volume_name -n $namespace --ignore-not-found=true
     done < volume_names
   fi
   while read volume_name; do
-    echo "Creating PV and PVC for volume: $volume_name"
     kubectl apply -f - <<EOF
       apiVersion: v1
       kind: PersistentVolume
@@ -544,14 +536,12 @@ fi
 
 # if dev.env file exists, source it to get CELL_GITHUB_TOKEN
 if [ -f "dev.env" ]; then
-  echo "Sourcing dev.env to get CELL_GITHUB_TOKEN"
   source dev.env
 fi
 
 # if configuration.json exists add the values, else skip
 if [ -f "configuration.json" ]; then
   export VIRTUAL_LAB_NAME="${VIRTUAL_LAB_NAME:-openlab}"
-  echo "Using virtual lab name: $VIRTUAL_LAB_NAME"
   jq --arg token "$ARGO_TOKEN" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.access_token = $token else . end)' configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   # Set namespace in minkube_configuration.json in the openlab
   jq --arg namespace "$namespace" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .wf_engine_config.namespace = $namespace else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
@@ -563,7 +553,6 @@ if [ -f "configuration.json" ]; then
   jq --arg base_image_tags_url "$BASE_IMAGE_TAGS_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .base_image_tags_url = $base_image_tags_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   jq --arg module_mapping_url "$MODULE_MAPPING_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .module_mapping_url = $module_mapping_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
   jq --arg registry_url "$REGISTRY_URL" --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations |= map(if .name == $vl then .registry_url = $registry_url else . end)' minkube_configuration.json > tmp.json && mv tmp.json minkube_configuration.json
-  echo "Updated minkube_configuration.json with ARGO_TOKEN and other values"
   # Create a PV and PVC volume mount from the extraVolumeMounts in minkube_configuration.json
   # Save the name of the extraVolumeMounts in a bash array
   jq . minkube_configuration.json | jq -r --arg vl "$VIRTUAL_LAB_NAME" '.vl_configurations[] | select(.name == $vl) | .wf_engine_config.extraVolumeMounts[] .name' > volume_names

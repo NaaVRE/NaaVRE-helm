@@ -16,7 +16,6 @@ print_usage() {
   echo "Options:"
   echo "  -f, --values        Path to the Helm values file to use for deployment"
   echo "  -d, --delete-naavre-dir  Delete the NaaVRE-helm directory before cloning it again"
-  echo "  -c, --clone-naavre-dir   Clone the NaaVRE-helm repository if it does not exist"
   echo "  -n, --delete-namespace        Delete the NaaVRE namespace before installation"
   echo "  -u, --uninstall-naavre        Uninstall NaaVRE before installation"
   echo "  -p, --delete-pv-pvc        Delete PV and PVC before creating them again"
@@ -41,10 +40,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     -d|--delete-naavre-dir)
       DELETE_NAAAVRE_DIR="true"
-      shift # past argument
-      ;;
-    -c|--clone-naavre-dir)
-      CLONE_NAAAVRE_DIR="true"
       shift # past argument
       ;;
     -n|--delete-namespace)
@@ -115,7 +110,6 @@ export "SECRETS_CREATOR_SECRET_NAME=$namespace-k8s-secret-creator"
 export ARGO_SERVICE_ACCOUNT_EXECUTOR="argo-executor"
 export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
-export USER_EMAIL=$USERNAME@nowhere.no
 
 
 
@@ -151,19 +145,18 @@ setup_minikube(){
 }
 
 deploy_naavre(){
-  echo "Deploying NaaVRE Helm chart"
   if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     if [ "$DELETE_NAAAVRE_DIR" == "true" ]; then
       rm -rf NaaVRE-helm
     fi
-    if [ "$CLONE_NAAAVRE_DIR" == "true" ]; then
-      git clone https://github.com/NaaVRE/NaaVRE-helm.git
-    fi
+    git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
     cp "../$VALUES_FILE" .
   fi
   # Add the third-party Helm repos
-  ./deploy.sh repo-add
+  if [ "$DEPLOY_NAAAVRE" == "true" ]; then
+    ./deploy.sh repo-add
+  fi
   cp "$VALUES_FILE" secrets-minikube.yaml
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
@@ -238,7 +231,7 @@ setup_authentication() {
       echo "USERNAME is empty. Please check the values file."
       exit 1
   fi
-
+  export USER_EMAIL=$USERNAME@nowhere.no
   export USER_FIRST_NAME=$USERNAME
   export USER_LAST_NAME=$USERNAME
 
@@ -330,7 +323,6 @@ setup_authentication() {
     -H "Authorization: Bearer $KEYCLOAK_ADMIN_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$UPDATED_JSON"
-
   get_auth_token
 }
 
@@ -605,13 +597,13 @@ export_variables(){
     echo "USERNAME=$USERNAME"
     echo "USER_PASSWORD=$USER_PASSWORD"
     echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER"
-    echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD"
     echo "OIDC_CONFIGURATION_URL=$OIDC_CONFIGURATION_URL"
     echo "REGISTRY_TOKEN_FOR_TESTS=$REGISTRY_TOKEN_FOR_TESTS"
     echo "CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN"
     echo "ARGO_TOKEN=$ARGO_TOKEN"
     echo "SECRETS_CREATOR_API_ENDPOINT"="$SECRETS_CREATOR_API_ENDPOINT"
     echo "SECRETS_CREATOR_API_TOKEN"="$SECRETS_CREATOR_API_TOKEN"
+    echo "USER_EMAIL"="$USER_EMAIL"
   } > dev-setup.env
 
   # Marge dev-setup.env to dev.env
@@ -627,32 +619,34 @@ export_variables(){
 }
 
 export_variables_to_github_env() {
-#  echo "CLIENT_ID=naavre" >> $GITHUB_ENV
-#  echo "REALM=$REALM" >> $GITHUB_ENV
-  echo "DISABLE_OAUTH=False" >> $GITHUB_ENV
-  echo "OIDC_CONFIGURATION_URL=https://$MINIKUBE_HOST/auth/realms/$REALM/.well-known/openid-configuration" >> $GITHUB_ENV
-  echo "SECRETS_CREATOR_API_ENDPOINT=https://$MINIKUBE_HOST/k8s-secret-creator/1.0.0" >> $GITHUB_ENV
-#  echo "ARGO_SERVICE_ACCOUNT_EXECUTOR=argo-executor" >> $GITHUB_ENV
-#  echo "ARGO_VRE_API_SERVICE_ACCOUNT=argo-vreapi" >> $GITHUB_ENV
-  echo "ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token" >> $GITHUB_ENV
-  echo "VERIFY_SSL=False" >> $GITHUB_ENV
-  echo "DISABLE_AUTH=False" >> $GITHUB_ENV
-#  echo "USERNAME=$USERNAME" >> $GITHUB_ENV
-#  echo "USER_EMAIL=$USER_EMAIL" >> $GITHUB_ENV
-#  echo "USER_FIRST_NAME=$USER_FIRST_NAME" >> $GITHUB_ENV
-#  echo "USER_LAST_NAME=$USER_LAST_NAME" >> $GITHUB_ENV
-#  echo "USER_PASSWORD=$USER_PASSWORD" >> $GITHUB_ENV
-#  echo "KEYCLOAK_AMIN_USER=$KEYCLOAK_AMIN_USER" >> $GITHUB_ENV
-#  echo "KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD" >> $GITHUB_ENV
-  echo "AUTH_TOKEN=$AUTH_TOKEN" >> $GITHUB_ENV
-  echo "ARGO_TOKEN=$ARGO_TOKEN" >> $GITHUB_ENV
-  echo "SECRETS_CREATOR_API_TOKEN=$SECRETS_CREATOR_API_TOKEN" >> $GITHUB_ENV
-  echo "SECRETS_CREATOR_API_ENDPOINT=$SECRETS_CRE"ATOR_API_ENDPOINT >> $GITHUB_ENV
-  echo "CONFIG_FILE_URL=minkube_configuration.json" >> $GITHUB_ENV
-#  echo "BASE_IMAGE_TAGS_URL=$BASE_IMAGE_TAGS_URL" >> $GITHUB_ENV
-#  echo "MODULE_MAPPING_URL=$MODULE_MAPPING_URL" >> $GITHUB_ENV
-#  echo "CELL_GITHUB_URL=$CELL_GITHUB_URL" >> $GITHUB_ENV
-#  echo "REGISTRY_URL=$REGISTRY_URL" >> $GITHUB_ENV
+  # Write variables from dev-setup.env into GITHUB_ENV for GitHub Actions
+  # Skip empty lines and comments, and strip any leading `export ` tokens.
+  if [ -z "$GITHUB_ENV" ]; then
+    GITHUB_ENV=/dev/stdout
+  fi
+
+  if [ ! -f "dev-setup.env" ]; then
+    echo "dev-setup.env not found, skipping write to GITHUB_ENV"
+    return 0
+  fi
+
+  echo "Writing variables from dev-setup.env to GITHUB_ENV ($GITHUB_ENV)"
+
+  # Count variables written
+  var_count=0
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Trim leading/trailing whitespace
+    trimmed=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    # Skip empty or commented lines
+    if [ -z "$trimmed" ] || [[ "$trimmed" =~ ^# ]]; then
+      continue
+    fi
+    # Remove leading 'export ' if present
+    sanitized=$(echo "$trimmed" | sed -E 's/^export[[:space:]]+//')
+    # Append to GITHUB_ENV
+    echo "$sanitized" >> "$GITHUB_ENV"
+    var_count=$((var_count+1))
+  done < dev-setup.env
 }
 
 setup_minikube

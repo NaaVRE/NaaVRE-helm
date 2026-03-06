@@ -14,7 +14,7 @@ jobs:
       matrix:
         chart:
           - scripts/argo-workflows-0.45.6-Chart.yaml
-          - scripts/jupyterhub-4.1.0-Chart.yaml
+          - scripts/argo-workflows-0.33.1-Chart.yaml
     steps:
       - uses: actions/checkout@v4
 

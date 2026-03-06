@@ -37,3 +37,30 @@ jobs:
         run: |
           pip install pyjwt
           python -c "import jwt; import os; token = os.getenv('AUTH_TOKEN'); decoded = jwt.decode(token, options={'verify_signature': False}); print(decoded)"
+
+      - name: Run playwright tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: |
+          cd tests
+          npm ci
+
+      - name: Install Playwright Browsers
+        run: |
+          cd tests
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          cd tests
+          npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: tests/playwright-report/
+          retention-days: 5

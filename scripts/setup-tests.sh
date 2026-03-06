@@ -166,6 +166,7 @@ deploy_naavre(){
     fi
     echo "Using custom chart file: $CHART_FILE"
     cp "$CHART_FILE" naavre/Chart.yaml
+    cd naavre && helm dependency update && cd ..
   fi
 
   # Add the third-party Helm repos

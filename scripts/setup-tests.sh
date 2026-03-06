@@ -159,9 +159,13 @@ deploy_naavre(){
     cd NaaVRE-helm
     cp "../$VALUES_FILE" .
   fi
-  if [ -n "$CHART_FILE" ] && [ "$"]
+  if [ -n "$CHART_FILE" ]; then
+    if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+      echo "Changing directory to NaaVRE-helm to use custom chart file"
+      cd NaaVRE-helm
+    fi
     echo "Using custom chart file: $CHART_FILE"
-    cp "$CHART_FILE" Chart.yaml
+    cp "$CHART_FILE" naavre/Chart.yaml
   fi
 
   # Add the third-party Helm repos

@@ -59,6 +59,11 @@ while [[ $# -gt 0 ]]; do
       DEPLOY_NAAAVRE="true"
       shift # past argument
       ;;
+    -c |--chart-file)
+      CHART_FILE="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -154,6 +159,11 @@ deploy_naavre(){
     cd NaaVRE-helm
     cp "../$VALUES_FILE" .
   fi
+  if [ -n "$CHART_FILE" ] && [ "$"]
+    echo "Using custom chart file: $CHART_FILE"
+    cp "$CHART_FILE" Chart.yaml
+  fi
+
   # Add the third-party Helm repos
   if [ "$DEPLOY_NAAAVRE" == "true" ]; then
     ./deploy.sh repo-add

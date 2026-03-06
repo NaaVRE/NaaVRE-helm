@@ -158,6 +158,9 @@ deploy_naavre(){
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
     cp "../$VALUES_FILE" .
+    cp "../$VALUES_FILE" secrets-minikube.yaml
+  else
+    cp "$VALUES_FILE" secrets-minikube.yaml
   fi
   if [ -n "$CHART_FILE" ]; then
     CURRENT_DIR=$(basename "$(pwd)")
@@ -179,7 +182,6 @@ deploy_naavre(){
   if [ "$DEPLOY_NAAAVRE" == "true" ]; then
     ./deploy.sh repo-add
   fi
-  cp "$VALUES_FILE" secrets-minikube.yaml
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
     source ../dev.env

@@ -59,11 +59,6 @@ while [[ $# -gt 0 ]]; do
       DEPLOY_NAAAVRE="true"
       shift # past argument
       ;;
-    -c |--chart-file)
-      CHART_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -158,7 +153,6 @@ deploy_naavre(){
     git clone https://github.com/NaaVRE/NaaVRE-helm.git
     cd NaaVRE-helm
     cp "../$VALUES_FILE" .
-
   fi
   # Add the third-party Helm repos
   if [ "$DEPLOY_NAAAVRE" == "true" ]; then
@@ -169,6 +163,7 @@ deploy_naavre(){
   if [ -f "../dev.env" ]; then
     source ../dev.env
   fi
+
 
   #Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
   if [ -n "$CELL_GITHUB_TOKEN" ]; then

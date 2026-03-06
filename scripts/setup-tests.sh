@@ -165,10 +165,13 @@ deploy_naavre(){
       echo "Changing directory to NaaVRE-helm to use custom chart file"
       cd NaaVRE-helm
     else
-      cp "../$CHART_FILE" .
+      CHART_FILE_IN_PLACE="true"
+      cp "../$CHART_FILE" ./naavre/Chart.yaml
     fi
     echo "Using custom chart file: $CHART_FILE"
-    cp "$CHART_FILE" naavre/Chart.yaml
+    if [ -z "$CHART_FILE_IN_PLACE" ]; then
+      cp "$CHART_FILE" naavre/Chart.yaml
+     fi
     cd naavre && helm dependency update && cd ..
   fi
 

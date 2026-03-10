@@ -139,3 +139,5 @@ jupyterhub:
       enabled: true
     als-tree-ind:
       enabled: true
+    homeros-seismology:
+      enabled: true

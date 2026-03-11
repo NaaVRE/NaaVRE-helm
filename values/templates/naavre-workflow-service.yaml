@@ -70,3 +70,6 @@ naavre-workflow-service:
     SECRETS_CREATOR_API_ENDPOINT: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
     SECRETS_CREATOR_API_TOKEN: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"
     {{- end }}
+
+  affinity:
+    {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

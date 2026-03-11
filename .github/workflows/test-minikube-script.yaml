@@ -30,7 +30,8 @@ jobs:
       - name: Run setup-tests.sh
         shell: bash -l {0}
         run: |
-          ./minikube_tests/setup-tests-local.sh -f values/values-deploy-minikube.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
+          chmod +x ./minikube_tests/setup-tests.sh 
+          ./minikube_tests/setup-tests.sh -f values/values-deploy-minikube.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
 
       - name: Test auth token with python jwt library
         run: |

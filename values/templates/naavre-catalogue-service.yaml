@@ -58,3 +58,6 @@ naavre-catalogue-service:
     postgresql:
       auth:
         password: "{{ .Values.global.secrets.naavreCatalogueService.postgresql.password }}"
+
+  affinity:
+    {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

@@ -49,6 +49,8 @@ global:
     velero:
       podAnnotations:
         backup.velero.io/backup-volumes: pvc-volume,emptydir-volume
+    corePods:
+      affinity: {}
     userPods:
       # See documentation README.md#add-minio-mount-to-user-containers
       extraVolumeMounts: []

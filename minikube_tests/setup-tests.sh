@@ -169,7 +169,8 @@ deploy_naavre(){
       cd NaaVRE-helm
     else
       CHART_FILE_IN_PLACE="true"
-      cp "../$CHART_FILE" ./naavre/Chart.yaml
+      echo '------------'
+      cp "$CHART_FILE" ./naavre/Chart.yaml
     fi
     echo "Using custom chart file: $CHART_FILE"
     if [ -z "$CHART_FILE_IN_PLACE" ]; then

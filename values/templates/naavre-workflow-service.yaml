@@ -47,6 +47,13 @@ naavre-workflow-service:
             extraVolumeMounts:
               {{- $.Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 14 }}
             {{- end }}
+            {{- if $.Values.global.externalServices.k8sSecretCreator.useExternal }}
+            secrets_creator_api_endpoint: "{{ $.Values.global.externalServices.k8sSecretCreator.url }}"
+            secrets_creator_api_token: "{{ $.Values.global.externalServices.k8sSecretCreator.token }}"
+            {{- else }}
+            secrets_creator_api_endpoint: "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
+            secrets_creator_api_token: "{{ $.Values.global.secrets.k8sSecretCreator.apiToken }}"
+            {{- end }}
         {{- end }}
         {{- end }}
       {{- end }}
@@ -63,13 +70,6 @@ naavre-workflow-service:
     OIDC_CONFIGURATION_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/.well-known/openid-configuration"
     {{- end }}
     CONFIG_FILE_URL: "/configuration.json"
-    {{- if .Values.global.externalServices.k8sSecretCreator.useExternal }}
-    SECRETS_CREATOR_API_ENDPOINT: "{{ .Values.global.externalServices.k8sSecretCreator.url }}"
-    SECRETS_CREATOR_API_TOKEN: "{{ .Values.global.externalServices.k8sSecretCreator.token }}"
-    {{- else }}
-    SECRETS_CREATOR_API_ENDPOINT: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
-    SECRETS_CREATOR_API_TOKEN: "{{ .Values.global.secrets.k8sSecretCreator.apiToken }}"
-    {{- end }}
 
   affinity:
     {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

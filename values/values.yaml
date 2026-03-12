@@ -60,13 +60,6 @@ global:
         #   subPath: 'path/in/pv'  # optional
 
   externalServices:
-    # The PaaS as well as all VLs must use the same Argo Workflows instance
-    # (either part of the current deployment or external). While the
-    # NaaVRE-workflow-service supports per-VL Argo configuration, the PaaS
-    # does not. To retain a consistent behaviour, it is not possible to set
-    # per-VL Argo configuration with this chart. In the future, per-VL Argo
-    # configuration support should be added to the PaaS.
-    # TODO: support per-VL Argo Workflows configuration
     argoWorkflows:
       useExternal: false
       namespace: nil

@@ -31,11 +31,17 @@ naavre-workflow-service:
         - name: "{{ $vlab.slug }}"
           wf_engine_config:
             name: "argo"
-            {{- if $.Values.global.externalServices.argoWorkflows.useExternal }}
-            namespace: "{{ $.Values.global.externalServices.argoWorkflows.namespace }}"
-            api_endpoint: "{{ $.Values.global.externalServices.argoWorkflows.url }}/"
-            access_token: "{{ $.Values.global.externalServices.argoWorkflows.token }}"
-            service_account: "{{ $.Values.global.externalServices.argoWorkflows.executor_service_account }}"
+            {{- $externalArgoWorkflows := false }}
+            {{- if $vlab.configuration.workflowEngineOverride.argoWorkflows }}
+            {{- $externalArgoWorkflows = $vlab.configuration.workflowEngineOverride.argoWorkflows }}
+            {{- else if $.Values.global.externalServices.argoWorkflows.useExternal }}
+            {{- $externalArgoWorkflows = $.Values.global.externalServices.argoWorkflows }}
+            {{- end }}
+            {{- if $externalArgoWorkflows }}
+            namespace: "{{ $externalArgoWorkflows.namespace }}"
+            api_endpoint: "{{ $externalArgoWorkflows.url }}/"
+            access_token: "{{ $externalArgoWorkflows.token }}"
+            service_account: "{{ $externalArgoWorkflows.executor_service_account }}"
             {{- else }}
             namespace: "{{ $.Values.global.namespace }}"
             api_endpoint: "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.argoWorkflows.ingress.basePath }}/"
@@ -47,9 +53,15 @@ naavre-workflow-service:
             extraVolumeMounts:
               {{- $.Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 14 }}
             {{- end }}
-            {{- if $.Values.global.externalServices.k8sSecretCreator.useExternal }}
-            secrets_creator_api_endpoint: "{{ $.Values.global.externalServices.k8sSecretCreator.url }}"
-            secrets_creator_api_token: "{{ $.Values.global.externalServices.k8sSecretCreator.token }}"
+            {{- $externalK8sSecretCreator := false }}
+            {{- if $vlab.configuration.workflowEngineOverride.k8sSecretCreator }}
+            {{- $externalK8sSecretCreator = $vlab.configuration.workflowEngineOverride.k8sSecretCreator }}
+            {{- else if $.Values.global.externalServices.k8sSecretCreator.useExternal }}
+            {{- $externalK8sSecretCreator = $.Values.global.externalServices.k8sSecretCreator }}
+            {{- end }}
+            {{- if $externalK8sSecretCreator }}
+            secrets_creator_api_endpoint: "{{ $externalK8sSecretCreator.url }}"
+            secrets_creator_api_token: "{{ $externalK8sSecretCreator.token }}"
             {{- else }}
             secrets_creator_api_endpoint: "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
             secrets_creator_api_token: "{{ $.Values.global.secrets.k8sSecretCreator.apiToken }}"

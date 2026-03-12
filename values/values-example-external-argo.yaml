@@ -57,6 +57,7 @@ k8sSecretCreator:
 jupyterhub:
   vlabs:
     openlab:
+      enabled: true
       slug: openlab
       title: "NaaVRE Open Lab"
       labels: []
@@ -72,3 +73,29 @@ jupyterhub:
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
         git_public: {}
+    otherLab:
+      enabled: true
+      slug: other-lab
+      title: "Another lab"
+      labels: []
+      description: "Another virtual lab to demonstrate that we support several"
+      dirname: "Another Lab"
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.1.12
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.12/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
+        cell_github_token: "<Token generated following the instructions from the template>"
+        registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
+        git_public: {}
+        workflowEngineOverride:
+          argoWorkflows:
+            namespace: "argo-override"
+            url: "https://override.example.org/argowf"
+            token: "Bearer <API token override>"
+            executor_service_account: "executor-override"
+          k8sSecretCreator:
+            url: "https://override.example.org/k8s-secret-creator/1.0.0/"
+            token: "<API token override>"

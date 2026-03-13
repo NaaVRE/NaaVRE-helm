@@ -13,9 +13,9 @@ Options:
   --kube-context        Kubernetes context (default: \"\")
   -n,--namespace        Kubernetes namespace (default: \"\")
   -r,--release-name     helm release name (default: \"naavre\")
-  -f,--values           value file(s) for the values/ chart (default: guess
-                        from --kube-context and --use-vlic-secrets)
+  -f,--values           value file(s) for the values/ chart
   -s,--use-vlic-secrets use VLIC secrets (default: false)
+  --include-labs        include values/virtual-labs/* (implied by --use-vlic-secrets)
   --dry-run             print the commands without running them
   -h,--help             print help and exit
 
@@ -40,6 +40,7 @@ g_namespace=""
 g_release_name="naavre"
 g_value_files=()
 g_use_vlic_secrets=0
+g_include_labs=0
 g_dry_run=0
 
 g_allowed_actions=(
@@ -111,7 +112,7 @@ gen_f_args() {
   for file in "${g_value_files[@]}"; do
     f_args="$f_args -f \"$file\""
   done
-  if [[ "$g_use_vlic_secrets" -eq 1 ]]; then
+  if [[ "$g_include_labs" -eq 1 || "$g_use_vlic_secrets" -eq 1 ]]; then
     f_args="\$($(gen_find_helm_value_files values/virtual-labs)) $f_args"
   fi
   echo "$f_args"
@@ -250,6 +251,10 @@ main() {
         ;;
       -s|--use-vlic-secrets)
         g_use_vlic_secrets=1
+        shift
+        ;;
+      --include-labs)
+        g_include_labs=1
         shift
         ;;
       --dry-run)

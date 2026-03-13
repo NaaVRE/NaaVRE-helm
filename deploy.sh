@@ -16,6 +16,8 @@ Options:
   -f,--values           value file(s) for the values/ chart
   -s,--use-vlic-secrets use VLIC secrets (default: false)
   --include-labs        include values/virtual-labs/* (implied by --use-vlic-secrets)
+  --no-dependency-build skip helm dependency build (WARNING: used improperly, this can
+                        break deployments by deploying the wrong subchart versions)
   --dry-run             print the commands without running them
   -h,--help             print help and exit
 
@@ -41,6 +43,7 @@ g_release_name="naavre"
 g_value_files=()
 g_use_vlic_secrets=0
 g_include_labs=0
+g_no_dependency_build=0
 g_dry_run=0
 
 g_allowed_actions=(
@@ -155,7 +158,11 @@ gen_helm_repo_add() {
 }
 
 gen_helm_dependency_build() {
-  echo "helm dependency build $1 naavre"
+  if [[ $g_no_dependency_build -eq 0 ]]; then
+    echo "helm dependency build $1 naavre"
+  else
+    echo "echo \"Skipping helm dependency build\""
+  fi
 }
 
 gen_helm_dependency_update() {
@@ -255,6 +262,10 @@ main() {
         ;;
       --include-labs)
         g_include_labs=1
+        shift
+        ;;
+      --no-dependency-build)
+        g_no_dependency_build=1
         shift
         ;;
       --dry-run)

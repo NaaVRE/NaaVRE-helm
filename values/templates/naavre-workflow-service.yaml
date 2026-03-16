@@ -32,7 +32,7 @@ naavre-workflow-service:
           wf_engine_config:
             name: "argo"
             {{- $externalArgoWorkflows := false }}
-            {{- if $vlab.configuration.workflowEngineOverride.argoWorkflows }}
+            {{- if ($vlab.configuration.workflowEngineOverride | default dict).argoWorkflows }}
             {{- $externalArgoWorkflows = $vlab.configuration.workflowEngineOverride.argoWorkflows }}
             {{- else if $.Values.global.externalServices.argoWorkflows.useExternal }}
             {{- $externalArgoWorkflows = $.Values.global.externalServices.argoWorkflows }}
@@ -54,7 +54,7 @@ naavre-workflow-service:
               {{- $.Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 14 }}
             {{- end }}
             {{- $externalK8sSecretCreator := false }}
-            {{- if $vlab.configuration.workflowEngineOverride.k8sSecretCreator }}
+            {{- if ($vlab.configuration.workflowEngineOverride | default dict).k8sSecretCreator }}
             {{- $externalK8sSecretCreator = $vlab.configuration.workflowEngineOverride.k8sSecretCreator }}
             {{- else if $.Values.global.externalServices.k8sSecretCreator.useExternal }}
             {{- $externalK8sSecretCreator = $.Values.global.externalServices.k8sSecretCreator }}

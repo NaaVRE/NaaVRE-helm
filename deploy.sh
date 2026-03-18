@@ -13,9 +13,11 @@ Options:
   --kube-context        Kubernetes context (default: \"\")
   -n,--namespace        Kubernetes namespace (default: \"\")
   -r,--release-name     helm release name (default: \"naavre\")
-  -f,--values           value file(s) for the values/ chart (default: guess
-                        from --kube-context and --use-vlic-secrets)
+  -f,--values           value file(s) for the values/ chart
   -s,--use-vlic-secrets use VLIC secrets (default: false)
+  --include-labs        include values/virtual-labs/* (implied by --use-vlic-secrets)
+  --no-dependency-build skip helm dependency build (WARNING: used improperly, this can
+                        break deployments by deploying the wrong subchart versions)
   --dry-run             print the commands without running them
   -h,--help             print help and exit
 
@@ -24,6 +26,7 @@ Actions:
   install-keycloak-operator   install the keycloak operator in the current namespace
   dependency-build      rebuild the naavre/charts/ directory based on the naavre/Chart.lock file
   dependency-update     update naavre/charts/ based on the contents of naavre/Chart.yaml
+  lint                  lint values/ and naavre/ helm charts
   install               render values/ and create a new deployment of naavre/
   upgrade               render values/ and upgrade an existing deployment of naavre/
   rollback              rollback an existing deployment
@@ -39,6 +42,8 @@ g_namespace=""
 g_release_name="naavre"
 g_value_files=()
 g_use_vlic_secrets=0
+g_include_labs=0
+g_no_dependency_build=0
 g_dry_run=0
 
 g_allowed_actions=(
@@ -46,6 +51,7 @@ g_allowed_actions=(
   "install-keycloak-operator"
   "dependency-build"
   "dependency-update"
+  "lint"
   "install"
   "upgrade"
   "rollback"
@@ -104,15 +110,30 @@ gen_helm_common_options() {
   echo "$options"
 }
 
-gen_helm_values_template_cmd() {
+gen_f_args() {
   f_args=""
   for file in "${g_value_files[@]}"; do
     f_args="$f_args -f \"$file\""
   done
+  if [[ "$g_include_labs" -eq 1 || "$g_use_vlic_secrets" -eq 1 ]]; then
+    f_args="\$($(gen_find_helm_value_files values/virtual-labs)) $f_args"
+  fi
+  echo "$f_args"
+}
+
+gen_helm_values_lint_cmd() {
   if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
-    echo "helm template $g_release_name values/ --output-dir values/rendered $f_args"
+    echo "helm lint values/ $(gen_f_args)"
   else
-    echo "helm secrets template $g_release_name values/ --output-dir values/rendered \$($(gen_find_helm_value_files values/virtual-labs)) $f_args"
+    echo "helm secrets lint values/ $(gen_f_args)"
+  fi
+}
+
+gen_helm_values_template_cmd() {
+  if [[ "$g_use_vlic_secrets" -eq 0 ]]; then
+    echo "helm template $g_release_name values/ --output-dir values/rendered $(gen_f_args)"
+  else
+    echo "helm secrets template $g_release_name values/ --output-dir values/rendered $(gen_f_args)"
   fi
 }
 
@@ -137,11 +158,19 @@ gen_helm_repo_add() {
 }
 
 gen_helm_dependency_build() {
-  echo "helm dependency build $1 naavre"
+  if [[ $g_no_dependency_build -eq 0 ]]; then
+    echo "helm dependency build $1 naavre"
+  else
+    echo "echo \"Skipping helm dependency build\""
+  fi
 }
 
 gen_helm_dependency_update() {
   echo "helm dependency update $1 naavre"
+}
+
+gen_helm_naavre_lint_cmd() {
+  echo "helm $(gen_helm_common_options) lint $1 naavre/ \$($(gen_find_helm_value_files values/rendered/values/templates))"
 }
 
 gen_helm_naavre_install_cmd() {
@@ -231,6 +260,14 @@ main() {
         g_use_vlic_secrets=1
         shift
         ;;
+      --include-labs)
+        g_include_labs=1
+        shift
+        ;;
+      --no-dependency-build)
+        g_no_dependency_build=1
+        shift
+        ;;
       --dry-run)
         g_dry_run=1
         shift
@@ -266,6 +303,14 @@ main() {
       ;;
     dependency-update)
       run_cmd "$(gen_helm_dependency_update "$action_options")"
+      ;;
+    lint)
+      check_value_files
+      check_sops
+      run_cmd "$(gen_helm_dependency_build)"
+      run_cmd "$(gen_helm_values_lint_cmd)"
+      run_cmd "$(gen_helm_values_template_cmd)"
+      run_cmd "$(gen_helm_naavre_lint_cmd "$action_options") ; $(gen_rm_values_cmd)"
       ;;
     install)
       check_all

@@ -19,12 +19,12 @@ dependencies:
   version: v0.5.3
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.4.6
+  version: v0.4.7
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.1.7
+  version: v0.2.1
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.4
-digest: sha256:693e475ebf33304659b501427bae599f51892499047d09b89a47e8dca65fec25
-generated: "2026-03-11T13:45:24.658366955+01:00"
+digest: sha256:23418351e32c117b0e6d345cd2537a212fd680398e6aacbe920e378365cb346f
+generated: "2026-03-16T12:51:27.089157524+01:00"

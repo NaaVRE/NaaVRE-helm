@@ -5,7 +5,7 @@ jupyterhub:
       slug: aneris
       title:  Essential Climate Variables Virtual Lab
       communities: [naavre]
-      labels: [tutorial, aneris]
+      labels: [aneris]
       description: |
         A virtual lab to access ANERIS.
       dirname: ANERIS

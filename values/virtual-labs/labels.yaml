@@ -20,3 +20,7 @@ jupyterhub:
     marco-bolo:
       title: Marco-Bolo
       color: "#6ec1e4"
+
+    aneris:
+      title: ANERIS
+      color: "#6ec1e4"

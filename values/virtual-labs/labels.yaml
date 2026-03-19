@@ -20,3 +20,7 @@ jupyterhub:
     marco-bolo:
       title: Marco-Bolo
       color: "#6ec1e4"
+
+    ecvs:
+      title: ECVs
+      color: "#6ec1e4"

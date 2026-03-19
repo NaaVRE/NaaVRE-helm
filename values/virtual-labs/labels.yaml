@@ -24,3 +24,7 @@ jupyterhub:
     ecvs:
       title: ECVs
       color: "#6ec1e4"
+
+    aneris:
+      title: ANERIS
+      color: "#6ec1e4"

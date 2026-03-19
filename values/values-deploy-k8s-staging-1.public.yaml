@@ -115,9 +115,13 @@ jupyterhub:
       enabled: true
     laserfarm:
       enabled: true
+    aneris:
+      enabled: true
     biodt-hackathon25:
       enabled: true
     blue-carbon:
+      enabled: true
+    ecvs:
       enabled: true
     quadfavl:
       enabled: true

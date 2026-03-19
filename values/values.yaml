@@ -49,6 +49,8 @@ global:
     velero:
       podAnnotations:
         backup.velero.io/backup-volumes: pvc-volume,emptydir-volume
+    corePods:
+      affinity: {}
     userPods:
       # See documentation README.md#add-minio-mount-to-user-containers
       extraVolumeMounts: []
@@ -58,13 +60,6 @@ global:
         #   subPath: 'path/in/pv'  # optional
 
   externalServices:
-    # The PaaS as well as all VLs must use the same Argo Workflows instance
-    # (either part of the current deployment or external). While the
-    # NaaVRE-workflow-service supports per-VL Argo configuration, the PaaS
-    # does not. To retain a consistent behaviour, it is not possible to set
-    # per-VL Argo configuration with this chart. In the future, per-VL Argo
-    # configuration support should be added to the PaaS.
-    # TODO: support per-VL Argo Workflows configuration
     argoWorkflows:
       useExternal: false
       namespace: nil
@@ -164,8 +159,25 @@ jupyterhub:
           # Public git repo cloned when starting the lab
           # repo: https://example.org/my/repo.git
           # branch: main
+        #
         # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
         # default_file_path: Virtual Labs/Open Lab/Git public/tutorial/Your first workflow in Python.ipynb
+        #
+        # Optional workflow engine override for the virtual lab. Allows
+        # configuring an external Argo workflows instance and
+        # k8s-secrets-creator to be used for the current virtual lab only. If
+        # unset, the default Argo workflows and k8s-secrets-creator are used
+        # (this can be the ones deployed by the current charts or external ones
+        # configured in global.externalServices)
+        workflowEngineOverride: {}
+          # argoWorkflows:
+          #   namespace: nil
+          #   url: nil
+          #   token: nil
+          #   executor_service_account: nil
+          # k8sSecretCreator:
+          #   url: nil
+          #   token: nil
       postStartShSnippet: |
         echo "Do something"
 

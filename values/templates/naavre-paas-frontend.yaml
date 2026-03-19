@@ -38,3 +38,6 @@ naavre-paas-frontend:
     secret: "{{ .Values.global.secrets.naavrePaasFrontend.secretKey }}"
     services:
       naavreCatalogueServiceUrl: https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}
+
+  affinity:
+    {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

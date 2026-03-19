@@ -1,0 +1,23 @@
+jupyterhub:
+  vlabs:
+    homeros-seismology:
+      enabled: false
+      slug: homeros-seismology
+      title:  Homeros Seismology Virtual Lab
+      communities: [naavre]
+      labels: []
+      description: Creating and visualizing earthquake catalogs using machine-learning tools and algorithms for small (or larger) datasets.
+      dirname: Homeros-Seismology
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-homeros-seismology-jupyter
+        tag: v0.1.13
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.13/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-homeros-seismology
+        registry_url: ghcr.io/naavre/cells-vl-homeros-seismology
+        log_queries: true
+        git_public:
+          repo: https://github.com/NaaVRE/vl-homeros-seismology.git
+          branch: main
+        default_file_path: Virtual Labs/Homeros-Seismology/Git public/README.md

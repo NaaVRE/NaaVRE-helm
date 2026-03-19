@@ -95,7 +95,14 @@ For example, to install or upgrade the `minikube` deployment ([values/values-dep
 To install or upgrade the `k8s-test-1` deployment ([values/values-deploy-k8s-test-1.public.yaml](values/values-deploy-k8s-test-1.public.yaml) and [values/values-deploy-k8s-test-1.secrets.yaml](values/values-deploy-k8s-test-1.secrets.yaml)), run:
 
 ```shell
-./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-test-1.public.yaml -f values/values-deploy-k8s-test-1.public.yaml upgrade --install --timeout 30m
+./deploy.sh --kube-context k8s-test-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-test-1.secrets.yaml -f values/values-deploy-k8s-test-1.public.yaml upgrade --install --timeout 30m
+```
+
+
+For `k8s-staging-1` ([values/values-deploy-k8s-staging-1.public.yaml](values/values-deploy-k8s-staging-1.public.yaml) and [values/values-deploy-k8s-staging-1.secrets.yaml](values/values-deploy-k8s-staging-1.secrets.yaml)), run:
+
+```shell
+./deploy.sh --kube-context k8s-staging-1 -n new-naavre --use-vlic-secrets -f values/values-deploy-k8s-staging-1.secrets.yaml -f values/values-deploy-k8s-staging-1.public.yaml upgrade --timeout 30m
 ```
 
 Adjust the value of `--timeout` if you get the error message `Error: UPGRADE FAILED: pre-upgrade hooks failed: 1 error occurred: * timed out waiting for the condition`.
@@ -367,6 +374,22 @@ NaaVRE needs a dedicated bucket in a S3-compatible object storage in order to st
 
 2. Write down the S3 API endpoint URL, bucket name, access key and secret key.
 3. Update your helm values for `global.externalServices.s3` and `seaweedfs.enabled`. The file [values/values-example-external-s3.yaml](./values/values-example-external-s3.yaml) can be used as an example.
+
+## Testing
+
+### UI Tests
+
+UI tests using Playwright are available to test the NaaVRE interface in a Minikube environment.
+
+See [tests/README.md](tests/README.md) for detailed instructions on running UI tests.
+
+Quick start:
+```shell
+cd tests
+npm install
+npx playwright install
+npm test
+```
 
 ## Troubleshooting
 

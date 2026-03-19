@@ -5,7 +5,7 @@ jupyterhub:
       slug: ecvs
       title:  Essential Climate Variables Virtual Lab
       communities: [naavre]
-      labels: [tutorial, ecvs]
+      labels: [ecvs]
       description: |
         A virtual lab to access ECVs. The workflows in the VLab were developed by ENVRI-Hub-NEXT project.
       dirname: ECVs

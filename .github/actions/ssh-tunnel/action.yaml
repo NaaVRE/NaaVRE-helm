@@ -1,0 +1,45 @@
+name: 'SSH Tunnel'
+description: 'Establish and manage SSH tunnel'
+inputs:
+  remote-host:
+    required: true
+  username:
+    required: true
+  private-key:
+    required: true
+  known-hosts:
+    required: true
+  remote-port:
+    required: true
+  local-address:
+    required: true
+  local-port:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        echo "${{ inputs.private-key }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
+
+    - name: Start tunnel
+      run: |
+        cmd="ssh -f \
+          -TL ${{ inputs.local-address }}:${{ inputs.local-port }}:localhost:${{ inputs.remote-port }} \
+          ${{ inputs.username }}@${{ inputs.remote-host }}"
+        $cmd
+        sleep 2
+        SSH_TUNNEL_PID=$(pgrep -f "$cmd")
+        echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
+
+    - name: Close tunnel
+      if: always()
+      run: |
+        if [ ! -z "$SSH_TUNNEL_PID" ]; then
+          kill $SSH_TUNNEL_PID 2>/dev/null || true
+        fi

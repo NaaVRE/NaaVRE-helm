@@ -34,3 +34,33 @@ jobs:
       - name: Test sops
         run: |
           sops decrypt ./hello.yaml
+
+      - name: Setup SSH tunnel
+        uses: ./.github/actions/ssh-tunnel
+        with:
+          remote-host: uva-k8s-test-1.naavre.net
+          username: ${{ env.SSH_USERNAME }}
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known-hosts: ${{ env.SSH_KNOWN_HOSTS }}
+          remote-port: 6443
+          local-address: 127.0.1.3
+          local-port: 6443
+
+      - name: Setup hostnames
+        run: |
+          echo "127.0.1.3 k8s-test-1" | sudo tee -a /etc/hosts
+
+      - name: Setup Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          chmod 700 ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Test kubectl
+        run: |
+          kubectl --context k8s-test-1 get no
+
+      - name: Test helm
+        run: |
+          helm --kube-context k8s-test-1 -n new-naavre list

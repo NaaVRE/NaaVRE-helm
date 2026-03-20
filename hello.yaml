@@ -1,0 +1,27 @@
+hello: ENC[AES256_GCM,data:Ogm+6hwzRHos,iv:KH/E8UaYz/2ijV0w+5Z2aBqByitsxwdGbrgdpVQa3Fg=,tag:4iPLIn5ELJtRN9B3RWA2yA==,type:str]
+sops:
+    kms:
+        - arn: arn:aws:kms:eu-west-3:050752621342:key/4680e482-89c6-4210-b541-0453aa4a41ef
+          created_at: "2026-03-20T10:06:42Z"
+          enc: AQICAHhTmJtY4jHaV3j5UYiXyuOv54scxHoIVc/S99cT0IZ1IwGlFWZQNX+UktzOoHOZBflHAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMaA5y8acFqD1SdjqgAgEQgDs9B8u24BI/4XLR5ltn4UNfzOJMxT0bxlpZVqEx0RgHuUJrDa4mBstilq6qnyTFUtWEZf6k9u2HU0eX5g==
+          aws_profile: ""
+        - arn: arn:aws:kms:eu-central-1:050752621342:key/6a9ef814-a13a-4299-b406-2e75b3ef1554
+          created_at: "2026-03-20T10:06:42Z"
+          enc: AQICAHi22G6tOL2LsvF6wpMHn/yuAwEASofH+f0dK2WYCvRIlQEXt6QbmlnxMisvAk99EfS3AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMfkNSVE76GUKWLMpeAgEQgDuScQ8+pTYHk9SoGWDJEMgWz2/bEbPOiPpr2asinI6mqDCVFahPYdmcs1cpMYFU/5whH4bppLw02tySWQ==
+          aws_profile: ""
+    lastmodified: "2026-03-20T10:06:57Z"
+    mac: ENC[AES256_GCM,data:nvX8evIXebsZXbyIFTNMNSVQwFlp/NUPS4m5YTNOug+T7JJrhtjkMqALZr+3E4rezzJgqtPC9TckA4bhf84CWvFjCwQ9Re7AjEm9A1gUvohA9NIjSlwTgtuq2/nctuKXfagEpS26UmfKONolKb3HSl+5jDwr+SHC2qwSg9s07aE=,iv:7dAOxGmOz/hjIHRQTNOsuJSFvpqOI+ZGSrJ0lQ1FI6M=,tag:PFE0EFKNpXaNQgoqnKtWVg==,type:str]
+    pgp:
+        - created_at: "2026-03-20T10:06:42Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            wV4DdjO6979FjmkSAQdA7lbzhey057wIEDvDrvbEPusKHDaeFMRIFkEW68fpawQw
+            n5yUzKJFFRaM+ACEeYESaQ8duhnMb6EQE85HhvGiG300V1SJBBlrgUMkVa4mCzQw
+            0lEB7PJ8mzfEaKecF0cR+Zx2Fy7ATJLniQHBomxK32J0EpsyCf7BnlrCLx7Di1gz
+            FiIxIABYTV96XCGAlBpM6K6yWFVzIhY534/2cN/lWzsqumY=
+            =NFyW
+            -----END PGP MESSAGE-----
+          fp: E90351D346AFCF25477190F1434316312E1CF3B1
+    unencrypted_suffix: _unencrypted
+    version: 3.12.1

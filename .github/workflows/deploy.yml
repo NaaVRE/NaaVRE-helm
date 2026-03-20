@@ -1,0 +1,27 @@
+name: Deploy NaaVRE
+
+on:
+  push:
+    branches:
+      - deploy/k8s-test-1
+
+permissions:
+  id-token: write
+
+jobs:
+  test-aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: arn:aws:iam::050752621342:role/github-actions-naavre-helm-deploy
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: eu-west-3
+
+      - name: Test sops
+        run: |
+          sops decrypt ./hello.yaml

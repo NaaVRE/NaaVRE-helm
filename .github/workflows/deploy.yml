@@ -12,8 +12,9 @@ permissions:
   id-token: write
 
 jobs:
-  test-aws:
+  deployment:
     runs-on: ubuntu-latest
+    environment: deploy/k8s-test-1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,17 +39,17 @@ jobs:
       - name: Setup SSH tunnel
         uses: ./.github/actions/ssh-tunnel
         with:
-          remote-host: uva-k8s-test-1.naavre.net
+          remote-host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USERNAME }}
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           known-hosts: ${{ env.SSH_KNOWN_HOSTS }}
           remote-port: 6443
-          local-address: 127.0.1.3
+          local-address: 127.0.0.1
           local-port: 6443
 
       - name: Setup hostnames
         run: |
-          echo "127.0.1.3 k8s-test-1" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 k8s-test-1" | sudo tee -a /etc/hosts
 
       - name: Setup Kubeconfig
         run: |

@@ -14,7 +14,6 @@ permissions:
 jobs:
   deployment:
     runs-on: ubuntu-latest
-    environment: deploy/k8s-test-1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -64,6 +64,7 @@ jobs:
 
       - name: Deploy NaaVRE
         run: |
+          ./deploy.sh repo-add
           ./deploy.sh \
             --kube-context ${{ vars.KUBE_CONTEXT }} \
             -n ${{ vars.K8S_NAMESPACE }} \

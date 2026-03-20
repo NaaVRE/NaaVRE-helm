@@ -1,0 +1,24 @@
+jupyterhub:
+  vlabs:
+    ecvs:
+      enabled: false
+      slug: ecvs
+      title:  Essential Climate Variables Virtual Lab
+      communities: [naavre]
+      labels: [ecvs]
+      description: |
+        A virtual lab to access ECVs. The workflows in the VLab were developed by ENVRI-Hub-NEXT project.
+      dirname: ECVs
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-ecvs-jupyter
+        tag: v0.1.13
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.13/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-ecvs
+        registry_url: ghcr.io/naavre/cells-vl-ecvs
+        log_queries: true
+        git_public:
+          repo: https://github.com/QCDIS/ecvs.git
+          branch: main
+        default_file_path: Virtual Labs/ECVs/Git public/README.md

@@ -11,6 +11,16 @@ global:
     redirectDomainToPaasFrontend: true
 
   common:
+    corePods:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: naavre.net/node-purpose
+                    operator: In
+                    values:
+                      - core
     userPods:
       extraVolumeMounts:
         - name: naa-vre-public-pvc
@@ -105,9 +115,13 @@ jupyterhub:
       enabled: true
     laserfarm:
       enabled: true
+    aneris:
+      enabled: true
     biodt-hackathon25:
       enabled: true
     blue-carbon:
+      enabled: true
+    ecvs:
       enabled: true
     quadfavl:
       enabled: true
@@ -138,4 +152,6 @@ jupyterhub:
     biotisan-euromarec:
       enabled: true
     als-tree-ind:
+      enabled: true
+    homeros-seismology:
       enabled: true

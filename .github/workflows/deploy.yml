@@ -48,9 +48,15 @@ jobs:
           cmd="ssh -f -N \
             -L $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT \
             ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
+          echo "running: $cmd"
           $cmd
+          echo "done"
+          echo "sleeping"
           sleep 2
+          echo "done"
+          echo "getting pid"
           SSH_TUNNEL_PID=$(pgrep -f "$cmd")
+          echo "done"
           echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
 
       - run: |

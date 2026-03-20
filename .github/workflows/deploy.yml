@@ -36,6 +36,9 @@ jobs:
         run: |
           sops decrypt ./hello.yaml
 
+      - run: |
+          echo ${{ vars.SSH_HOST }}
+
       - name: Setup SSH tunnel
         uses: ./.github/actions/ssh-tunnel
         with:

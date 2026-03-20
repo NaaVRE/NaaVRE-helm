@@ -52,6 +52,8 @@ jobs:
           sleep 2
           SSH_TUNNEL_PID=$(pgrep -f "$cmd")
           echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
+
+      - run: |
           echo "$TUNNEL_LOCAL_ADDRESS $KUBE_CONTEXT" | sudo tee -a /etc/hosts
 
       - name: Setup Kubeconfig

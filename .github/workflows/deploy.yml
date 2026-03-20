@@ -14,7 +14,8 @@ permissions:
 jobs:
   deployment:
     runs-on: ubuntu-latest
-    environment: deploy/k8s-test-1
+    # Deploy to the environment matching the branch name, eg. `deploy/k8s-test-1`
+    environment: ${{ github.ref_name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

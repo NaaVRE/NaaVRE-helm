@@ -56,9 +56,7 @@ jobs:
           SSH_TUNNEL_PID=$(pgrep -f "$cmd")
           echo "done"
           echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
-
-      - run: |
-          echo "$TUNNEL_LOCAL_ADDRESS $KUBE_CONTEXT" | sudo tee -a /etc/hosts
+          echo "$TUNNEL_LOCAL_ADDRESS ${{ vars.KUBE_CONTEXT }}" | sudo tee -a /etc/hosts
 
       - name: Setup Kubeconfig
         run: |
@@ -69,11 +67,11 @@ jobs:
 
       - name: Test kubectl
         run: |
-          kubectl --context k8s-test-1 get no
+          kubectl --context ${{ vars.KUBE_CONTEXT }} get no
 
       - name: Test helm
         run: |
-          helm --kube-context k8s-test-1 -n new-naavre list
+          helm --kube-context ${{ vars.KUBE_CONTEXT }} -n new-naavre list
 
       - name: Close SSH tunnel
         if: always()

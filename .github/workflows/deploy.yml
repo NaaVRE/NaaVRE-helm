@@ -36,23 +36,23 @@ jobs:
         run: |
           sops decrypt ./hello.yaml
 
-      - run: |
-          echo ${{ vars.SSH_HOST }}
-
-      - name: Setup SSH tunnel
-        uses: ./.github/actions/ssh-tunnel
-        with:
-          remote-host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USERNAME }}
-          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ vars.SSH_KNOWN_HOSTS }}
-          remote-port: 6443
-          local-address: 127.0.0.1
-          local-port: 6443
-
-      - name: Setup hostnames
+      - name: Open SSH tunnel
         run: |
-          echo "127.0.0.1 k8s-test-1" | sudo tee -a /etc/hosts
+          TUNNEL_LOCAL_ADDRESS=127.0.0.1
+          TUNNEL_PORT=6443
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIV_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ vars.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          cmd="ssh -f \
+            -TL $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT \
+            ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
+          $cmd
+          sleep 2
+          SSH_TUNNEL_PID=$(pgrep -f "$cmd")
+          echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
+          echo "$TUNNEL_LOCAL_ADDRESS $KUBE_CONTEXT" | sudo tee -a /etc/hosts
 
       - name: Setup Kubeconfig
         run: |
@@ -68,3 +68,11 @@ jobs:
       - name: Test helm
         run: |
           helm --kube-context k8s-test-1 -n new-naavre list
+
+      - name: Close SSH tunnel
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -z "$SSH_TUNNEL_PID" ]; then
+            kill $SSH_TUNNEL_PID 2>/dev/null || true
+          fi

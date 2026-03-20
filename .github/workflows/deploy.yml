@@ -39,10 +39,10 @@ jobs:
       - name: Setup SSH tunnel
         uses: ./.github/actions/ssh-tunnel
         with:
-          remote-host: ${{ env.SSH_HOST }}
-          username: ${{ env.SSH_USERNAME }}
+          remote-host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USERNAME }}
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ env.SSH_KNOWN_HOSTS }}
+          known-hosts: ${{ vars.SSH_KNOWN_HOSTS }}
           remote-port: 6443
           local-address: 127.0.0.1
           local-port: 6443

@@ -20,6 +20,7 @@ runs:
   using: 'composite'
   steps:
     - name: Configure SSH
+      shell: bash
       run: |
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
@@ -28,6 +29,7 @@ runs:
         echo "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
 
     - name: Start tunnel
+      shell: bash
       run: |
         cmd="ssh -f \
           -TL ${{ inputs.local-address }}:${{ inputs.local-port }}:localhost:${{ inputs.remote-port }} \
@@ -39,6 +41,7 @@ runs:
 
     - name: Close tunnel
       if: always()
+      shell: bash
       run: |
         if [ ! -z "$SSH_TUNNEL_PID" ]; then
           kill $SSH_TUNNEL_PID 2>/dev/null || true

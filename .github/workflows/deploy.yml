@@ -5,6 +5,9 @@ on:
     branches:
       - deploy/k8s-test-1
 
+env:
+  SOPS_VERSION: v3.12.2
+
 permissions:
   id-token: write
 
@@ -21,6 +24,12 @@ jobs:
           role-to-assume: arn:aws:iam::050752621342:role/github-actions-naavre-helm-deploy
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           aws-region: eu-west-3
+
+      - name: Install sops
+        run: |
+          wget https://github.com/mozilla/sops/releases/download/${{ env.SOPS_VERSION }}/sops-${{ env.SOPS_VERSION }}.linux.amd64
+          chmod +x sops-${{ env.SOPS_VERSION }}.linux.amd64
+          sudo mv sops-${{ env.SOPS_VERSION }}.linux.amd64 /usr/local/bin/sops
 
       - name: Test sops
         run: |

@@ -45,9 +45,7 @@ jobs:
           echo "${{ secrets.SSH_PRIV_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           echo "${{ vars.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          cmd="ssh -f -N \
-            -L $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT \
-            ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
+          cmd="ssh -fNL $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
           echo "running: $cmd"
           $cmd
           echo "done"

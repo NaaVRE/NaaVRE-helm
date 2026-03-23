@@ -1,10 +1,11 @@
 name: Deploy NaaVRE
 
 on:
-  push:
-    branches:
-      - deploy/k8s-test-1
-      - deploy/k8s-staging-1
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 env:
   SOPS_VERSION: v3.12.2
@@ -15,8 +16,7 @@ permissions:
 jobs:
   deployment:
     runs-on: ubuntu-latest
-    # Deploy to the environment matching the branch name, eg. `deploy/k8s-test-1`
-    environment: ${{ github.ref_name }}
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

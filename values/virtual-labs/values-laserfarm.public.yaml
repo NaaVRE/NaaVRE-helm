@@ -5,7 +5,7 @@ jupyterhub:
       slug: laserfarm
       title: Laserfarm collaborative virtual labs
       communities: [naavre]
-      labels: []
+      labels: [tutorial]
       description: LiDAR point cloud analysis for macro-ecology
       dirname: Laserfarm
       icon: >

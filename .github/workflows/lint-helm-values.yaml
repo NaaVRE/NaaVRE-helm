@@ -28,6 +28,8 @@ jobs:
             bash -c "$cmd"
           }
 
+          ./deploy.sh dependency-build
+
           # Paired values-{public,secrets}.yaml files
           find "${VALUES_DIR}" -maxdepth 1 -name "values-*.public.yaml" \
           | while read -r public_file; do

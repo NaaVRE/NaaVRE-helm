@@ -28,6 +28,7 @@ jobs:
             bash -c "$cmd"
           }
 
+          ./deploy.sh repo-add
           ./deploy.sh dependency-build
 
           # Paired values-{public,secrets}.yaml files

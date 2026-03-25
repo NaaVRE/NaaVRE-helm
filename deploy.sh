@@ -310,19 +310,22 @@ main() {
       run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_values_lint_cmd)"
       run_cmd "$(gen_helm_values_template_cmd)"
-      run_cmd "$(gen_helm_naavre_lint_cmd "$action_options") ; $(gen_rm_values_cmd)"
+      trap 'run_cmd "$(gen_rm_values_cmd)"' exit
+      run_cmd "$(gen_helm_naavre_lint_cmd "$action_options")"
       ;;
     install)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_values_template_cmd)"
-      run_cmd "$(gen_helm_naavre_install_cmd "$action_options") ; $(gen_rm_values_cmd)"
+      trap 'run_cmd "$(gen_rm_values_cmd)"' exit
+      run_cmd "$(gen_helm_naavre_install_cmd "$action_options")"
       ;;
     upgrade)
       check_all
       run_cmd "$(gen_helm_dependency_build)"
       run_cmd "$(gen_helm_values_template_cmd)"
-      run_cmd "$(gen_helm_naavre_upgrade_cmd "$action_options") ; $(gen_rm_values_cmd)"
+      trap 'run_cmd "$(gen_rm_values_cmd)"' exit
+      run_cmd "$(gen_helm_naavre_upgrade_cmd "$action_options")"
       ;;
     rollback)
       check_k8s

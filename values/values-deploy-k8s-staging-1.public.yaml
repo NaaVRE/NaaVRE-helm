@@ -155,3 +155,5 @@ jupyterhub:
       enabled: true
     homeros-seismology:
       enabled: true
+    geospatial-toolbox:
+      enabled: true

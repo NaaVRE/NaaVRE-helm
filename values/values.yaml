@@ -58,6 +58,7 @@ global:
         #   mountPath: /path/to/my-mount-point
         #   readOnly: true  # optional
         #   subPath: 'path/in/pv'  # optional
+        #   allowedUsers: ['example_username']  # optional
 
   externalServices:
     argoWorkflows:

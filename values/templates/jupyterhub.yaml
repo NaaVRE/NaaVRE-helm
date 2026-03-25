@@ -86,9 +86,15 @@ jupyterhub:
                 return super().get_pvc_manifest()
             async def get_pod_manifest(self):
                 self.volume_mounts = [
-                    {k: v for k, v in volume_mount.items() if k != 'allowedUsers'}
+                    {k: v for k, v in volume_mount.items() if k != 'allowedGroups'}
                     for volume_mount in self.volume_mounts
-                    if self.user.name in volume_mount.get('allowedUsers', [self.user.name])
+                    if (
+                        ('allowedGroups' not in volume_mount)
+                        or (
+                            set([g.name for g in self.user.groups])
+                            & set(volume_mount['allowedGroups'])
+                            )
+                        )
                     ]
                 return await super().get_pod_manifest()
         c.JupyterHub.spawner_class = CustomKubeSpawner

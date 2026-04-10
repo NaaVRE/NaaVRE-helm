@@ -161,7 +161,9 @@ deploy_naavre(){
     cp "../$VALUES_FILE" secrets-minikube.yaml
   else
     cp "$VALUES_FILE" secrets-minikube.yaml
+    cp ./minikube_tests/configuration.json ../
   fi
+
   if [ -n "$CHART_FILE" ]; then
     CURRENT_DIR=$(basename "$(pwd)")
     if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
@@ -169,7 +171,6 @@ deploy_naavre(){
       cd NaaVRE-helm
     else
       CHART_FILE_IN_PLACE="true"
-      echo '------------'
       cp "$CHART_FILE" ./naavre/Chart.yaml
     fi
     echo "Using custom chart file: $CHART_FILE"

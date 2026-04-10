@@ -168,11 +168,11 @@ jupyterhub:
           vl_dir="Virtual Labs/$dirname"
 
           if [ -z "$slug" ]; then
-            echo "setup_virtual_lab: missing slug" >> /opt/setup-scripts/setup_virtual_lab.log
+            echo "setup_virtual_lab: missing slug" >> /home/jovyan/setup_virtual_lab.log
             exit 1
           fi
           if [ -z "$dirname" ]; then
-            echo "setup_virtual_lab: missing dirname" >> /opt/setup-scripts/setup_virtual_lab.log
+            echo "setup_virtual_lab: missing dirname" >> /home/jovyan/setup_virtual_lab.log
             exit 1
           fi
 

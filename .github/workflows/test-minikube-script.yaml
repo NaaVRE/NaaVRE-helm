@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - '**'
+      - '!deploy/**'
   schedule:
     - cron: '0 4 5,25 * *'
 

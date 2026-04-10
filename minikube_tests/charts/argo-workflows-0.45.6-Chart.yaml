@@ -25,7 +25,7 @@ appVersion: "v2.5.0"
 
 dependencies:
   - name: "argo-workflows"
-    version: "0.33.1"
+    version: "0.45.6"
     repository: https://argoproj.github.io/argo-helm
     condition: argo-workflows.enabled
   - name: "jupyterhub"

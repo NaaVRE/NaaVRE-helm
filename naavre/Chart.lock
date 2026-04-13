@@ -7,7 +7,7 @@ dependencies:
   version: 4.1.0
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
-  version: 4.0.406
+  version: 4.17.0
 - name: k8s-secret-creator
   repository: oci://ghcr.io/qcdis/charts
   version: 0.1.0
@@ -19,12 +19,12 @@ dependencies:
   version: v0.5.3
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.4.6
+  version: v0.4.7
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.1.7
+  version: v0.2.1
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.4
-digest: sha256:693e475ebf33304659b501427bae599f51892499047d09b89a47e8dca65fec25
-generated: "2026-04-10T14:09:30.257144925+02:00"
+digest: sha256:5fba0870f655176aab1f4285230840c3c1c647397cb1e004cccacea0e3c98001
+generated: "2026-03-23T10:20:28.504970573+01:00"

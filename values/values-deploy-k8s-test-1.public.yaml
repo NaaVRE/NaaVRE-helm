@@ -19,6 +19,18 @@ global:
         - name: naa-vre-user-data-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
+        - name: naa-vre-als-tree-ind
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-als-tree-ind/
+          allowedGroups:
+            - s3-naa-vre-als-tree-ind-users
+        - name: naa-vre-laserfarm
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-laserfarm/
+          allowedGroups:
+            - s3-naa-vre-laserfarm-users
+        - name: naa-vre-waddenzee-shared
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
+          allowedGroups:
+            - s3-naa-vre-waddenzee-shared-users
 
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0

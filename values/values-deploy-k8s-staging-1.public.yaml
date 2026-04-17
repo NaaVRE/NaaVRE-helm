@@ -29,15 +29,15 @@ global:
         - name: naa-vre-user-data-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
-        - name: naa-vre-als-tree-ind
+        - name: naa-vre-als-tree-ind-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-als-tree-ind/
           allowedGroups:
             - s3-naa-vre-als-tree-ind-users
-        - name: naa-vre-laserfarm
+        - name: naa-vre-laserfarm-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-laserfarm/
           allowedGroups:
             - s3-naa-vre-laserfarm-users
-        - name: naa-vre-waddenzee-shared
+        - name: naa-vre-waddenzee-shared-pvc
           mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
           allowedGroups:
             - s3-naa-vre-waddenzee-shared-users

@@ -175,4 +175,5 @@ spec:
           - profile
           - roles
           - web-origins
+          - openid
 {{- end }}

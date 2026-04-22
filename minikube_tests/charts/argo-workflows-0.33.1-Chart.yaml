@@ -32,6 +32,12 @@ dependencies:
     version: "4.1.0"
     repository: "https://jupyterhub.github.io/helm-chart/"
     condition: jupyterhub.enabled
+  - name: enterprise-gateway
+    version: "3.2.3"
+    # This chart does not publish a repository. We download the chart .tgz with
+    # `./deploy.sh repo-add` instead
+    repository: "file:///tmp/enterprise-gateway"
+    condition: enterprise-gateway.enabled
   - name: "seaweedfs"
     version: "4.0.406"
     repository: "https://seaweedfs.github.io/seaweedfs/helm"

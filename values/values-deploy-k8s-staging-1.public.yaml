@@ -169,3 +169,5 @@ jupyterhub:
       enabled: true
     geospatial-toolbox:
       enabled: true
+    bgis-urban-planning:
+      enabled: true

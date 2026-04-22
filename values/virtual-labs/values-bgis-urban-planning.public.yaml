@@ -10,7 +10,7 @@ jupyterhub:
         Migrating a legacy urban planning application into a reusable Cloud Virtual Lab.
       dirname: BGIs Urban Planning
       image:
-        name: ghcr.io/naavre/flavors/naavre-fl-bgis-urban-planning
+        name: ghcr.io/naavre/flavors/naavre-fl-bgis-urban-planning-jupyter
         tag: v0.1.16
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.16/base_image_tags.json

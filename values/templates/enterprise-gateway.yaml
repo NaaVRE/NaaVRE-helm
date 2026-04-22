@@ -1,0 +1,18 @@
+enterprise-gateway:
+  enabled: {{ .Values.enterpriseGateway.enabled }}
+
+  global:
+    rbac: true
+    serviceAccountName: 'enterprise-gateway-sa'
+
+  service:
+    type: "ClusterIP"
+
+  kernel:
+    shareGatewayNamespace: "true"
+    cullIdleTimeout: 300
+    cullConnected: true
+    allowedKernels:
+      - r_kubernetes
+      - python_kubernetes
+    defaultKernelName: python_kubernetes

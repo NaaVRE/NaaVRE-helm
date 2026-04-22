@@ -154,6 +154,10 @@ gen_helm_repo_add() {
   cmd+=" && helm repo add $1 jupyterhub https://jupyterhub.github.io/helm-chart/"
   cmd+=" && helm repo add $1 bitnami https://charts.bitnami.com/bitnami"
   cmd+=" && helm repo add $1 seaweedfs https://seaweedfs.github.io/seaweedfs/helm"
+  # enterprise-gateway does not publish a repo, so we download the chart ourselves
+  eg_chart_version="$(yq '.dependencies[] | select(.name == "enterprise-gateway") | .version' naavre/Chart.yaml)"
+  cmd+=" && curl -L \"https://github.com/jupyter-server/enterprise_gateway/releases/download/v$eg_chart_version/jupyter_enterprise_gateway_helm-$eg_chart_version.tar.gz\" -o /tmp/enterprise-gateway.tar.gz"
+  cmd+=" && tar -xzf /tmp/enterprise-gateway.tar.gz -C /tmp/"
   echo "$cmd"
 }
 

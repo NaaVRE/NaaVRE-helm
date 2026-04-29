@@ -171,3 +171,5 @@ jupyterhub:
       enabled: true
     bgis-urban-planning:
       enabled: true
+    tempsed-wadden-sea:
+      enabled: true

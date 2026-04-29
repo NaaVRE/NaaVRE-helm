@@ -228,6 +228,18 @@ jupyterhub:
         {{- .Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 6 }}
       {{- end }}
 
+    networkPolicy:
+      egress:
+        - ports:
+            - port: 8888
+              protocol: TCP
+          to:
+            - podSelector:
+                matchLabels:
+                  app: enterprise-gateway
+                  component: enterprise-gateway
+                  release: "{{ .Release.Name }}"
+
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
       {{- if .Values.global.insecureSkipVerifySSL }}
@@ -265,6 +277,8 @@ jupyterhub:
           {{- end }}
           environment:
             NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+            # FIXME hard-coded service name
+            JUPYTER_GATEWAY_URL: "http://enterprise-gateway.{{ $.Values.global.namespace }}.svc:8888"
           extra_pod_config:
             securityContext:
               fsGroupChangePolicy: OnRootMismatch

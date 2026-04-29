@@ -5,6 +5,9 @@ dependencies:
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart/
   version: 4.1.0
+- name: enterprise-gateway
+  repository: file:///tmp/enterprise-gateway
+  version: 3.2.3
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
   version: 4.17.0
@@ -26,5 +29,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.4
-digest: sha256:57a3ade00855bb9b75474c7a952d7318cba5f55777957820d7d964fb0ded6c84
-generated: "2026-04-15T16:51:44.289662316+02:00"
+digest: sha256:8197952a35baf96ec9c5c7b83e396150dd19b3eefa5c4eb35b6c67076d7c4e93
+generated: "2026-04-22T13:10:38.85182979+02:00"

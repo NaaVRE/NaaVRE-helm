@@ -1,0 +1,80 @@
+global:
+  namespace: naavre
+
+  # WARNING: don't verify SSL certificates (don't use in production!)
+  insecureSkipVerifySSL: true
+
+  ingress:
+    domain: naavre-dev.minikube.test
+    seaweedfsS3Domain: s3.naavre-dev.minikube.test
+    enterpriseGatewayDomain: jeg.naavre-dev.minikube.test # TODO: try to use in-cluster address
+    redirectDomainToPaasFrontend: true
+
+  secrets:
+    k8sSecretCreator:
+      apiToken: fake-k8sSecretCreator-apiToken
+    keycloak:
+      adminPassword: admin
+      naavreClientSecret: fake-keycloak-naavreClientSecret
+      users:
+        - username: user
+          password: user
+      postgresql:
+        password: fake-keycloak-postgresql-password
+    seaweedfs:
+      catalogueBucket:
+        access_key: fake-s3-access-key
+        secret_key: fake-s3-secret-key
+    naavreCatalogueService:
+      secretKey: fake-naavreCatalogueService-secretKey
+      auth:
+        superuser:
+          email: admin@example.org
+          username: admin
+          password: admin
+      postgresql:
+        password: fake-naavreCatalogueService-postgresql-password
+    naavrePaasFrontend:
+      secretKey: fake-naavrePaasFrontend-secretKey
+
+# common:
+#   userPods:
+#     extraVolumeMounts:
+#       - name: naa-vre-public
+#         mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+#         readOnly: true
+#       - name: naa-vre-user-data
+#         mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+#         subPath: '{unescaped_username}'
+
+jupyterhub:
+  vlabLabels:
+    sampleLabel:
+      title: Sample Label
+      color: "#3c8f49"
+
+  vlabs:
+    openlab:
+      enabled: true
+      slug: openlab
+      title: NaaVRE Open Lab
+      labels: [sampleLabel]
+      description: Open experimentation with virtual labs
+      dirname: Open Lab
+      image:
+        # FIXME: use NaaVRE image
+        # name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        # tag: latest
+        name: quay.io/jupyterhub/k8s-singleuser-sample
+        tag: "4.1.0"
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        log_queries: true
+        # WARNING: with the values below, the deployment will work but containerizing cells won't.
+        # If you need to containerize cells, create your own cells repository using the template at
+        # https://github.com/QCDIS/NaaVRE-cells, generate a token following the instruction in
+        # the repo's README.
+        cell_github_url: https://github.com/user/repo
+        cell_github_token: fake-cell-github-token
+        registry_url: ghcr.io/user/repo

@@ -164,6 +164,11 @@ deploy_naavre(){
     cp ./minikube_tests/configuration.json ../
   fi
 
+  # Add the third-party Helm repos
+  if [ "$DEPLOY_NAAAVRE" == "true" ]; then
+    ./deploy.sh repo-add
+  fi
+
   if [ -n "$CHART_FILE" ]; then
     CURRENT_DIR=$(basename "$(pwd)")
     if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
@@ -180,10 +185,6 @@ deploy_naavre(){
     cd naavre && helm dependency update && cd ..
   fi
 
-  # Add the third-party Helm repos
-  if [ "$DEPLOY_NAAAVRE" == "true" ]; then
-    ./deploy.sh repo-add
-  fi
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
     source ../dev.env

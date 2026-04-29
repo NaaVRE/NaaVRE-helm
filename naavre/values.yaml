@@ -4,6 +4,9 @@ fullnameOverride: ""
 argo-workflows:
   enabled: true
 
+enterprise-gateway:
+  enabled: true
+
 jupyterhub:
   enabled: true
 

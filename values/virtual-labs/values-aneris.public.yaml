@@ -3,7 +3,7 @@ jupyterhub:
     aneris:
       enabled: false
       slug: aneris
-      title:  Essential Climate Variables Virtual Lab
+      title: ANERIS
       communities: [naavre]
       labels: [aneris]
       description: |

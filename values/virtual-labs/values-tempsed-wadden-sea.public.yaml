@@ -1,0 +1,24 @@
+jupyterhub:
+  vlabs:
+    tempsed-wadden-sea:
+      enabled: false
+      slug: tempsed-wadden-sea
+      title:  TempSED Wadden Sea Virtual Lab
+      communities: [naavre, lter-life]
+      labels: [lter-life]
+      description: |
+        Sediment temperature dynamics and heatwave exposure in the Dutch Wadden Sea intertidal zone.
+      dirname: TempSED Wadden Sea
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-tempsed-wadden-sea-jupyter
+        tag: v0.1.16
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.1.16/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-tempsed-wadden-sea
+        registry_url: ghcr.io/naavre/cells-vl-tempsed-wadden-sea
+        log_queries: true
+        git_public:
+          repo: https://github.com/naavre/vl-tempsed-wadden-sea.git
+          branch: main
+        default_file_path: Virtual Labs/TempSED Wadden Sea/Git public/README.md

@@ -107,6 +107,10 @@ jupyterhub:
       nodeAffinity:
         matchNodePurpose: prefer
   hub:
+    concurrentSpawnLimit: 10
+    consecutiveFailureLimit: 16
+    activeServerLimit: 16
+    namedServerLimitPerUser: 1
     extraConfig: {}
     initContainers: []
     extraVolumes: []

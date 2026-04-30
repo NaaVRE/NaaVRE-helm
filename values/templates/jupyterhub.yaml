@@ -8,10 +8,10 @@ jupyterhub:
         matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
 
   hub:
-    concurrentSpawnLimit: 10
-    consecutiveFailureLimit: 16
-    activeServerLimit: 16
-    namedServerLimitPerUser: 1
+    concurrentSpawnLimit: {{ .Values.jupyterhub.hub.concurrentSpawnLimit }}
+    consecutiveFailureLimit: {{ .Values.jupyterhub.hub.consecutiveFailureLimit }}
+    activeServerLimit: {{ .Values.jupyterhub.hub.activeServerLimit }}
+    namedServerLimitPerUser: {{ .Values.jupyterhub.hub.namedServerLimitPerUser }}
     shutdownOnLogout: true
     baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
     {{- if .Values.global.insecureSkipVerifySSL }}

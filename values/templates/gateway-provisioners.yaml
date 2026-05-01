@@ -1,0 +1,16 @@
+gateway-provisioners:
+  enabled: {{ .Values.gatewayProvisioners.enabled }}
+
+  service:
+    type: "ClusterIP"
+
+  application:
+    cullIdleTimeout: 300
+    cullConnected: true
+    allowedKernels:
+      - k8s_r
+      - k8s_python
+    defaultKernelName: k8s_python
+
+  provisioner:
+    shareNamespace: true

@@ -98,6 +98,9 @@ argoWorkflows:
   ingress:
     basePath: /argowf
 
+gatewayProvisioners:
+  enabled: true
+
 jupyterhub:
   enabled: true
   ingress:

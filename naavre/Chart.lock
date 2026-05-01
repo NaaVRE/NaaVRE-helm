@@ -2,6 +2,9 @@ dependencies:
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.33.1
+- name: gateway-provisioners
+  repository: file:///tmp/gateway-provisioners-helm
+  version: 0.4.0
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart/
   version: 4.1.0
@@ -26,5 +29,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.4
-digest: sha256:57a3ade00855bb9b75474c7a952d7318cba5f55777957820d7d964fb0ded6c84
-generated: "2026-04-15T16:51:44.289662316+02:00"
+digest: sha256:056170abae3e71cb59ac03b948a105730b80d21bb883621a141e86d11655cafb
+generated: "2026-05-01T15:41:40.526397975+02:00"

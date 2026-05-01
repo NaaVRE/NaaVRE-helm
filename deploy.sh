@@ -154,6 +154,14 @@ gen_helm_repo_add() {
   cmd+=" && helm repo add $1 jupyterhub https://jupyterhub.github.io/helm-chart/"
   cmd+=" && helm repo add $1 bitnami https://charts.bitnami.com/bitnami"
   cmd+=" && helm repo add $1 seaweedfs https://seaweedfs.github.io/seaweedfs/helm"
+  # gateway-provisioners does not publish a repo, so we download the chart ourselves
+  gp_chart_version="$(yq '.dependencies[] | select(.name == "gateway-provisioners") | .version' naavre/Chart.yaml)"
+  gp_chart_url="https://github.com/jupyter-server/gateway_provisioners/releases/download/v$gp_chart_version/gateway_provisioners-$gp_chart_version.tar.gz"
+  gp_chart_path="gateway_provisioners-$gp_chart_version/gateway_provisioners/app-support/kubernetes/helm/gateway-provisioners"
+  cmd+=" && curl --fail -L \"$gp_chart_url\" -o /tmp/gateway_provisioners.tar.gz"
+  cmd+=" && tar -xzf /tmp/gateway_provisioners.tar.gz -C /tmp/ \"$gp_chart_path\""
+  cmd+=" && mv \"/tmp/$gp_chart_path\" /tmp/gateway-provisioners-helm"
+  cmd+=" && yq -i '.version |= \"$gp_chart_version\"' /tmp/gateway-provisioners-helm/Chart.yaml"
   echo "$cmd"
 }
 

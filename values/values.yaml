@@ -160,6 +160,7 @@ jupyterhub:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
         log_queries: true
+        splitter_max_branches: 32
         git_public: {}
           # Public git repo cloned when starting the lab
           # repo: https://example.org/my/repo.git

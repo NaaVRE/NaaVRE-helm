@@ -17,3 +17,4 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-cnr-phytoplankton
         registry_url: ghcr.io/naavre/cells-vl-cnr-phytoplankton
         log_queries: true
+        splitter_max_branches: 32

@@ -19,3 +19,4 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-quadfavl
         registry_url: ghcr.io/naavre/cells-vl-quadfavl
         log_queries: true
+        splitter_max_branches: 32

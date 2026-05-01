@@ -19,3 +19,4 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-veluwe-forest-model
         registry_url: ghcr.io/naavre/cells-vl-veluwe-forest-model
         log_queries: true
+        splitter_max_branches: 32

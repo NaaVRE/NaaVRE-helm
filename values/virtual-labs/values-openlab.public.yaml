@@ -17,6 +17,7 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-openlab
         registry_url: ghcr.io/naavre/cells-vl-openlab
         log_queries: true
+        splitter_max_branches: 32
         git_public:
           repo: https://github.com/NaaVRE/vl-openlab.git
           branch: main

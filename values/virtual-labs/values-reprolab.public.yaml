@@ -17,6 +17,7 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-reprolab
         registry_url: ghcr.io/naavre/cells-vl-reprolab
         log_queries: true
+        splitter_max_branches: 32
         git_public:
           repo: https://github.com/NaaVRE/vl-reprolab.git
           branch: main

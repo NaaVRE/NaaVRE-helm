@@ -17,3 +17,4 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-als-tree-ind
         registry_url: ghcr.io/naavre/cells-vl-als-tree-ind
         log_queries: true
+        splitter_max_branches: 32

@@ -79,6 +79,7 @@ jupyterhub:
       nodeAffinity:
         matchNodePurpose: require
   hub:
+    activeServerLimit: 50
     initContainers:
       - name: git-clone-templates
         image: alpine/git

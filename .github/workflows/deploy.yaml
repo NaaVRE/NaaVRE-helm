@@ -77,7 +77,7 @@ jobs:
             -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.secrets.yaml \
             -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.public.yaml \
             upgrade --install \
-            --timeout 30m
+            --timeout 60m
 
       - name: Close SSH tunnel
         if: always()

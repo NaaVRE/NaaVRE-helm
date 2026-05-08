@@ -66,6 +66,7 @@ naavre-workflow-service:
             secrets_creator_api_endpoint: "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" $.Values.k8sSecretCreator.ingress.basePath }}/1.0.0/"
             secrets_creator_api_token: "{{ $.Values.global.secrets.k8sSecretCreator.apiToken }}"
             {{- end }}
+            default_max_branches: "{{ $vlab.configuration.splitter_max_branches }}"
         {{- end }}
         {{- end }}
       {{- end }}

@@ -1,4 +1,4 @@
-{{- if and .Values.jupyterhub.enabled (index .Values "naavre-catalogue-service" "enabled") }}
+{{- if and .Values.binderhubEnabled (index .Values "naavre-catalogue-service" "enabled") }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -53,9 +53,9 @@ data:
 
     from base_assets.models import SharingScope
 
-    protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
-    host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
-    base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
+    protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
+    host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
+    base_url = "{{ trimAll " / " .Values.binderhub.jupyterhub.hub.baseUrl }}"
 
 
     def create_or_update(model_class, search_field, object_dict):

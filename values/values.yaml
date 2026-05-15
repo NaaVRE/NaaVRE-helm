@@ -98,6 +98,15 @@ argoWorkflows:
   ingress:
     basePath: /argowf
 
+binderhub:
+  enabled: true
+  ingress:
+    basePath: /binderhub
+  registry:
+    url:
+    username:
+    password:
+
 jupyterhub:
   enabled: true
   ingress:

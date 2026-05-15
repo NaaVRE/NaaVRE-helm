@@ -1,0 +1,339 @@
+binderhub:
+  {{/*enabled: {{ .Values.binderhub.enabled }}*/}}
+
+  registry:
+    # TODO: secrets
+    url: {{ .Values.binderhub.registry.url }}
+    username: {{ .Values.binderhub.registry.username }}
+    password: {{ .Values.binderhub.registry.password }}
+
+  config:
+    BinderHub:
+      # TODO: expose
+      use_registry: true
+      image_prefix: ghcr.io/naavre/tmp-binder-builds/
+      base_url: /{{ trimAll "/" .Values.binderhub.ingress.basePath }}/
+      hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}/hub
+      hub_url_local: http://hub.{{ $.Values.global.namespace }}.svc:8081
+      auth_enabled: true
+
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations:
+      {{- with .Values.global.ingress.commonAnnotations }}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+    hosts:
+      - "{{ .Values.global.ingress.domain }}"
+    # TODO
+    pathSuffix: "{{ trimAll "/" (.Values.binderhub.ingress.basePath) }}"
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  jupyterhub:
+    # TODO
+    {{/*fullnameOverride: "{{ include "values.fullname" . }}-jupyter"*/}}
+
+    scheduling:
+      userPods:
+        nodeAffinity:
+          matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
+
+    cull:
+      # don't cull authenticated users (reverts binderhub chart's default)
+      users: false
+
+    # enable image pre-puller (reverts binderhub chart's default)
+    prePuller:
+      continuous:
+        enabled: true
+      hook:
+        enabled: true
+
+    hub:
+      concurrentSpawnLimit: {{ .Values.jupyterhub.hub.concurrentSpawnLimit }}
+      consecutiveFailureLimit: {{ .Values.jupyterhub.hub.consecutiveFailureLimit }}
+      activeServerLimit: {{ .Values.jupyterhub.hub.activeServerLimit }}
+      namedServerLimitPerUser: {{ .Values.jupyterhub.hub.namedServerLimitPerUser }}
+      shutdownOnLogout: true
+      baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
+      {{- if .Values.global.insecureSkipVerifySSL }}
+      extraEnv:
+        OAUTH_TLS_VERIFY: "0"
+      {{- end }}
+      config:
+        Authenticator:
+          enable_auth_state: true
+          auto_login: true
+        GenericOAuthenticator:
+          login_service: keycloak
+          username_claim: preferred_username
+          userdata_params:
+            state: state
+          claim_groups_key: groups
+          manage_groups: True
+          allowed_groups:
+            - users
+          admin_groups:
+            - admins
+          oauth_callback_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}/hub/oauth_callback"
+          {{- if .Values.global.externalServices.keycloak.useExternal }}
+          client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
+          client_secret: "{{ .Values.global.externalServices.keycloak.client_secret }}"
+          authorize_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/auth"
+          token_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/token"
+          userdata_url: "{{ trimSuffix "/" .Values.global.externalServices.keycloak.url }}/realms/{{ .Values.global.externalServices.keycloak.realm }}/protocol/openid-connect/userinfo"
+          {{- else }}
+          client_id: naavre
+          client_secret: "{{ .Values.global.secrets.keycloak.naavreClientSecret }}"
+          authorize_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/auth"
+          token_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/token"
+          userdata_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/userinfo"
+          {{- end }}
+        BinderSpawner:
+          auth_enabled: true
+        JupyterHub:
+          authenticator_class: generic-oauth
+      services:
+        binder:
+          oauth_client_id: service-binderhub
+          oauth_no_confirm: true
+          oauth_redirect_uri: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}/oauth_callback
+      loadRoles:
+        user:
+          scopes:
+            - self
+            - "access:services!service=binder"
+      {{- with .Values.jupyterhub.hub.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8}}
+      {{- end}}
+      {{- with .Values.jupyterhub.hub.extraVolumes }}
+      extraVolumes:
+        {{- toYaml . | nindent 8}}
+      {{- end}}
+      {{- with .Values.jupyterhub.hub.extraVolumeMounts }}
+      extraVolumeMounts:
+        {{- toYaml . | nindent 8}}
+      {{- end}}
+      extraConfig:
+        {{- with .Values.jupyterhub.hub.extraConfig }}
+        {{- toYaml . | nindent 8}}
+        {{- end}}
+        10-generic_env_oauthenticator.py: |
+          from oauthenticator.generic import GenericOAuthenticator
+          class GenericEnvOAuthenticator(GenericOAuthenticator):
+              async def pre_spawn_start(self, user, spawner):
+                  auth_state = await user.get_auth_state()
+                  if not auth_state:
+                      return
+                  spawner.environment['OAUTH_ACCESS_TOKEN'] = auth_state.get('access_token')
+                  spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
+          c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
+        10-custom_kubespawner.py: |
+          # extend spawner_class set by binderhub
+          class CustomKubeSpawner(c.JupyterHub.spawner_class):
+              def get_pvc_manifest(self):
+                  # Workaround for jupyterhub/kubespawner#877
+                  # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5
+                  self.pvc_name = self._expand_user_properties(self.pvc_name_template)
+                  self.pod_name = self._expand_user_properties(self.pod_name_template)
+                  return super().get_pvc_manifest()
+              async def get_pod_manifest(self):
+                  self.volume_mounts = [
+                      {k: v for k, v in volume_mount.items() if k != 'allowedGroups'}
+                      for volume_mount in self.volume_mounts
+                      if (
+                          ('allowedGroups' not in volume_mount)
+                          or (
+                              set([g.name for g in self.user.groups])
+                              & set(volume_mount['allowedGroups'])
+                              )
+                          )
+                      ]
+                  return await super().get_pod_manifest()
+          c.JupyterHub.spawner_class = CustomKubeSpawner
+        10-custom_user_redirect.py: |
+          from jupyterhub.utils import url_path_join
+          from tornado.httputil import url_concat
+          from urllib.parse import parse_qsl
+          async def custom_user_redirect_hook(path, request, user, base_url):
+            user_url = url_path_join(user.url, path)
+            profile = ""
+            if request.query:
+              query_dict = dict(parse_qsl(request.query))
+              profile = query_dict.pop("profile", "")
+              user_url = url_concat(user_url, query_dict)
+            url = url_concat(
+              url_path_join(base_url, "spawn", user.escaped_name),
+              {"next": user_url, "profile": profile},
+              )
+            return url
+          c.JupyterHub.user_redirect_hook = custom_user_redirect_hook
+
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+        {{- with .Values.global.ingress.commonAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      hosts:
+        - "{{ .Values.global.ingress.domain }}"
+      {{- if .Values.global.ingress.tls.enabled }}
+      tls:
+        - hosts:
+            - "{{ .Values.global.ingress.domain }}"
+          secretName: "{{ .Values.global.ingress.domain }}-tls"
+      {{- end }}
+
+    proxy:
+      service:
+        type: ClusterIP
+
+    singleuser:
+      defaultUrl: "/lab"
+      startTimeout: 600
+      extraAnnotations:
+        {{- toYaml .Values.global.common.velero.podAnnotations | nindent 8 }}
+
+      extraFiles:
+        jupyter_notebook_config.json:
+          mountPath: /etc/jupyter/jupyter_notebook_config.json
+          data:
+            ServerApp:
+              iopub_data_rate_limit: 1.0e10
+              iopub_msg_rate_limitFloat: 3000
+        overrides.json:
+          mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
+          stringData: |
+            {
+              "@jupyterlab/docmanager-extension:plugin": {
+                "defaultViewers": {
+                  "markdown": "Markdown Preview"
+                }
+              },
+              "@naavre/catalogue-jupyterlab:plugin": {
+                "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+              },
+              "@naavre/containerizer-jupyterlab:plugin": {
+                "containerizerServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreContainerizerService.ingress.basePath) }}",
+                "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+              },
+              "@naavre/workflow-jupyterlab:plugin": {
+                "workflowServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreWorkflowService.ingress.basePath) }}",
+                "catalogueServiceUrl": "https://{{ $.Values.global.ingress.domain }}/{{ trimAll "/" ($.Values.naavreCatalogueService.ingress.basePath) }}"
+              }
+            }
+        setup_virtual_lab.sh:
+          mountPath: /opt/setup-scripts/setup_virtual_lab.sh
+          stringData: |
+            #!/bin/bash
+            slug="$1"
+            dirname="$2"
+            vl_dir="Virtual Labs/$dirname"
+
+            if [ -z "$slug" ]; then
+              echo "missing slug"
+              exit 1
+            fi
+            if [ -z "$dirname" ]; then
+              echo "missing dirname"
+              exit 1
+            fi
+
+            # Plugin settings
+            for ext in "catalogue" "containerizer" "workflow"; do
+              dir=".jupyter/lab/user-settings/@naavre/$ext-jupyterlab/"
+              mkdir -p "$dir"
+              echo "{\"virtualLab\":\"$slug\"}" > "$dir/plugin.jupyterlab-settings"
+            done
+
+            # Virtual Lab dir
+            mkdir -p "$vl_dir/My data"
+
+            # Workspace initialization on first VL launch
+            workspace_slug=$(python -c "from jupyterlab_server.workspaces_handler import slugify; print(slugify(\"$slug\"))")
+            workspace_file="/home/jovyan/.jupyter/lab/workspaces/$workspace_slug.jupyterlab-workspace"
+            if [ ! -f "$workspace_file" ]; then
+              echo "{\"data\":{\"file-browser-filebrowser:cwd\":{\"path\":\"$vl_dir\"}},\"metadata\":{\"id\":\"$slug\"}}" > "$workspace_file"
+            fi
+
+      memory:
+        limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
+        guarantee: {{ .Values.jupyterhub.singleuser.memory.guarantee }}
+      cpu:
+        limit: {{ .Values.jupyterhub.singleuser.cpu.limit }}
+        guarantee: {{ .Values.jupyterhub.singleuser.cpu.guarantee }}
+      storage:
+        capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
+        type: dynamic
+        {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
+        dynamic:
+          {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 10 }}
+        {{- end }}
+        {{- if .Values.global.common.userPods.extraVolumeMounts }}
+        extraVolumes:
+        {{- range .Values.global.common.userPods.extraVolumeMounts }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .name }}
+        {{- end }}
+        extraVolumeMounts:
+          {{- .Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 8 }}
+        {{- end }}
+
+      extraEnv:
+        NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
+        {{- if .Values.global.insecureSkipVerifySSL }}
+        VRE_API_VERIFY_SSL: 'false'
+        {{- end }}
+
+      # make notebook servers aware of hub (reverts binderhub chart's default to z2jh chart's default)
+      cmd: jupyterhub-singleuser
+
+      profileList:
+        {{- range .Values.jupyterhub.vlabs }}
+        {{- if .enabled }}
+        - display_name: "{{ .slug }}"
+          kubespawner_override:
+            image: "{{ .image.name }}:{{ .image.tag }}"
+            pullPolicy: IfNotPresent
+            pvc_name_template: "jupyter-lab-{username}"
+            pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
+            lifecycle_hooks:
+              postStart:
+                exec:
+                  command:
+                    - "sh"
+                    - "-c"
+                    - |
+                      bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}" "{{ .dirname }}"
+                      echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
+                      {{- if .configuration.git_public }}
+                      cd "Virtual Labs/{{ .dirname }}/"
+                      gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"
+                      {{- end }}
+                      {{- if .postStartShSnippet }}
+                      {{- .postStartShSnippet | nindent 22 }}
+                      {{- end }}
+            {{- if .cmd | default "" }}
+            cmd:
+              {{- toYaml .cmd | nindent 14 }}
+            {{- end }}
+            environment:
+              NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
+            extra_pod_config:
+              securityContext:
+                fsGroupChangePolicy: OnRootMismatch
+        {{- end }}
+        {{- end }}

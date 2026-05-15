@@ -4,8 +4,10 @@ fullnameOverride: ""
 argo-workflows:
   enabled: true
 
-jupyterhub:
-  enabled: true
+binderhub: {}
+# Schema validation fails if binderhub.enable is present,
+# so we use a separate key for this chart
+binderhubEnabled: true
 
 k8s-secret-creator:
   enabled: true

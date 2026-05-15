@@ -24,6 +24,9 @@ global:
       users:
         - username: user
           password: user
+          firstName: U
+          lastName: Ser
+          email: user@example.org
       postgresql:
         password: fake-keycloak-postgresql-password
     seaweedfs:

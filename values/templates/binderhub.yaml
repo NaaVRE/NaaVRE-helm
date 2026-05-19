@@ -58,6 +58,12 @@ binderhub:
       hook:
         enabled: true
 
+    imagePullSecret:
+      create: true
+      registry: ghcr.io  # FIXME
+      username: {{ .Values.binderhub.registry.username }}
+      password: {{ .Values.binderhub.registry.password }}
+
     hub:
       concurrentSpawnLimit: {{ .Values.jupyterhub.hub.concurrentSpawnLimit }}
       consecutiveFailureLimit: {{ .Values.jupyterhub.hub.consecutiveFailureLimit }}
@@ -305,6 +311,7 @@ binderhub:
       cmd: jupyterhub-singleuser
 
       profileList:
+        - display_name: default
         {{- range .Values.jupyterhub.vlabs }}
         {{- if .enabled }}
         - display_name: "{{ .slug }}"

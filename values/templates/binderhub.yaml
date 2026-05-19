@@ -1,5 +1,5 @@
+binderhubEnabled: {{ .Values.binderhub.enabled }}
 binderhub:
-  {{/*enabled: {{ .Values.binderhub.enabled }}*/}}
 
   registry:
     url: {{ .Values.binderhub.registry.url }}
@@ -12,7 +12,7 @@ binderhub:
       image_prefix: {{ .Values.binderhub.registry.image_prefix }}
       base_url: /{{ trimAll "/" .Values.binderhub.ingress.basePath }}/
       hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
-      hub_url_local: http://hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
+      hub_url_local: http://{{ include "values.fullname" . }}-jupyter-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
       auth_enabled: true
 
   service:
@@ -36,8 +36,7 @@ binderhub:
     {{- end }}
 
   jupyterhub:
-    # TODO
-    {{/*fullnameOverride: "{{ include "values.fullname" . }}-jupyter"*/}}
+    fullnameOverride: "{{ include "values.fullname" . }}-jupyter"
 
     scheduling:
       userPods:
@@ -144,29 +143,30 @@ binderhub:
                   spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
           c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
         # TODO: this makes spawning fail (AttributeError: 'str' object has no attribute 'items')
-        {{/*10-custom_kubespawner.py: |*/}}
-        {{/*  # extend spawner_class set by binderhub*/}}
-        {{/*  class CustomKubeSpawner(c.JupyterHub.spawner_class):*/}}
-        {{/*      def get_pvc_manifest(self):*/}}
-        {{/*          # Workaround for jupyterhub/kubespawner#877*/}}
-        {{/*          # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5*/}}
-        {{/*          self.pvc_name = self._expand_user_properties(self.pvc_name_template)*/}}
-        {{/*          self.pod_name = self._expand_user_properties(self.pod_name_template)*/}}
-        {{/*          return super().get_pvc_manifest()*/}}
-        {{/*      async def get_pod_manifest(self):*/}}
-        {{/*          self.volume_mounts = [*/}}
-        {{/*              {k: v for k, v in volume_mount.items() if k != 'allowedGroups'}*/}}
-        {{/*              for volume_mount in self.volume_mounts*/}}
-        {{/*              if (*/}}
-        {{/*                  ('allowedGroups' not in volume_mount)*/}}
-        {{/*                  or (*/}}
-        {{/*                      set([g.name for g in self.user.groups])*/}}
-        {{/*                      & set(volume_mount['allowedGroups'])*/}}
-        {{/*                      )*/}}
-        {{/*                  )*/}}
-        {{/*              ]*/}}
-        {{/*          return await super().get_pod_manifest()*/}}
-        {{/*  c.JupyterHub.spawner_class = CustomKubeSpawner*/}}
+        10-custom_kubespawner.py: |
+          # extend spawner_class set by binderhub
+          class CustomKubeSpawner(c.JupyterHub.spawner_class):
+              def get_pvc_manifest(self):
+                  # Workaround for jupyterhub/kubespawner#877
+                  # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5
+                  self.log.warn(f'@@ {self.pvc_name_template} {self.pod_name_template}')
+                  self.pvc_name = self._expand_user_properties(self.pvc_name_template)
+                  self.pod_name = self._expand_user_properties(self.pod_name_template)
+                  return super().get_pvc_manifest()
+              async def get_pod_manifest(self):
+                  self.volume_mounts = [
+                      {k: v for k, v in volume_mount.items() if k != 'allowedGroups'}
+                      for volume_mount in self.volume_mounts.values()
+                      if (
+                          ('allowedGroups' not in volume_mount)
+                          or (
+                              set([g.name for g in self.user.groups])
+                              & set(volume_mount['allowedGroups'])
+                              )
+                          )
+                      ]
+                  return await super().get_pod_manifest()
+          c.JupyterHub.spawner_class = CustomKubeSpawner
         10-custom_user_redirect.py: |
           from jupyterhub.utils import url_path_join
           from tornado.httputil import url_concat
@@ -207,6 +207,7 @@ binderhub:
         type: ClusterIP
 
     singleuser:
+      podNameTemplate: "jupyter-lab-{{ .slug }}-{user_server}"
       defaultUrl: "/lab"
       startTimeout: 600
       extraAnnotations:
@@ -220,7 +221,7 @@ binderhub:
               iopub_data_rate_limit: 1.0e10
               iopub_msg_rate_limitFloat: 3000
         overrides.json:
-          mountPath: /opt/conda/share/jupyter/lab/settings/overrides.json
+          mountPath: /srv/conda/envs/notebook/share/jupyter/lab/settings/overrides.json
           stringData: |
             {
               "@jupyterlab/docmanager-extension:plugin": {
@@ -282,9 +283,11 @@ binderhub:
         guarantee: {{ .Values.jupyterhub.singleuser.cpu.guarantee }}
       storage:
         capacity: {{ .Values.jupyterhub.singleuser.storage.capacity }}
+        homeMountPath: /home/jovyan/My Documents
         type: dynamic
         {{- if .Values.jupyterhub.singleuser.storage.dynamic }}
         dynamic:
+          pvcNameTemplate: "jupyter-lab-{username}"
           {{ .Values.jupyterhub.singleuser.storage.dynamic | toYaml | nindent 10 }}
         {{- end }}
         {{- if .Values.global.common.userPods.extraVolumeMounts }}
@@ -304,6 +307,10 @@ binderhub:
         VRE_API_VERIFY_SSL: 'false'
         {{- end }}
 
+      extraPodConfig:
+        securityContext:
+          fsGroupChangePolicy: OnRootMismatch
+
       # make notebook servers aware of hub (reverts binderhub chart's default to z2jh chart's default)
       cmd: jupyterhub-singleuser
 
@@ -315,8 +322,6 @@ binderhub:
           kubespawner_override:
             image: "{{ .image.name }}:{{ .image.tag }}"
             pullPolicy: IfNotPresent
-            pvc_name_template: "jupyter-lab-{username}"
-            pod_name_template: "jupyter-lab-{{ .slug }}-{user_server}"
             lifecycle_hooks:
               postStart:
                 exec:
@@ -339,8 +344,5 @@ binderhub:
             {{- end }}
             environment:
               NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
-            extra_pod_config:
-              securityContext:
-                fsGroupChangePolicy: OnRootMismatch
         {{- end }}
         {{- end }}

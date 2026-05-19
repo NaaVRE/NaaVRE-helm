@@ -55,6 +55,11 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
 
+binderhub:
+  registry:
+    url: ghcr.io
+    image_prefix: ghcr.io/naavre/tmp-binder-builds/
+
 jupyterhub:
   vlabLabels:
     sampleLabel:

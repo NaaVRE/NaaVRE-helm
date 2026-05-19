@@ -103,7 +103,10 @@ binderhub:
   ingress:
     basePath: /binderhub
   registry:
-    url:
+    # Registry for building Jupyter images
+    # (only tested with ghcr.io)
+    url: ghcr.io
+    image_prefix: ghcr.io/<org>/<prefix>/
     username:
     password:
 

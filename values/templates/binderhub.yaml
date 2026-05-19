@@ -2,16 +2,14 @@ binderhub:
   {{/*enabled: {{ .Values.binderhub.enabled }}*/}}
 
   registry:
-    # TODO: secrets
     url: {{ .Values.binderhub.registry.url }}
     username: {{ .Values.binderhub.registry.username }}
     password: {{ .Values.binderhub.registry.password }}
 
   config:
     BinderHub:
-      # TODO: expose
       use_registry: true
-      image_prefix: ghcr.io/naavre/tmp-binder-builds/
+      image_prefix: {{ .Values.binderhub.registry.image_prefix }}
       base_url: /{{ trimAll "/" .Values.binderhub.ingress.basePath }}/
       hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
       hub_url_local: http://hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
@@ -29,7 +27,6 @@ binderhub:
       {{- end }}
     hosts:
       - "{{ .Values.global.ingress.domain }}"
-    # TODO
     pathSuffix: "{{ trimAll "/" (.Values.binderhub.ingress.basePath) }}"
     {{- if .Values.global.ingress.tls.enabled }}
     tls:
@@ -60,7 +57,7 @@ binderhub:
 
     imagePullSecret:
       create: true
-      registry: ghcr.io  # FIXME
+      registry: {{ .Values.binderhub.registry.url }}
       username: {{ .Values.binderhub.registry.username }}
       password: {{ .Values.binderhub.registry.password }}
 

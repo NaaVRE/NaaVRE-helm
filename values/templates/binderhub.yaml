@@ -97,6 +97,8 @@ binderhub:
           authorize_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/auth"
           token_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/token"
           userdata_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.keycloak.ingress.basePath }}/realms/vre/protocol/openid-connect/userinfo"
+          scope:
+            - openid
           {{- end }}
         BinderSpawner:
           auth_enabled: true

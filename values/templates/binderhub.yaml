@@ -14,6 +14,12 @@ binderhub:
       hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
       hub_url_local: http://{{ include "values.fullname" . }}-jupyter-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
       auth_enabled: true
+      BuildExecutor:
+        appendix: |
+          USER root
+          RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
+          RUN pip install --no-cache-dir {{ range $package := .Values.binderhub.builder.naavre_requirements }}{{ $package | squote }} {{ end }}
+          USER ${NB_USER}
 
   service:
     type: ClusterIP

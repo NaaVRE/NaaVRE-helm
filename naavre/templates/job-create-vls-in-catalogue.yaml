@@ -55,7 +55,7 @@ data:
 
     protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
     host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
-    base_url = "{{ trimAll " / " .Values.binderhub.jupyterhub.hub.baseUrl }}"
+    base_url = "{{ trimAll " / " .Values.binderhub.config.BinderHub.base_url }}"
 
 
     def create_or_update(model_class, search_field, object_dict):
@@ -116,11 +116,11 @@ data:
                 path = url_quote(f'tree/{default_file_path}')
             else:
                 path = ''
-            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
+            urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}', safe='')
+            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binderhub_ref']}?urlpath={urlpath}"
             print(default_file_path)
             print(path)
             print(vlab['deployment_url'])
-            vlab['container_image'] = f"{vlab['image']['name']}:{vlab['image']['tag']}"
             vlab['image'] = vlab.get("icon", "").strip()
 
             obj = create_or_update(
@@ -131,7 +131,6 @@ data:
                     'title': vlab['title'],
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
-                    'container_image': vlab['container_image'],
                     'image': vlab['image'],
                     })
 

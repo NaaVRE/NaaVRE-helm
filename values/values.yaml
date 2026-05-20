@@ -168,12 +168,11 @@ jupyterhub:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
-      dirname: "Open Lab"
+      # TODO: remove all dirname occurrences
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.6
+      # TODO: replace all occurrences of image: with binderhub_ref
+      binderhub_ref: gh/NaaVRE/vl-openlab
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -184,13 +183,10 @@ jupyterhub:
         # registry_token: "<username>:<token>"
         log_queries: true
         splitter_max_branches: 32
-        git_public: {}
-          # Public git repo cloned when starting the lab
-          # repo: https://example.org/my/repo.git
-          # branch: main
+        # TODO: remove all git_public occurrences
         #
         # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
-        # default_file_path: Virtual Labs/Open Lab/Git public/tutorial/Your first workflow in Python.ipynb
+        # default_file_path: tutorial/Your first workflow in Python.ipynb
         #
         # Optional workflow engine override for the virtual lab. Allows
         # configuring an external Argo workflows instance and

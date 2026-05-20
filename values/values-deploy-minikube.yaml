@@ -59,6 +59,8 @@ binderhub:
   registry:
     url: ghcr.io
     image_prefix: ghcr.io/naavre/tmp-binder-builds/
+    username: fake-github-username
+    password: fake-packages-github-token
 
 jupyterhub:
   vlabLabels:
@@ -74,9 +76,7 @@ jupyterhub:
       labels: [sampleLabel]
       description: Open experimentation with virtual labs
       dirname: Open Lab
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: latest
+      binderhub_ref: gh/NaaVRE/vl-openlab/add_binderhub
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -89,3 +89,4 @@ jupyterhub:
         cell_github_url: https://github.com/user/repo
         cell_github_token: fake-cell-github-token
         registry_url: ghcr.io/user/repo
+        default_file_path: README.md

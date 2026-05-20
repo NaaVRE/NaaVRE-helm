@@ -53,13 +53,6 @@ binderhub:
       # don't cull authenticated users (reverts binderhub chart's default)
       users: false
 
-    # enable image pre-puller (reverts binderhub chart's default)
-    prePuller:
-      continuous:
-        enabled: true
-      hook:
-        enabled: true
-
     imagePullSecret:
       create: true
       registry: {{ .Values.binderhub.registry.url }}
@@ -148,7 +141,6 @@ binderhub:
                   spawner.environment['OAUTH_ACCESS_TOKEN'] = auth_state.get('access_token')
                   spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
           c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
-        # TODO: this makes spawning fail (AttributeError: 'str' object has no attribute 'items')
         10-custom_kubespawner.py: |
           # extend spawner_class set by binderhub
           class CustomKubeSpawner(c.JupyterHub.spawner_class):
@@ -252,15 +244,9 @@ binderhub:
           stringData: |
             #!/bin/bash
             slug="$1"
-            dirname="$2"
-            vl_dir="Virtual Labs/$dirname"
 
             if [ -z "$slug" ]; then
               echo "missing slug"
-              exit 1
-            fi
-            if [ -z "$dirname" ]; then
-              echo "missing dirname"
               exit 1
             fi
 
@@ -270,16 +256,6 @@ binderhub:
               mkdir -p "$dir"
               echo "{\"virtualLab\":\"$slug\"}" > "$dir/plugin.jupyterlab-settings"
             done
-
-            # Virtual Lab dir
-            mkdir -p "$vl_dir/My data"
-
-            # Workspace initialization on first VL launch
-            workspace_slug=$(python -c "from jupyterlab_server.workspaces_handler import slugify; print(slugify(\"$slug\"))")
-            workspace_file="/home/jovyan/.jupyter/lab/workspaces/$workspace_slug.jupyterlab-workspace"
-            if [ ! -f "$workspace_file" ]; then
-              echo "{\"data\":{\"file-browser-filebrowser:cwd\":{\"path\":\"$vl_dir\"}},\"metadata\":{\"id\":\"$slug\"}}" > "$workspace_file"
-            fi
 
       memory:
         limit: {{ .Values.jupyterhub.singleuser.memory.limit }}
@@ -326,8 +302,6 @@ binderhub:
         {{- if .enabled }}
         - display_name: "{{ .slug }}"
           kubespawner_override:
-            image: "{{ .image.name }}:{{ .image.tag }}"
-            pullPolicy: IfNotPresent
             lifecycle_hooks:
               postStart:
                 exec:
@@ -335,12 +309,8 @@ binderhub:
                     - "sh"
                     - "-c"
                     - |
-                      bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}" "{{ .dirname }}"
+                      bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}"
                       echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
-                      {{- if .configuration.git_public }}
-                      cd "Virtual Labs/{{ .dirname }}/"
-                      gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"
-                      {{- end }}
                       {{- if .postStartShSnippet }}
                       {{- .postStartShSnippet | nindent 22 }}
                       {{- end }}

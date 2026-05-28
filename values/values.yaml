@@ -139,6 +139,7 @@ jupyterhub:
     extraVolumes: []
     extraVolumeMounts: []
   singleuser:
+    naavre_log_queries: true
     memory:
       limit: 4G
       guarantee: 4G
@@ -171,8 +172,8 @@ jupyterhub:
       # TODO: remove all dirname occurrences
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
-      # TODO: replace all occurrences of image: with binderhub_ref
-      binderhub_ref: gh/NaaVRE/vl-openlab
+      # TODO: replace all occurrences of image: with binder_ref
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -181,7 +182,7 @@ jupyterhub:
         registry_url:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
-        log_queries: true
+        # TODO: remove log_queries
         splitter_max_branches: 32
         # TODO: remove all git_public occurrences
         #
@@ -203,6 +204,7 @@ jupyterhub:
           # k8sSecretCreator:
           #   url: nil
           #   token: nil
+      # TODO: postStartShSnippet is ignored because we dropped profiles. Find an alternative.
       postStartShSnippet: |
         echo "Do something"
 

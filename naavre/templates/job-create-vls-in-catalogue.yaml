@@ -116,8 +116,8 @@ data:
                 path = url_quote(f'tree/{default_file_path}')
             else:
                 path = ''
-            urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}', safe='')
-            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binderhub_ref']}?urlpath={urlpath}"
+            urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}', safe='')
+            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binder_ref']}?urlpath={urlpath}"
             print(default_file_path)
             print(path)
             print(vlab['deployment_url'])
@@ -131,6 +131,7 @@ data:
                     'title': vlab['title'],
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
+                    'binder_ref': vlab['binder_ref'],
                     'image': vlab['image'],
                     })
 

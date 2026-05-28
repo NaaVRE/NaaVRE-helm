@@ -141,13 +141,74 @@ binderhub:
                   spawner.environment['OAUTH_ACCESS_TOKEN'] = auth_state.get('access_token')
                   spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
           c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
+
+        5-naavre-env.py: |
+          import asyncio
+          import json
+          from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+
+          async def get_labs_from_catalogue():
+            url = "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.naavreCatalogueService.ingress.basePath }}/virtual-labs/"
+            skip_verify_ssl = {{ .Values.global.insecureSkipVerifySSL | ternary "True" "False" }}
+            client = AsyncHTTPClient()
+            results = []
+            next_url = url
+            while next_url:
+              request = HTTPRequest(
+                  url=url,
+                  method='GET',
+                  headers={'Accept': 'application/json'},
+                  validate_cert=not skip_verify_ssl,
+              )
+              response = await client.fetch(request, raise_error=True)
+              payload = json.loads(response.body)
+              results += payload.get('results', [])
+              next_url = payload.get('next')
+            return results
+
+          async def get_lab(binder_ref):
+            labs = [lab for lab in await get_labs_from_catalogue() if lab['binder_ref'] == binder_ref]
+            if len(labs) < 1:
+              raise web.HTTPError(404, f"No virtual lab exists for repo: {binder_ref}")
+            if len(labs) > 1:
+              raise web.HTTPError(500, f"Several virtual labs exists for repo: {binder_ref}")
+            return labs[0]
+
+          async def apply_user_options(spawner, user_options):
+            spawner.log.debug(f'Applying user options {json.dumps(user_options)}')
+            if 'binder_request' in user_options:
+              binder_ref = user_options['binder_request'].removeprefix('v2/')
+              lab = await get_lab(binder_ref)
+              spawner.log.info(f'Using lab {lab.get('slug')} for binder ref {binder_ref}')
+              spawner.lab = lab
+
+          c.Spawner.apply_user_options = apply_user_options
+
+          # extend spawner_class set by binderhub
+          class CustomBinderKubeSpawner(c.JupyterHub.spawner_class):
+            def get_env(self):
+              env = super().get_env()
+              try:
+                if self.lab:
+                  for key in (
+                    'url',
+                    'slug',
+                    'title',
+                    'description',
+                  ):
+                    env[f'NAAVRE_VL_{key.upper()}'] = self.lab.get(key, '')
+              except KeyError:
+                self.log.warning('No lab found, NaaVRE environment variables will not be set.')
+              return env
+
+          c.JupyterHub.spawner_class = CustomBinderKubeSpawner
+
         10-custom_kubespawner.py: |
           # extend spawner_class set by binderhub
           class CustomKubeSpawner(c.JupyterHub.spawner_class):
               def get_pvc_manifest(self):
                   # Workaround for jupyterhub/kubespawner#877
                   # Source: https://discourse.jupyter.org/t/creating-1-pvc-per-profile-and-per-user/31755/5
-                  self.log.warn(f'@@ {self.pvc_name_template} {self.pod_name_template}')
                   self.pvc_name = self._expand_user_properties(self.pvc_name_template)
                   self.pod_name = self._expand_user_properties(self.pod_name_template)
                   return super().get_pvc_manifest()
@@ -243,7 +304,7 @@ binderhub:
           mountPath: /opt/setup-scripts/setup_virtual_lab.sh
           stringData: |
             #!/bin/bash
-            slug="$1"
+            slug="$NAAVRE_VL_SLUG"
 
             if [ -z "$slug" ]; then
               echo "missing slug"
@@ -285,6 +346,7 @@ binderhub:
 
       extraEnv:
         NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"
+        NAAVRE_LOG_QUERIES: "{{ .Values.jupyterhub.singleuser.naavre_log_queries | default false | printf "%t" }}"
         {{- if .Values.global.insecureSkipVerifySSL }}
         VRE_API_VERIFY_SSL: 'false'
         {{- end }}
@@ -296,29 +358,9 @@ binderhub:
       # make notebook servers aware of hub (reverts binderhub chart's default to z2jh chart's default)
       cmd: jupyterhub-singleuser
 
-      profileList:
-        - display_name: default
-        {{- range .Values.jupyterhub.vlabs }}
-        {{- if .enabled }}
-        - display_name: "{{ .slug }}"
-          kubespawner_override:
-            lifecycle_hooks:
-              postStart:
-                exec:
-                  command:
-                    - "sh"
-                    - "-c"
-                    - |
-                      bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}"
-                      echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
-                      {{- if .postStartShSnippet }}
-                      {{- .postStartShSnippet | nindent 22 }}
-                      {{- end }}
-            {{- if .cmd | default "" }}
-            cmd:
-              {{- toYaml .cmd | nindent 14 }}
-            {{- end }}
-            environment:
-              NAAVRE_LOG_QUERIES: "{{ .configuration.log_queries | default false | printf "%t" }}"
-        {{- end }}
-        {{- end }}
+      lifecycleHooks:
+        postStart:
+          exec:
+            command:
+              - bash
+              - /opt/setup-scripts/setup_virtual_lab.sh

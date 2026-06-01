@@ -254,7 +254,19 @@ jupyterhub:
                     echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
                     {{- if .configuration.git_public }}
                     cd "Virtual Labs/{{ .dirname }}/"
-                    gitpuller {{ .configuration.git_public.repo }} {{ .configuration.git_public.branch }} "Git public"
+                    git_public_repo="{{ .configuration.git_public.repo }}"
+                    git_public_branch="{{ .configuration.git_public.branch }}"
+                    git_public_dir="Git public"
+                    pull_git_public() {
+                      gitpuller "$git_public_repo" "$git_public_branch" "$git_public_dir"
+                    }
+                    backup_local_git_public() {
+                      mv "$git_public_dir" "$git_public_dir (backup $(date "+%Y-%m-%d %H:%M:%S"))"
+                    }
+                    handle_error() {
+                      echo "An unexpected error has occurred while pulling $git_public_repo to '$git_public_dir'. You can try removing or renaming the '$git_public_dir' folder (if it exists), and run the following command:\n\ngitpuller \"$git_public_repo\" \"$git_public_branch\" \"$git_public_dir\"\n" > "$git_public_dir error.txt"
+                    }
+                    pull_git_public || backup_local_git_public && pull_git_public || handle_error
                     {{- end }}
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}

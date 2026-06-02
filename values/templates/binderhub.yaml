@@ -17,7 +17,7 @@ binderhub:
       BuildExecutor:
         appendix: |
           USER root
-          RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
+          RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements" || echo "Failed to disable @jupyterlab/apputils-extension:announcements"
           RUN pip install --no-cache-dir {{ range $package := .Values.binderhub.builder.naavre_requirements }}{{ $package | squote }} {{ end }}
           USER ${NB_USER}
 

@@ -154,8 +154,6 @@ jupyterhub:
       enabled: true
     ravl:
       enabled: true
-    reprolab:
-      enabled: true
     veluwe-proto-dt:
       enabled: true
     waddenzee-proto-dt:

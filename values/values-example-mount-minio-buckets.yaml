@@ -50,6 +50,12 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
 
+binderhub:
+  registry:
+    image_prefix: ghcr.io/<org>/<prefix>/
+    username: <username>
+    password: <access token>
+
 jupyterhub:
   vlabs:
     openlab:

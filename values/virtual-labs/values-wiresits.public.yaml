@@ -7,9 +7,8 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: []
       description:  Digital Twin for satellite-based assessment of ecosystem functioning resilience to wildfires
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-wiresits-jupyter
-        tag: v0.3.5
+      # TODO: add environment to repo
+      binder_ref: gh/bmarcos/WiReSITS-VL/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

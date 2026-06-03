@@ -7,15 +7,11 @@ jupyterhub:
       communities: [naavre]
       labels: [experimental_features]
       description: An interactive, lifecycle-aware quality assessment tool for research software developed in Jupyter Notebooks.
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-jupyter-quality-jupyter
-        tag: v0.3.5
+      # TODO: add environment to repo
+      binder_ref: gh/QCDIS/jupyter-quality-extension/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-openlab
         registry_url: ghcr.io/naavre/cells-vl-openlab
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/QCDIS/jupyter-quality-extension.git
-          branch: main

@@ -171,7 +171,6 @@ jupyterhub:
       description: "Open experimentation with virtual labs"
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
-      # TODO: replace all occurrences of image: with binder_ref
       binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
@@ -182,7 +181,6 @@ jupyterhub:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
         splitter_max_branches: 32
-        # TODO: remove all git_public occurrences
         #
         # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
         # default_file_path: tutorial/Your first workflow in Python.ipynb

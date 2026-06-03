@@ -16,8 +16,9 @@ jupyterhub:
         registry_url: ghcr.io/naavre/cells-vl-dt-codesign
         splitter_max_branches: 32
         default_file_path: tutorial/Co-design of Digital Twins.ipynb
-      postStartShSnippet: |
-        f="/home/jovyan/.jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
-        cp "$f" "$f.old"
-        /opt/conda/envs/vanilla/bin/jq '.isDraftDefault |= true' "$f.old" > "$f"
-        rm "$f.old"
+      # TODO: move post start snippet to VL repo
+      # postStartShSnippet: |
+      #   f="/home/jovyan/.jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
+      #   cp "$f" "$f.old"
+      #   /opt/conda/envs/vanilla/bin/jq '.isDraftDefault |= true' "$f.old" > "$f"
+      #   rm "$f.old"

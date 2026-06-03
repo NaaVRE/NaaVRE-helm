@@ -8,16 +8,12 @@ jupyterhub:
       labels: [lter-life]
       description: |
         Sediment temperature dynamics and heatwave exposure in the Dutch Wadden Sea intertidal zone.
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-tempsed-wadden-sea-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/LTER-LIFE/vl-tempsed-wadden-sea/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-tempsed-wadden-sea
         registry_url: ghcr.io/naavre/cells-vl-tempsed-wadden-sea
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/LTER-LIFE/vl-tempsed-wadden-sea.git
-          branch: main
-        default_file_path: Virtual Labs/TempSED Wadden Sea/Git public/README.md
+        default_file_path: README.md

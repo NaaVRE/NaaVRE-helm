@@ -81,7 +81,6 @@ global:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
-      dirname: "Open Lab"
       icon: ""
       binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:

@@ -8,7 +8,6 @@ jupyterhub:
       labels: [lter-life]
       description: |
         Sediment temperature dynamics and heatwave exposure in the Dutch Wadden Sea intertidal zone.
-      dirname: TempSED Wadden Sea
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-tempsed-wadden-sea-jupyter
         tag: v0.3.6

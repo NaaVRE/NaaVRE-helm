@@ -169,7 +169,6 @@ jupyterhub:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
-      # TODO: remove all dirname occurrences
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
       # TODO: replace all occurrences of image: with binder_ref

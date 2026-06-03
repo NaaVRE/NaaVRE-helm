@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: [lter-life]
       description: Virtual lab supporting the search, downloading, and manipulation of geospatial data, such as satellite imagery, and extracting such data to inform ecological workflows.
-      dirname: GeoSpatial Toolbox
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-geospatial-toolbox-jupyter
         tag: v0.3.6

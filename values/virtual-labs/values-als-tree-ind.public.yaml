@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre]
       labels: []
       description: Identifying individual trees from airborne laser scanning data
-      dirname: ALS Tree Individualization
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-als-tree-ind-jupyter
         tag: v0.3.6

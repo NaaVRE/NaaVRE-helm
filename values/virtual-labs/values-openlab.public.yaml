@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre]
       labels: [naavre_tutorial]
       description: Open experimentation with virtual labs
-      dirname: Open Lab
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.6

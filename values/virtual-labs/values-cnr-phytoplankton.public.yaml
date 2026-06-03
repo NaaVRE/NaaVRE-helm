@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre]
       labels: []
       description:  CNR Phytoplankton virtual lab
-      dirname: CNR Phytoplankton
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.6

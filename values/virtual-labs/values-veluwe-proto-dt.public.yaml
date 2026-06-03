@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: [lter-life]
       description:  Veluwe Digital Twin prototype for LTER-LIFE
-      dirname: Veluwe proto DT
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-lter-life-veluwe-jupyter
         tag: v0.3.5

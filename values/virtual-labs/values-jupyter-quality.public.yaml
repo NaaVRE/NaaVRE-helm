@@ -7,7 +7,6 @@ jupyterhub:
       communities: [naavre]
       labels: [experimental_features]
       description: An interactive, lifecycle-aware quality assessment tool for research software developed in Jupyter Notebooks.
-      dirname: Jupyter quality
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-jupyter-quality-jupyter
         tag: v0.3.5

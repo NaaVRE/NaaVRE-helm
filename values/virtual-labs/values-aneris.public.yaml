@@ -8,7 +8,6 @@ jupyterhub:
       labels: [aneris]
       description: |
         A virtual lab to access ANERIS.
-      dirname: ANERIS
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-aneris-jupyter
         tag: v0.3.5

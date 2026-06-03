@@ -73,6 +73,10 @@ keycloak:
 seaweedfs:
   enabled: false
 
+binderhub:
+  registry:
+    image_prefix: ghcr.io/naavre/binder-builds/
+
 jupyterhub:
   scheduling:
     userPods:

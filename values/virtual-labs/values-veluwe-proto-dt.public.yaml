@@ -15,7 +15,6 @@ jupyterhub:
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-veluwe-proto-dt
         registry_url: ghcr.io/naavre/cells-vl-veluwe-proto-dt
-        log_queries: true
         splitter_max_branches: 32
         git_public:
           repo: https://github.com/LTER-LIFE/vl-VeluweProtoDT.git

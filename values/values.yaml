@@ -181,7 +181,6 @@ jupyterhub:
         registry_url:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
-        # TODO: remove log_queries
         splitter_max_branches: 32
         # TODO: remove all git_public occurrences
         #

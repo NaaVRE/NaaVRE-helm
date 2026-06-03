@@ -18,7 +18,6 @@ jupyterhub:
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-biotisan-euromarec
         registry_url: ghcr.io/naavre/cells-vl-biotisan-euromarec
-        log_queries: true
         splitter_max_branches: 32
         git_public:
           repo: https://github.com/QCDIS/Biodiversity_time_series_analyses_from_European_marine_ecosystems.git

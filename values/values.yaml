@@ -200,9 +200,6 @@ jupyterhub:
           # k8sSecretCreator:
           #   url: nil
           #   token: nil
-      # TODO: postStartShSnippet is ignored because we dropped profiles. Find an alternative.
-      postStartShSnippet: |
-        echo "Do something"
 
 k8sSecretCreator:
   enabled: true

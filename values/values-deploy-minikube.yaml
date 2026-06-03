@@ -57,7 +57,6 @@ global:
 
 binderhub:
   registry:
-    url: ghcr.io
     image_prefix: ghcr.io/naavre/tmp-binder-builds/
     username: fake-github-username
     password: fake-packages-github-token

@@ -43,6 +43,12 @@ global:
 keycloak:
   enabled: false
 
+binderhub:
+  registry:
+    image_prefix: ghcr.io/<org>/<prefix>/
+    username: <username>
+    password: <access token>
+
 jupyterhub:
   vlabs:
     openlab:

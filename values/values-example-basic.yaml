@@ -39,6 +39,12 @@ global:
     naavrePaasFrontend:
       secretKey: <a random secret>
 
+binderhub:
+  registry:
+    image_prefix: ghcr.io/<org>/<prefix>/
+    username: <username>
+    password: <access token>
+
 jupyterhub:
   vlabs:
     openlab:

@@ -171,13 +171,21 @@ deploy_naavre(){
       cd NaaVRE-helm
     else
       CHART_FILE_IN_PLACE="true"
-      yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' naavre/Chart.yaml "$CHART_FILE" > merged_chart.yaml
-      cp merged_chart.yaml ./naavre/Chart.yaml
+      while IFS=$'\t' read -r dep_name dep_version; do
+        export DEP_NAME="$dep_name"
+        export DEP_VERSION="$dep_version"
+        echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
+        yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
+      done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$CHART_FILE")
     fi
     echo "Using custom chart file: $CHART_FILE"
     if [ -z "$CHART_FILE_IN_PLACE" ]; then
-      yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' naavre/Chart.yaml "$CHART_FILE" > merged_chart.yaml
-      cp merged_chart.yaml ./naavre/Chart.yaml
+      while IFS=$'\t' read -r dep_name dep_version; do
+        export DEP_NAME="$dep_name"
+        export DEP_VERSION="$dep_version"
+        echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
+        yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
+      done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$CHART_FILE")
      fi
     cd naavre && helm dependency update && cd ..
   fi

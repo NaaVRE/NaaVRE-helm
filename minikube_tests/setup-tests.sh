@@ -171,11 +171,13 @@ deploy_naavre(){
       cd NaaVRE-helm
     else
       CHART_FILE_IN_PLACE="true"
-      cp "$CHART_FILE" ./naavre/Chart.yaml
+      yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' naavre/Chart.yaml "$CHART_FILE" > merged_chart.yaml
+      cp merged_chart.yaml ./naavre/Chart.yaml
     fi
     echo "Using custom chart file: $CHART_FILE"
     if [ -z "$CHART_FILE_IN_PLACE" ]; then
-      cp "$CHART_FILE" naavre/Chart.yaml
+      yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' naavre/Chart.yaml "$CHART_FILE" > merged_chart.yaml
+      cp merged_chart.yaml ./naavre/Chart.yaml
      fi
     cd naavre && helm dependency update && cd ..
   fi

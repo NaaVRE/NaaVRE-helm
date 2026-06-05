@@ -169,6 +169,9 @@ deploy_naavre(){
     if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
       echo "Changing directory to NaaVRE-helm to use custom chart file"
       cd NaaVRE-helm
+    else
+      cp "../$CHART_FILE" .
+      CHART_FILE=$(basename "$CHART_FILE")
     fi
     echo "Using custom chart file: $CHART_FILE"
     while IFS=$'\t' read -r dep_name dep_version; do

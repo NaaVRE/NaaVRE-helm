@@ -60,7 +60,7 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       ;;
     -c |--chart-file)
-      CHART_FILE="$2"
+      EXTRA_CHART_FILE="$2"
       shift # past argument
       shift # past value
       ;;
@@ -92,6 +92,11 @@ if [[ -n "$VALUES_FILE" ]]; then
   echo "Using values file: $VALUES_FILE"
 fi
 
+# If $EXTRA_CHART_FILE exists, set its absolute path
+if [[ -f "$EXTRA_CHART_FILE" ]]; then
+  EXTRA_CHART_FILE=$(realpath "$EXTRA_CHART_FILE")
+  echo "Using chart file: $EXTRA_CHART_FILE"
+fi
 
 # Get only the last part of the current directory
 CURRENT_DIR=$(basename "$(pwd)")
@@ -116,8 +121,6 @@ export "SECRETS_CREATOR_SECRET_NAME=$namespace-k8s-secret-creator"
 export ARGO_SERVICE_ACCOUNT_EXECUTOR="argo-executor"
 export ARGO_VRE_API_SERVICE_ACCOUNT="argo-vreapi"
 export ARGO_SERCERT_TOKEN_NAME=argo-vreapi.service-account-token
-
-
 
 setup_minikube(){
   echo "Setting up Minikube"
@@ -151,6 +154,7 @@ setup_minikube(){
 }
 
 deploy_naavre(){
+  CURRENT_DIR=$(basename "$(pwd)")
   if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
     if [ "$DELETE_NAAAVRE_DIR" == "true" ]; then
       rm -rf NaaVRE-helm
@@ -164,21 +168,18 @@ deploy_naavre(){
     cp ./minikube_tests/configuration.json ../
   fi
 
-  CURRENT_DIR=$(basename "$(pwd)")
-  if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-    cp $CHART_FILE NaaVRE-helm
-    CHART_FILE=$(basename "$CHART_FILE")
-    echo "Changing directory to NaaVRE-helm to use custom chart file"
-    cd NaaVRE-helm
+  # if EXTRA_CHART_FILE is provided, merge with naavre/chart
+  if [ -f "$EXTRA_CHART_FILE" ]; then
+    echo "Merging $EXTRA_CHART_FILE with naavre/Chart.yaml"
+    while IFS=$'\t' read -r dep_name dep_version; do
+      export DEP_NAME="$dep_name"
+      export DEP_VERSION="$dep_version"
+      echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
+      yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
+    done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$EXTRA_CHART_FILE")
   fi
 
-  echo "Using custom chart file: $CHART_FILE"
-  while IFS=$'\t' read -r dep_name dep_version; do
-    export DEP_NAME="$dep_name"
-    export DEP_VERSION="$dep_version"
-    echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
-    yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
-  done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$CHART_FILE")
+
   cd naavre && helm dependency update && cd ..
 
   # Add the third-party Helm repos

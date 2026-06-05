@@ -164,24 +164,22 @@ deploy_naavre(){
     cp ./minikube_tests/configuration.json ../
   fi
 
-  if [ -n "$CHART_FILE" ]; then
-    CURRENT_DIR=$(basename "$(pwd)")
-    if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
-      echo "Changing directory to NaaVRE-helm to use custom chart file"
-      cd NaaVRE-helm
-    else
-      cp "../$CHART_FILE" .
-      CHART_FILE=$(basename "$CHART_FILE")
-    fi
-    echo "Using custom chart file: $CHART_FILE"
-    while IFS=$'\t' read -r dep_name dep_version; do
-      export DEP_NAME="$dep_name"
-      export DEP_VERSION="$dep_version"
-      echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
-      yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
-    done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$CHART_FILE")
-    cd naavre && helm dependency update && cd ..
+  CURRENT_DIR=$(basename "$(pwd)")
+  if [ "$CURRENT_DIR" != "NaaVRE-helm" ]; then
+    cp $CHART_FILE NaaVRE-helm
+    CHART_FILE=$(basename "$CHART_FILE")
+    echo "Changing directory to NaaVRE-helm to use custom chart file"
+    cd NaaVRE-helm
   fi
+
+  echo "Using custom chart file: $CHART_FILE"
+  while IFS=$'\t' read -r dep_name dep_version; do
+    export DEP_NAME="$dep_name"
+    export DEP_VERSION="$dep_version"
+    echo "Processing dependency: $DEP_NAME with version $DEP_VERSION"
+    yq -i '(.dependencies[] | select(.name == strenv(DEP_NAME) ) | .version) = strenv(DEP_VERSION)' naavre/Chart.yaml
+  done < <(yq -r '.dependencies[] | [.name, .version] | @tsv' "$CHART_FILE")
+  cd naavre && helm dependency update && cd ..
 
   # Add the third-party Helm repos
   if [ "$DEPLOY_NAAAVRE" == "true" ]; then

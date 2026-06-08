@@ -134,6 +134,8 @@ jupyterhub:
       enabled: true
     blue-carbon:
       enabled: true
+    dajs:
+      enabled: true
     ecvs:
       enabled: true
     quadfavl:

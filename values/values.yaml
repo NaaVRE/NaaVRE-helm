@@ -98,6 +98,29 @@ argoWorkflows:
   ingress:
     basePath: /argowf
 
+binderhub:
+  enabled: true
+  ingress:
+    basePath: /binderhub
+  registry:
+    # Registry for building Jupyter images
+    # (only tested with ghcr.io)
+    url: ghcr.io
+    image_prefix: ghcr.io/<org>/<prefix>/
+    username:
+    password:
+  builder:
+    naavre_requirements:
+      - NaaVRE-catalogue-jupyterlab==0.2.0
+      - NaaVRE-communicator-jupyterlab==0.3.3
+      - NaaVRE-containerizer-jupyterlab==0.5.0
+      - NaaVRE-workflow-jupyterlab==0.6.0
+      - ipywidgets>=8.1.7
+      - jupyter-archive>=3.4.0
+      - jupyterlab-git>=0.51.2
+      - nbgitpuller>=1.2.2
+      - voila>=0.5.7
+
 jupyterhub:
   enabled: true
   ingress:
@@ -116,6 +139,7 @@ jupyterhub:
     extraVolumes: []
     extraVolumeMounts: []
   singleuser:
+    naavre_log_queries: true
     memory:
       limit: 4G
       guarantee: 4G
@@ -145,12 +169,9 @@ jupyterhub:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
-      dirname: "Open Lab"
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.5
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -159,15 +180,10 @@ jupyterhub:
         registry_url:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
-        log_queries: true
         splitter_max_branches: 32
-        git_public: {}
-          # Public git repo cloned when starting the lab
-          # repo: https://example.org/my/repo.git
-          # branch: main
         #
         # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
-        # default_file_path: Virtual Labs/Open Lab/Git public/tutorial/Your first workflow in Python.ipynb
+        # default_file_path: tutorial/Your first workflow in Python.ipynb
         #
         # Optional workflow engine override for the virtual lab. Allows
         # configuring an external Argo workflows instance and
@@ -184,8 +200,6 @@ jupyterhub:
           # k8sSecretCreator:
           #   url: nil
           #   token: nil
-      postStartShSnippet: |
-        echo "Do something"
 
 k8sSecretCreator:
   enabled: true

@@ -7,14 +7,11 @@ jupyterhub:
       communities: [naavre]
       labels: []
       description: CNR Biomass virtual lab
-      dirname: CNR Biomass
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.5
+      # TODO: create repo and add environment
+      binder_ref: gh/NaaVRE/vl-cnr-biomass/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-cnr-biomass
         registry_url: ghcr.io/naavre/cells-vl-cnr-biomass
-        log_queries: true
         splitter_max_branches: 32

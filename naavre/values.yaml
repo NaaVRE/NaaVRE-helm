@@ -4,8 +4,10 @@ fullnameOverride: ""
 argo-workflows:
   enabled: true
 
-jupyterhub:
-  enabled: true
+binderhub: {}
+# Schema validation fails if binderhub.enable is present,
+# so we use a separate key for this chart
+binderhubEnabled: true
 
 k8s-secret-creator:
   enabled: true
@@ -45,6 +47,9 @@ global:
       # users:
       #   - username: example-1
       #     password: ...
+      #     firstName: ...
+      #     lastName: ...
+      #     email: ...
       postgresql:
         database:
         username:
@@ -76,11 +81,8 @@ global:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
-      dirname: "Open Lab"
       icon: ""
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.0.1
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.0.1/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

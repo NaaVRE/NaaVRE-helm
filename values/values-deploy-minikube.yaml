@@ -24,6 +24,9 @@ global:
       users:
         - username: user
           password: user
+          firstName: U
+          lastName: Ser
+          email: user@example.org
       postgresql:
         password: fake-keycloak-postgresql-password
     seaweedfs:
@@ -52,6 +55,12 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
 
+binderhub:
+  registry:
+    image_prefix: ghcr.io/naavre/tmp-binder-builds/
+    username: fake-github-username
+    password: fake-packages-github-token
+
 jupyterhub:
   vlabLabels:
     sampleLabel:
@@ -65,14 +74,10 @@ jupyterhub:
       title: NaaVRE Open Lab
       labels: [sampleLabel]
       description: Open experimentation with virtual labs
-      dirname: Open Lab
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: latest
+      binder_ref: gh/NaaVRE/vl-openlab/add_binderhub
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
-        log_queries: true
         splitter_max_branches: 32
         # WARNING: with the values below, the deployment will work but containerizing cells won't.
         # If you need to containerize cells, create your own cells repository using the template at
@@ -81,3 +86,4 @@ jupyterhub:
         cell_github_url: https://github.com/user/repo
         cell_github_token: fake-cell-github-token
         registry_url: ghcr.io/user/repo
+        default_file_path: README.md

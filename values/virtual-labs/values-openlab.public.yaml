@@ -7,18 +7,12 @@ jupyterhub:
       communities: [naavre]
       labels: [naavre_tutorial]
       description: Open experimentation with virtual labs
-      dirname: Open Lab
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.5
+      # TODO: add environment to repo
+      binder_ref: gh/NaaVRE/vl-openlab/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-openlab
         registry_url: ghcr.io/naavre/cells-vl-openlab
-        log_queries: true
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/NaaVRE/vl-openlab.git
-          branch: main
-        default_file_path: Virtual Labs/Open Lab/Git public/README.md
+        default_file_path: README.md

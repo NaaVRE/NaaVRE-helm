@@ -9,18 +9,12 @@ jupyterhub:
       description: |
         A virtual lab to compile estimates of blue carbon storage by using essential variables and 
         satellite remote sensing at regional scales within European coastal systems .
-      dirname: Seagrass carbon stock model
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-blue-carbon-jupyter
-        tag: v0.3.5
+      # TODO: add environment to repo
+      binder_ref: gh/QCDIS/Seagrass_carbon_stock_model/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-blue-carbon
         registry_url: ghcr.io/naavre/cells-vl-blue-carbon
-        log_queries: true
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/QCDIS/Seagrass_carbon_stock_model.git
-          branch: main
-        default_file_path: Virtual Labs/Seagrass carbon stock model/Git public/README.md
+        default_file_path: README.md

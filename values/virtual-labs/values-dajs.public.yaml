@@ -1,0 +1,22 @@
+jupyterhub:
+  vlabs:
+    dajs:
+      enabled: false
+      slug: dajs
+      title: DAJS virtual labs
+      communities: [naavre]
+      labels: []
+      description: Sustainable regeneration of agriculture in territories affected by Xylella Fastidiosa
+      dirname: DAJS
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.3.5
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.5/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-dajs
+        registry_url: ghcr.io/naavre/cells-vl-dajs
+        log_queries: true
+        splitter_max_branches: 32
+        # git_public in secrets with pull token
+        default_file_path: Virtual Labs/DAJS/Git public/README.md

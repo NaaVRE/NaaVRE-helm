@@ -119,3 +119,20 @@ argo-workflows:
             - "{{ .Values.global.ingress.domain }}"
           secretName: "{{ .Values.global.ingress.domain }}-tls"
       {{- end }}
+  artifactRepository:
+    s3:
+      {{- if .Values.global.externalServices.s3.useExternal }}
+      endpoint: "{{ .Values.global.externalServices.s3.argoBucket.endpoint_url }}"
+      bucket: "{{ .Values.global.externalServices.s3.argoBucket.bucket_name }}"
+      {{- else }}
+      endpoint: "{{ .Values.global.ingress.seaweedfsS3Domain }}"
+      bucket: "{{ .Values.seaweedfs.argoBucket.bucket_name }}"
+      {{ end }}
+      insecure: {{ .Values.global.insecureSkipVerifySSL }}
+      keyFormat: "{{`{{workflow.namespace}}`}}/{{`{{workflow.name}}`}}-{{`{{workflow.uid}}`}}/{{`{{pod.name}}`}}"
+      accessKeySecret:
+        name: "{{ include "values.fullname" . }}-argo-s3-credentials"
+        key: accessKey
+      secretKeySecret:
+        name: "{{ include "values.fullname" . }}-argo-s3-credentials"
+        key: secretKey

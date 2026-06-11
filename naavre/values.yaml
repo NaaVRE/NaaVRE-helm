@@ -53,12 +53,17 @@ global:
       catalogueBucket:
         access_key:
         secret_key:
+      argoBucket:
+        access_key:
+        secret_key:
 
   keycloak:
     image:
 
   seaweedfs:
     catalogueBucket:
+      bucket_name:
+    argoBucket:
       bucket_name:
 
   communities: {}

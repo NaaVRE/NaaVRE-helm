@@ -24,6 +24,9 @@ global:
       catalogueBucket:
         access_key: <a random secret>
         secret_key: <a random secret>
+      argoBucket:
+        access_key: <a random secret>
+        secret_key: <a random secret>
     naavreCatalogueService:
       secretKey: <a random secret>
       auth:

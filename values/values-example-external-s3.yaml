@@ -24,6 +24,9 @@ global:
       catalogueBucket:
         access_key: nil
         secret_key: nil
+      argoBucket:
+        access_key: nil
+        secret_key: nil
     naavreCatalogueService:
       secretKey: <a random secret>
       auth:
@@ -41,7 +44,12 @@ global:
       useExternal: true
       catalogueBucket:
         endpoint_url: "https://s3.example.org"
-        bucket_name: "my-bucket"
+        bucket_name: "my-assets-bucket"
+        access_key: "my-access-key"
+        secret_key: "my-secret-key"
+      argoBucket:
+        endpoint_url: "https://s3.example.org"
+        bucket_name: "my-artifacts-bucket"
         access_key: "my-access-key"
         secret_key: "my-secret-key"
 

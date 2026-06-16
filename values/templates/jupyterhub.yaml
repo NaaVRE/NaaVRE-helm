@@ -258,7 +258,9 @@ jupyterhub:
                     git_public_branch="{{ .configuration.git_public.branch }}"
                     git_public_dir="Git public"
                     pull_git_public() {
+                      find "${git_public_dir}" -type f | xargs -I{} chmod +w {}
                       gitpuller "$git_public_repo" "$git_public_branch" "$git_public_dir"
+                      find "${git_public_dir}" -type f | xargs -I{} chmod -w {}
                     }
                     backup_local_git_public() {
                       mv "$git_public_dir" "$git_public_dir (backup $(date "+%Y-%m-%d %H:%M:%S"))"

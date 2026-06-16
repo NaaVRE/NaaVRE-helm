@@ -1,0 +1,188 @@
+# Temporary deployment of the Binder PoC to gather feedback
+#
+# Deploy with:
+# ./deploy.sh --kube-context k8s-staging-1 -n binder-poc --use-vlic-secrets -f values/values-deploy-binder-poc.secrets.yaml -f values/values-deploy-binder-poc.public.yaml upgrade --install --timeout 30m
+
+nameOverride: "naavre-binder-poc"
+
+global:
+  namespace: binder-poc
+
+  ingress:
+    domain: binder-poc.naavre.net
+    seaweedfsS3Domain: nil
+    commonAnnotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    tls:
+      enabled: true
+    redirectDomainToPaasFrontend: true
+
+  common:
+    corePods:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: naavre.net/node-purpose
+                    operator: In
+                    values:
+                      - core
+    userPods:
+      extraVolumeMounts:
+        - name: naa-vre-public-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-public
+          readOnly: true
+        - name: naa-vre-user-data-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
+          subPath: '{unescaped_username}'
+        - name: naa-vre-als-tree-ind-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-als-tree-ind/
+          allowedGroups:
+            - s3-naa-vre-als-tree-ind-users
+        - name: naa-vre-laserfarm-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-laserfarm/
+          allowedGroups:
+            - s3-naa-vre-laserfarm-users
+        - name: naa-vre-waddenzee-shared-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
+          allowedGroups:
+            - s3-naa-vre-waddenzee-shared-users
+
+  externalServices:
+    argoWorkflows:
+      useExternal: true
+      namespace: argo
+      url: https://staging.demo.naavre.net/argowf
+      executor_service_account: executor
+    k8sSecretCreator:
+      useExternal: true
+      url: https://staging.demo.naavre.net/k8s-secret-creator/1.0.0/
+    keycloak:
+      useExternal: true
+      url: https://lifewatch.lab.uvalight.net/auth/
+      realm: vre
+    s3:
+      useExternal: true
+      catalogueBucket:
+        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
+        # TODO: configure bucket
+        bucket_name: "naavre-catalogue-binderhub-poc"
+
+argoWorkflows:
+  enabled: false
+
+k8sSecretCreator:
+  enabled: false
+
+keycloak:
+  enabled: false
+
+seaweedfs:
+  enabled: false
+
+binderhub:
+  registry:
+    image_prefix: ghcr.io/naavre/binder-builds/
+
+jupyterhub:
+  scheduling:
+    userPods:
+      nodeAffinity:
+        matchNodePurpose: require
+  hub:
+    activeServerLimit: 50
+    initContainers:
+      - name: git-clone-templates
+        image: alpine/git
+        args:
+          - clone
+          - --single-branch
+          - --branch=lifeWatch-jh-4
+          - --depth=1
+          - --
+          - https://github.com/QCDIS/k8s-jhub.git
+          - /etc/jupyterhub/custom
+        securityContext:
+          runAsUser: 1000
+        volumeMounts:
+          - name: hub-templates
+            mountPath: /etc/jupyterhub/custom
+      - name: copy-static
+        image: busybox:1.28
+        command: ["sh", "-c", "mv /etc/jupyterhub/custom/static/* /usr/local/share/jupyterhub/static/external"]
+        securityContext:
+          runAsUser: 1000
+        volumeMounts:
+          - name: hub-templates
+            mountPath: /etc/jupyterhub/custom
+          - name: hub-static
+            mountPath: /usr/local/share/jupyterhub/static/external
+    extraVolumes:
+      - name: hub-templates
+        emptyDir: {}
+      - name: hub-static
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: hub-templates
+        mountPath: /etc/jupyterhub/custom
+      - name: hub-static
+        mountPath: /usr/local/share/jupyterhub/static/external
+    extraConfig:
+      templates.py: |
+        c.JupyterHub.template_paths = ['/etc/jupyterhub/custom/templates']
+  singleuser:
+    storage:
+      dynamic:
+        storageClass: zfs-generic-nfs
+  vlabs:
+    openlab:
+      enabled: true
+    # laserfarm:
+    #   enabled: true
+    # aneris:
+    #   enabled: true
+    # biodt-hackathon25:
+    #   enabled: true
+    # blue-carbon:
+    #   enabled: true
+    # ecvs:
+    #   enabled: true
+    # quadfavl:
+    #   enabled: true
+    # veluwe-forest-model:
+    #   enabled: true
+    # cnr-biomass:
+    #   enabled: true
+    # cnr-phytoplankton:
+    #   enabled: true
+    # dt-codesign:
+    #   enabled: true
+    # jupyter-quality:
+    #   enabled: true
+    # pclake:
+    #   enabled: true
+    # phytoplankton:
+    #   enabled: true
+    ravl:
+      enabled: true
+    # veluwe-proto-dt:
+    #   enabled: true
+    # waddenzee-proto-dt:
+    #   enabled: true
+    wiresits:
+      enabled: true
+    # biotisan-euromarec:
+    #   enabled: true
+    # als-tree-ind:
+    #   enabled: true
+    # homeros-seismology:
+    #   enabled: true
+    # geospatial-toolbox:
+    #   enabled: true
+    # bgis-urban-planning:
+    #   enabled: true
+    # tempsed-wadden-sea:
+    #   enabled: true
+    # et-zeeland:
+    #   enabled: true

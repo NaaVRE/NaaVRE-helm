@@ -6,6 +6,8 @@ binderhub:
     username: {{ .Values.binderhub.registry.username }}
     password: {{ .Values.binderhub.registry.password }}
 
+  imageBuilderType: dind
+
   config:
     BinderHub:
       use_registry: true

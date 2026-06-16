@@ -117,6 +117,12 @@ binderhub:
           scopes:
             - self
             - "access:services!service=binder"
+      networkPolicy:
+        ingress:
+          - from:
+              - podSelector:
+                  matchLabels:
+                    app: binder
       {{- with .Values.jupyterhub.hub.initContainers }}
       initContainers:
         {{- toYaml . | nindent 8}}

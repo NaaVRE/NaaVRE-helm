@@ -8,18 +8,12 @@ jupyterhub:
       labels: [ecvs]
       description: |
         A virtual lab to access ECVs. The workflows in the VLab were developed by ENVRI-Hub-NEXT project.
-      dirname: ECVs
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-ecvs-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/QCDIS/ecvs/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-ecvs
         registry_url: ghcr.io/naavre/cells-vl-ecvs
-        log_queries: true
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/QCDIS/ecvs.git
-          branch: main
-        default_file_path: Virtual Labs/ECVs/Git public/README.md
+        default_file_path: README.md

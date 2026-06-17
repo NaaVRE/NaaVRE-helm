@@ -7,23 +7,18 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: [lter-life]
       description:  Co-design digital twins virtual lab
-      dirname: DT Co-Design
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/NaaVRE/vl-dt-codesign/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-dt-codesign
         registry_url: ghcr.io/naavre/cells-vl-dt-codesign
-        log_queries: true
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/NaaVRE/vl-dt-codesign.git
-          branch: main
-        default_file_path: Virtual Labs/DT Co-Design/Git public/tutorial/Co-design of Digital Twins.ipynb
-      postStartShSnippet: |
-        f="/home/jovyan/.jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
-        cp "$f" "$f.old"
-        /opt/conda/envs/vanilla/bin/jq '.isDraftDefault |= true' "$f.old" > "$f"
-        rm "$f.old"
+        default_file_path: tutorial/Co-design of Digital Twins.ipynb
+      # TODO: move post start snippet to VL repo
+      # postStartShSnippet: |
+      #   f="/home/jovyan/.jupyter/lab/user-settings/@naavre/containerizer-jupyterlab/plugin.jupyterlab-settings"
+      #   cp "$f" "$f.old"
+      #   /opt/conda/envs/vanilla/bin/jq '.isDraftDefault |= true' "$f.old" > "$f"
+      #   rm "$f.old"

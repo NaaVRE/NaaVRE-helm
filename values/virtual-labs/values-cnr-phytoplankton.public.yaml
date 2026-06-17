@@ -7,14 +7,11 @@ jupyterhub:
       communities: [naavre]
       labels: []
       description:  CNR Phytoplankton virtual lab
-      dirname: CNR Phytoplankton
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.6
+      # TODO: create repo and environment
+      binder_ref: gh/NaaVRE/vl-cnr-phytoplankton/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-cnr-phytoplankton
         registry_url: ghcr.io/naavre/cells-vl-cnr-phytoplankton
-        log_queries: true
         splitter_max_branches: 32

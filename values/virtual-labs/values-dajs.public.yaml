@@ -8,9 +8,8 @@ jupyterhub:
       labels: []
       description: Sustainable regeneration of agriculture in territories affected by Xylella Fastidiosa
       dirname: DAJS
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/QCDIS/dajs-notebooks/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

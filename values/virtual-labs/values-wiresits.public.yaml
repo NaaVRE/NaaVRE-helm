@@ -7,14 +7,11 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: []
       description:  Virtual lab for assessing wildfire severity, recovery and resilience, through indicators of changes in ecosystem functioning extracted from satellite image time series.
-      dirname: Wildfire Resilience Satellite Imaging
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-wiresits-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/bmarcos/WiReSITS-VL/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-wiresits
         registry_url: ghcr.io/naavre/cells-vl-wiresits
-        log_queries: true
         splitter_max_branches: 32

@@ -2,9 +2,9 @@ dependencies:
 - name: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: 0.33.1
-- name: jupyterhub
-  repository: https://jupyterhub.github.io/helm-chart/
-  version: 4.1.0
+- name: binderhub
+  repository: https://jupyterhub.github.io/helm-chart
+  version: 1.0.0-0.dev.git.3968.hfa645405
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
   version: 4.17.0
@@ -26,5 +26,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.5
-digest: sha256:dc693140c6cb04a35940d9c1176c5380f7b2bb8804f0a91f5a57bf88559b5b42
-generated: "2026-06-15T15:01:14.348878474+02:00"
+digest: sha256:f8462fe13ac46d8d0d9f9d0ed3af9498b0ec061b66307d608bd7a67ee2beaf1c
+generated: "2026-06-16T16:00:09.190939242+02:00"

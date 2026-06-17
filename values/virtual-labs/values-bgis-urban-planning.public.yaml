@@ -8,18 +8,12 @@ jupyterhub:
       labels: [experimental_features]
       description: |
         Migrating a legacy urban planning application into a reusable Cloud Virtual Lab.
-      dirname: BGIs Urban Planning
-      image:
-        name: ghcr.io/naavre/flavors/naavre-fl-bgis-urban-planning-jupyter
-        tag: v0.3.6
+      # TODO: add environment to repo
+      binder_ref: gh/NaaVRE/vl-bgis-urban-planning/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-bgis-urban-planning
         registry_url: ghcr.io/naavre/cells-vl-bgis-urban-planning
-        log_queries: true
         splitter_max_branches: 32
-        git_public:
-          repo: https://github.com/naavre/vl-bgis-urban-planning.git
-          branch: main
-        default_file_path: Virtual Labs/BGIs Urban Planning/Git public/README.md
+        default_file_path: README.md

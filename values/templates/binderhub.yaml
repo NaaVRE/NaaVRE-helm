@@ -21,6 +21,7 @@ binderhub:
           USER root
           RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements" || echo "Failed to disable @jupyterlab/apputils-extension:announcements"
           RUN pip install --no-cache-dir {{ range $package := .Values.binderhub.builder.naavre_requirements }}{{ $package | squote }} {{ end }}
+          RUN chown -R ${NB_USER}:${NB_USER} /home/${NB_USER}/.jupyter
           USER ${NB_USER}
       KubernetesBuildExecutor:
         build_image: quay.io/jupyterhub/repo2docker:2026.4.0

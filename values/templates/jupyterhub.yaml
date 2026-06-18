@@ -257,8 +257,17 @@ jupyterhub:
                     git_public_repo="{{ .configuration.git_public.repo }}"
                     git_public_branch="{{ .configuration.git_public.branch }}"
                     git_public_dir="Git public"
+                    update_git_files_mode() {
+                      mode=$@
+                      if [ -d "${git_public_dir}" ]; then
+                        git -C "${git_public_dir}" ls-tree -r --name-only HEAD \
+                          | xargs -I{} chmod $mode "${git_public_dir}/{}"
+                      fi
+                    }
                     pull_git_public() {
+                      update_git_files_mode +w
                       gitpuller "$git_public_repo" "$git_public_branch" "$git_public_dir"
+                      update_git_files_mode -w
                     }
                     backup_local_git_public() {
                       mv "$git_public_dir" "$git_public_dir (backup $(date "+%Y-%m-%d %H:%M:%S"))"

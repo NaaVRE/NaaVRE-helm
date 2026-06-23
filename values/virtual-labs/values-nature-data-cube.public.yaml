@@ -3,11 +3,11 @@ jupyterhub:
     nature-data-cube:
       enabled: false
       slug: nature-data-cube
-      title:  Nature data cube
+      title:  Nature Data Cube
       communities: [naavre, lter-life]
       labels: [experimental_features]
       description: |
-
+        Simplifying the retrieval of relevant data for ecologists.
       dirname: Nature data cube
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-nature-data-cube-r-jupyter

@@ -25,6 +25,7 @@ binderhub:
           USER ${NB_USER}
       KubernetesBuildExecutor:
         build_image: quay.io/jupyterhub/repo2docker:2026.4.0
+        sticky_builds: true
 
   service:
     type: ClusterIP

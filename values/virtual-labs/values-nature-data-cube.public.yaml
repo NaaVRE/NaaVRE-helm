@@ -5,7 +5,7 @@ jupyterhub:
       slug: nature-data-cube
       title:  Nature Data Cube
       communities: [naavre, lter-life]
-      labels: [experimental_features]
+      labels: [tutorial, lter-life]
       description: |
         Simplifying the retrieval of relevant data for ecologists.
       dirname: Nature data cube

@@ -42,6 +42,8 @@ global:
           password:
       postgresql:
         password:
+    naavreEnvironmentService:
+      jupyterhubApiToken:
     naavrePaasFrontend:
       secretKey:
 

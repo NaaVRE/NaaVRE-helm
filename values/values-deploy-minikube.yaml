@@ -42,6 +42,8 @@ global:
           password: admin
       postgresql:
         password: fake-naavreCatalogueService-postgresql-password
+    naavreEnvironmentService:
+      jupyterhubApiToken: fake-jupyterhub-api-token
     naavrePaasFrontend:
       secretKey: fake-naavrePaasFrontend-secretKey
 

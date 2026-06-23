@@ -116,10 +116,17 @@ binderhub:
           oauth_client_id: service-binderhub
           oauth_no_confirm: true
           oauth_redirect_uri: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}/oauth_callback
+        environment-service:
+          apiToken: {{ .Values.global.secrets.naavreEnvironmentService.jupyterhubApiToken }}
       loadRoles:
         user:
           scopes:
             - self
+            - "access:services!service=binder"
+        binder-api-user:
+          services:
+            - environment-service
+          scopes:
             - "access:services!service=binder"
       networkPolicy:
         ingress:

@@ -60,6 +60,9 @@ global:
       catalogueBucket:
         endpoint_url: "https://scruffy.lab.uvalight.net:9000"
         bucket_name: "naavre-catalogue-k8s-staging-1"
+      argoBucket:
+        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
+        bucket_name: "argo-artifacts-k8s-staging-1"
 
 argoWorkflows:
   enabled: false
@@ -175,4 +178,8 @@ jupyterhub:
     tempsed-wadden-sea:
       enabled: true
     et-zeeland:
+      enabled: true
+    nature-data-cube:
+      enabled: true
+    wad-emoaas:
       enabled: true

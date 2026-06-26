@@ -1,0 +1,25 @@
+jupyterhub:
+  vlabs:
+    nature-data-cube:
+      enabled: false
+      slug: nature-data-cube
+      title:  Nature Data Cube
+      communities: [naavre, lter-life]
+      labels: [tutorial, lter-life]
+      description: |
+        Simplifying the retrieval of relevant data for ecologists.
+      dirname: Nature data cube
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-nature-data-cube-r-jupyter
+        tag: v0.3.9
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.9/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-nature-data-cube
+        registry_url: ghcr.io/naavre/cells-vl-nature-data-cube
+        log_queries: true
+        splitter_max_branches: 32
+        git_public:
+          repo: https://github.com/LTER-LIFE/VL-NatureDataCube.git
+          branch: main
+        default_file_path: Virtual Labs/Nature data cube/Git public/README.md

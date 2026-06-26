@@ -32,11 +32,21 @@ global:
         password: "{{ .Values.global.secrets.keycloak.postgresql.password }}"
       {{- end }}
     seaweedfs:
-      access_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.access_key }}"
-      secret_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.secret_key }}"
+      catalogueBucket:
+        access_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.access_key }}"
+        secret_key: "{{ .Values.global.secrets.seaweedfs.catalogueBucket.secret_key }}"
+      argoBucket:
+        access_key: "{{ .Values.global.secrets.seaweedfs.argoBucket.access_key }}"
+        secret_key: "{{ .Values.global.secrets.seaweedfs.argoBucket.secret_key }}"
 
   keycloak:
     image: {{ .Values.keycloak.image }}
+
+  seaweedfs:
+    catalogueBucket:
+      bucket_name: "{{ .Values.seaweedfs.catalogueBucket.bucket_name }}"
+    argoBucket:
+      bucket_name: "{{ .Values.seaweedfs.argoBucket.bucket_name }}"
 
   communities: {{- .Values.jupyterhub.communities | default dict | toYaml | nindent 4 }}
 

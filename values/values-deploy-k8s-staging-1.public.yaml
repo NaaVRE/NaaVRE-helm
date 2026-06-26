@@ -179,3 +179,5 @@ jupyterhub:
       enabled: true
     et-zeeland:
       enabled: true
+    nature-data-cube:
+      enabled: true

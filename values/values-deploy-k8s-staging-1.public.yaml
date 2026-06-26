@@ -181,3 +181,5 @@ jupyterhub:
       enabled: true
     nature-data-cube:
       enabled: true
+    wad-emoaas:
+      enabled: true

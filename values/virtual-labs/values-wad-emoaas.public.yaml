@@ -1,0 +1,25 @@
+jupyterhub:
+  vlabs:
+    wad-emoaas:
+      enabled: false
+      slug: wad-emoaas
+      title:  Wad EMOaaS
+      communities: [naavre, lter-life]
+      labels: [lter-life]
+      description: |
+        Processing four dimensional ecosystem model output for the western Dutch Wadden Sea.
+      dirname: Wad EMOaaS
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-wad-emoaas-jupyter
+        tag: v0.3.9
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.9/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-wad-emoaas
+        registry_url: ghcr.io/naavre/cells-vl-wad-emoaas
+        log_queries: true
+        splitter_max_branches: 32
+        git_public:
+          repo: https://github.com/LTER-LIFE/Wad_EMOaaS.git
+          branch: main
+        default_file_path: Virtual Labs/Wad EMOaaS/Git public/README.md

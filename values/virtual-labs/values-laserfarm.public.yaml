@@ -19,7 +19,7 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-laserfarm
         registry_url: ghcr.io/naavre/cells-vl-laserfarm
         log_queries: true
-        splitter_max_branches: 32
+        splitter_max_branches: 18
         git_public:
           repo: https://github.com/NaaVRE/vl-laserfarm.git
           branch: main

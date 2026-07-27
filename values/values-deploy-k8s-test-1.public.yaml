@@ -55,9 +55,3 @@ jupyterhub:
       configuration:
         cell_github_url: https://github.com/NaaVRE/cells-test
         registry_url: ghcr.io/naavre/cells-test
-    reprolab:
-      enabled: true
-      # Overrides the configuration in virtual-labs/values-reprolab.public.yaml
-      configuration:
-        cell_github_url: https://github.com/NaaVRE/cells-test
-        registry_url: ghcr.io/naavre/cells-test

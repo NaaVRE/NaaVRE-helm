@@ -1,0 +1,21 @@
+jupyterhub:
+  vlabs:
+    sparc:
+      enabled: false
+      slug: sparc
+      title:  Spatial Planning for Protected Areas in Response to Climate Change Virtual Lab
+      communities: [naavre]
+      labels: []
+      description: |
+        Elucidating biodiversity resilience across 800 globally representative cities.
+      dirname: SPARC
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-sparc-jupyter
+        tag: v0.3.15
+      configuration:
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.15/base_image_tags.json
+        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        cell_github_url: https://github.com/NaaVRE/cells-vl-sparc
+        registry_url: ghcr.io/naavre/cells-vl-sparc
+        log_queries: true
+        splitter_max_branches: 32

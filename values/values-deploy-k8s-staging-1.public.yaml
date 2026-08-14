@@ -191,3 +191,5 @@ jupyterhub:
       enabled: true
     wad-emoaas:
       enabled: true
+    sparc:
+      enabled: true

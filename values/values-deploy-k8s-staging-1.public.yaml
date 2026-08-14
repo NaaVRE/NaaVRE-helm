@@ -41,6 +41,14 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
           allowedGroups:
             - s3-naa-vre-waddenzee-shared-users
+        - name: naa-vre-veluwe-flm-minio-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-minio/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
+        - name: naa-vre-veluwe-flm-seaweedfs-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-seaweedfs/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
 
   externalServices:
     argoWorkflows:

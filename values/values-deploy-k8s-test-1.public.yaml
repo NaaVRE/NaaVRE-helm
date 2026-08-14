@@ -31,6 +31,14 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
           allowedGroups:
             - s3-naa-vre-waddenzee-shared-users
+        - name: naa-vre-veluwe-flm-minio-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-minio/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
+        - name: naa-vre-veluwe-flm-seaweedfs-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-seaweedfs/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
 
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
@@ -52,12 +60,6 @@ jupyterhub:
     dt-codesign:
       enabled: true
       # Overrides the configuration in virtual-labs/values-dt-codesign.public.yaml
-      configuration:
-        cell_github_url: https://github.com/NaaVRE/cells-test
-        registry_url: ghcr.io/naavre/cells-test
-    reprolab:
-      enabled: true
-      # Overrides the configuration in virtual-labs/values-reprolab.public.yaml
       configuration:
         cell_github_url: https://github.com/NaaVRE/cells-test
         registry_url: ghcr.io/naavre/cells-test

@@ -39,6 +39,14 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-seaweedfs/
           allowedGroups:
             - s3-naa-vre-veluwe-flm-users
+        - name: naa-vre-benchmarking-minio-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-minio/
+          allowedGroups:
+            - s3-naa-vre-benchmarking-users
+        - name: naa-vre-benchmarking-seaweedfs-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-seaweedfs/
+          allowedGroups:
+            - s3-naa-vre-benchmarking-users
 
 keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0

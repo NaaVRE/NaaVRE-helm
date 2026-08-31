@@ -16,7 +16,7 @@ dependencies:
   version: 12.12.10
 - name: naavre-catalogue-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.6.6
+  version: v0.6.9
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.4.7
@@ -26,5 +26,5 @@ dependencies:
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.6
-digest: sha256:e39035bb25130e8c1cf70803c770a4d3d17b48b0d94182740158c6452061f16e
-generated: "2026-07-01T13:12:25.575759997+02:00"
+digest: sha256:81d9e3d04cceb8be3c58f5b49dc637408effdc81935dec3fa5a18292c1b498e4
+generated: "2026-08-31T13:38:41.643734703+02:00"

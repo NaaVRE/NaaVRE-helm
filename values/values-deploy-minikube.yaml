@@ -30,6 +30,9 @@ global:
       catalogueBucket:
         access_key: fake-s3-access-key
         secret_key: fake-s3-secret-key
+      argoBucket:
+        access_key: fake-argo-s3-access-key
+        secret_key: fake-argo-s3-secret-key
     naavreCatalogueService:
       secretKey: fake-naavreCatalogueService-secretKey
       auth:

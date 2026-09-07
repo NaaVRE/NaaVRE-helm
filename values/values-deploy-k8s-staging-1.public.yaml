@@ -41,6 +41,26 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
           allowedGroups:
             - s3-naa-vre-waddenzee-shared-users
+        - name: naa-vre-veluwe-flm-minio-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-minio/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
+        - name: naa-vre-veluwe-flm-seaweedfs-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-seaweedfs/
+          allowedGroups:
+            - s3-naa-vre-veluwe-flm-users
+        - name: naa-vre-benchmarking-minio-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-minio/
+          allowedGroups:
+            - s3-naa-vre-benchmarking-users
+        - name: naa-vre-benchmarking-seaweedfs-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-seaweedfs/
+          allowedGroups:
+            - s3-naa-vre-benchmarking-users
+        - name: naa-vre-benchmarking-seaweedfs-s3-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-seaweedfs-s3/
+          allowedGroups:
+            - s3-naa-vre-benchmarking-users
 
   externalServices:
     argoWorkflows:
@@ -60,6 +80,9 @@ global:
       catalogueBucket:
         endpoint_url: "https://scruffy.lab.uvalight.net:9000"
         bucket_name: "naavre-catalogue-k8s-staging-1"
+      argoBucket:
+        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
+        bucket_name: "argo-artifacts-k8s-staging-1"
 
 argoWorkflows:
   enabled: false
@@ -177,4 +200,8 @@ jupyterhub:
     et-zeeland:
       enabled: true
     nature-data-cube:
+      enabled: true
+    wad-emoaas:
+      enabled: true
+    sparc:
       enabled: true

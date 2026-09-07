@@ -5,10 +5,13 @@ naavre-containerizer-service:
   ingress:
     enabled: true
     className: "nginx"
-    {{- with .Values.global.ingress.commonAnnotations }}
     annotations:
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+      {{- with .Values.global.ingress.commonAnnotations }}
       {{- toYaml . | nindent 6 }}
-    {{- end }}
+      {{- end }}
     hosts:
       - host: "{{ .Values.global.ingress.domain }}"
         paths:

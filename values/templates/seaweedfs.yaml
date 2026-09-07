@@ -28,6 +28,8 @@ seaweedfs:
       createBuckets:
         - name: "{{ .Values.seaweedfs.catalogueBucket.bucket_name }}"
           anonymousRead: false
+        - name: "{{ .Values.seaweedfs.argoBucket.bucket_name }}"
+          anonymousRead: false
 
   s3:
     enabled: true

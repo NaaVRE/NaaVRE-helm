@@ -121,6 +121,9 @@ jupyterhub:
     ingressClassName: "nginx"
     annotations:
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
       {{- with .Values.global.ingress.commonAnnotations }}
       {{- toYaml . | nindent 6 }}
       {{- end }}

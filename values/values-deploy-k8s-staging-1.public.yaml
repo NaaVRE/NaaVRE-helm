@@ -61,6 +61,10 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-benchmarking-seaweedfs-s3/
           allowedGroups:
             - s3-naa-vre-benchmarking-users
+        - name: naa-vre-sparc-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-sparc/
+          allowedGroups:
+            - s3-naa-vre-sparc-users
 
   externalServices:
     argoWorkflows:

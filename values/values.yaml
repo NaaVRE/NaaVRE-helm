@@ -43,6 +43,7 @@ global:
           email: "admin@example.org"
           username: admin
           password:
+        naavreEnvironmentSaToken:
       postgresql:
         password:
     naavreEnvironmentService:

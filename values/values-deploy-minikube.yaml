@@ -43,6 +43,7 @@ global:
           email: admin@example.org
           username: admin
           password: admin
+        naavreEnvironmentSaToken: fake-naavreCatalogueService-token
       postgresql:
         password: fake-naavreCatalogueService-postgresql-password
     naavreEnvironmentService:

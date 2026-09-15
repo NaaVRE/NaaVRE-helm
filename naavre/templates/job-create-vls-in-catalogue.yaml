@@ -49,6 +49,7 @@ data:
     import json
     from urllib.parse import quote as url_quote
     from base_assets.models import SharingScope
+    from binder_environments.models import BinderEnvironment
     from virtual_labs.models import VirtualLabLabel, VirtualLab
 
     from base_assets.models import SharingScope
@@ -101,6 +102,18 @@ data:
         for vlab in vlabs.values()
         }
 
+    binder_environment_objects = {
+        vlab['slug']: create_or_update(
+            BinderEnvironment,
+            'binder_ref',
+            {
+                'binder_ref': vlab['binder_ref'],
+                'pre_pull': False,
+                # not including 'container_image' preserves the value in the db
+                })
+        for vlab in vlabs.values()
+        }
+
     vlab_label_objects = {
         key: create_or_update(
             VirtualLabLabel,
@@ -131,7 +144,7 @@ data:
                     'title': vlab['title'],
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
-                    'binder_ref': vlab['binder_ref'],
+                    'binder_environment': str(binder_environment_objects[vlab['slug']].id),
                     'image': vlab['image'],
                     })
 

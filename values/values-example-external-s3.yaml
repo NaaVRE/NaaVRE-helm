@@ -69,7 +69,7 @@ jupyterhub:
         tag: v0.3.20
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.20/base_image_tags.json
-        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        module_mapping_url: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/module_mapping.json
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"
@@ -85,7 +85,7 @@ jupyterhub:
         tag: v0.3.20
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.20/base_image_tags.json
-        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        module_mapping_url: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/module_mapping.json
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
         registry_url: "<Container Registry URL, eg ghcr.io/user/repo>"

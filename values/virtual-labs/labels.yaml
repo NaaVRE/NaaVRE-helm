@@ -28,3 +28,7 @@ jupyterhub:
     aneris:
       title: ANERIS
       color: "#6ec1e4"
+
+    historical_archive:
+      title: Historical archive / closed
+      color: "#ffc107"

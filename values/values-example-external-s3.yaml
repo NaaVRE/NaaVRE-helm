@@ -24,6 +24,9 @@ global:
       catalogueBucket:
         access_key: nil
         secret_key: nil
+      argoBucket:
+        access_key: nil
+        secret_key: nil
     naavreCatalogueService:
       secretKey: <a random secret>
       auth:
@@ -41,7 +44,12 @@ global:
       useExternal: true
       catalogueBucket:
         endpoint_url: "https://s3.example.org"
-        bucket_name: "my-bucket"
+        bucket_name: "my-assets-bucket"
+        access_key: "my-access-key"
+        secret_key: "my-secret-key"
+      argoBucket:
+        endpoint_url: "https://s3.example.org"
+        bucket_name: "my-artifacts-bucket"
         access_key: "my-access-key"
         secret_key: "my-secret-key"
 
@@ -63,7 +71,7 @@ jupyterhub:
       description: "Open experimentation with virtual labs"
       binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.20/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"
@@ -75,7 +83,7 @@ jupyterhub:
       description: "Another virtual lab to demonstrate that we support several"
       binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
-        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.6/base_image_tags.json
+        base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.20/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: "<Repo created from template https://github.com/QCDIS/NaaVRE-cells, eg. https://github.com/User/Repo>"
         cell_github_token: "<Token generated following the instructions from the template>"

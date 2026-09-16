@@ -17,6 +17,7 @@ binderhub:
       hub_url_local: http://{{ include "values.fullname" . }}-jupyter-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
       auth_enabled: true
       BuildExecutor:
+        # language=dockerfile
         appendix: |
           USER root
           RUN jupyter labextension disable "@jupyterlab/apputils-extension:announcements" || echo "Failed to disable @jupyterlab/apputils-extension:announcements"
@@ -150,6 +151,7 @@ binderhub:
         {{- with .Values.jupyterhub.hub.extraConfig }}
         {{- toYaml . | nindent 8}}
         {{- end}}
+        # language=python
         10-generic_env_oauthenticator.py: |
           from oauthenticator.generic import GenericOAuthenticator
           class GenericEnvOAuthenticator(GenericOAuthenticator):
@@ -162,6 +164,7 @@ binderhub:
           c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
 
         # FIXME: assumes VirtualLab.binder_ref instead of .binder_environment (https://github.com/NaaVRE/NaaVRE-catalogue-service/pull/170)
+        # language=python
         5-naavre-env.py: |
           import asyncio
           import json
@@ -186,34 +189,33 @@ binderhub:
               next_url = payload.get('next')
             return results
 
-          def binder_env_matches_binder_ref(binder_env, binder_ref):
-            if binder_ref.startswith('gh/'):
-              # For GitHub providers, binder_ref is of the form
+          def binder_refs_match(ref_a, ref_b):
+            # Binder refs are of the form {provider_prefix}/{spec}
+            provider_a, spec_a = ref_a.split('/', 1)
+            provider_b, spec_b = ref_b.split('/', 1)
+            if provider_a != provider_b:
+              return False
+            if provider_a == 'gh':
+              # For GitHub providers, specs are of the form
               # 'gh/<user>/<repo>/<commit-sha-or-tag-or-branch>'.
               # Match based on user and repo, regardless of the
               # commit-sha-or-tag-or-branch.
-              env_user, env_repo = binder_env['binder_ref'].split('/')[1:3]
-              ref_user, ref_repo = binder_ref.split('/')[1:3]
-              return env_user == ref_user and env_repo == ref_repo
+              user_repo_a, _ = spec_a.rsplit('/', 1)
+              user_repo_b, _ = spec_b.rsplit('/', 1)
+              return user_repo_a == user_repo_b
             else:
-              # For other providers, match based on the full binder_ref.
-              return binder_env['binder_ref'] == binder_ref
+              # For other providers, match based on the full spec
+              return spec_a == spec_b
 
           async def get_lab(binder_ref):
-            binder_envs = [
-              env for env in await get_objects_from_catalogue('/binder-environments/')
-              if binder_env_matches_binder_ref(env, binder_ref)
+            binder_envs_urls = [
+              env['url'] for env in await get_objects_from_catalogue('/binder-environments/')
+              if binder_refs_match(env['binder_ref'], binder_ref)
             ]
-            if len(binder_envs) < 1:
-              raise web.HTTPError(404, f"No binder environment exists for repo: {binder_ref}")
-            if len(binder_envs) > 1:
-              raise web.HTTPError(500, f"Several binder environments exist for repo: {binder_ref}")
-            binder_env = binder_envs[0]
-            binder_env_url = binder_env['url']
 
             labs = [
               lab for lab in await get_objects_from_catalogue('/virtual-labs/')
-              if lab.get('binder_environment') == binder_env_url
+              if lab.get('binder_environment') in binder_envs_urls
             ]
             if len(labs) < 1:
               raise web.HTTPError(404, f"No virtual lab exists for binder environment: {binder_env_url}")
@@ -250,6 +252,7 @@ binderhub:
 
           c.JupyterHub.spawner_class = CustomBinderKubeSpawner
 
+        # language=python
         10-custom_kubespawner.py: |
           # extend spawner_class set by binderhub
           class CustomKubeSpawner(c.JupyterHub.spawner_class):
@@ -273,6 +276,8 @@ binderhub:
                       ]
                   return await super().get_pod_manifest()
           c.JupyterHub.spawner_class = CustomKubeSpawner
+
+        # language=python
         10-custom_user_redirect.py: |
           from jupyterhub.utils import url_path_join
           from tornado.httputil import url_concat
@@ -352,6 +357,7 @@ binderhub:
             }
         setup_virtual_lab.sh:
           mountPath: /opt/setup-scripts/setup_virtual_lab.sh
+          # language=bash
           stringData: |
             #!/bin/bash
             slug="$NAAVRE_VL_SLUG"

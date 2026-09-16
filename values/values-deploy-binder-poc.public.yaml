@@ -1,8 +1,15 @@
+# Temporary deployment of the Binder PoC to gather feedback
+#
+# Deploy with:
+# ./deploy.sh --kube-context k8s-staging-1 -n binder-poc --use-vlic-secrets -f values/values-deploy-binder-poc.secrets.yaml -f values/values-deploy-binder-poc.public.yaml upgrade --install --timeout 30m
+
+nameOverride: "naavre-binder-poc"
+
 global:
-  namespace: new-naavre
+  namespace: binder-poc
 
   ingress:
-    domain: beta.naavre.net
+    domain: binder-poc.naavre.net
     seaweedfsS3Domain: nil
     commonAnnotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -41,18 +48,6 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-waddenzee-shared/
           allowedGroups:
             - s3-naa-vre-waddenzee-shared-users
-        - name: naa-vre-veluwe-flm-minio-pvc
-          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-minio/
-          allowedGroups:
-            - s3-naa-vre-veluwe-flm-users
-        - name: naa-vre-veluwe-flm-seaweedfs-pvc
-          mountPath: /home/jovyan/Cloud Storage/naa-vre-veluwe-flm-seaweedfs/
-          allowedGroups:
-            - s3-naa-vre-veluwe-flm-users
-        - name: naa-vre-sparc-pvc
-          mountPath: /home/jovyan/Cloud Storage/naa-vre-sparc/
-          allowedGroups:
-            - s3-naa-vre-sparc-users
 
   externalServices:
     argoWorkflows:
@@ -71,10 +66,8 @@ global:
       useExternal: true
       catalogueBucket:
         endpoint_url: "https://scruffy.lab.uvalight.net:9000"
-        bucket_name: "naavre-catalogue-k8s-staging-1"
-      argoBucket:
-        endpoint_url: "https://scruffy.lab.uvalight.net:9000"
-        bucket_name: "argo-artifacts-k8s-staging-1"
+        # TODO: configure bucket
+        bucket_name: "naavre-catalogue-binderhub-poc"
 
 argoWorkflows:
   enabled: false
@@ -145,59 +138,51 @@ jupyterhub:
   vlabs:
     openlab:
       enabled: true
-    laserfarm:
-      enabled: true
-    aneris:
-      enabled: true
-    biodt-hackathon25:
-      enabled: true
-    blue-carbon:
-      enabled: true
-    dajs:
-      enabled: true
-    ecvs:
-      enabled: true
-    quadfavl:
-      enabled: true
-    veluwe-forest-model:
-      enabled: true
-    cnr-biomass:
-      enabled: true
-    cnr-phytoplankton:
-      enabled: true
-    dt-codesign:
-      enabled: true
-    jupyter-quality:
-      enabled: true
-    pclake:
-      enabled: true
-    phytoplankton:
-      enabled: true
+    # laserfarm:
+    #   enabled: true
+    # aneris:
+    #   enabled: true
+    # biodt-hackathon25:
+    #   enabled: true
+    # blue-carbon:
+    #   enabled: true
+    # ecvs:
+    #   enabled: true
+    # quadfavl:
+    #   enabled: true
+    # veluwe-forest-model:
+    #   enabled: true
+    # cnr-biomass:
+    #   enabled: true
+    # cnr-phytoplankton:
+    #   enabled: true
+    # dt-codesign:
+    #   enabled: true
+    # jupyter-quality:
+    #   enabled: true
+    # pclake:
+    #   enabled: true
+    # phytoplankton:
+    #   enabled: true
     ravl:
       enabled: true
-    veluwe-proto-dt:
-      enabled: true
-    waddenzee-proto-dt:
-      enabled: true
-    wiresits:
-      enabled: true
-    biotisan-euromarec:
-      enabled: true
-    als-tree-ind:
-      enabled: true
-    homeros-seismology:
-      enabled: true
+    # veluwe-proto-dt:
+    #   enabled: true
+    # waddenzee-proto-dt:
+    #   enabled: true
+    # wiresits:
+    #   enabled: true
+    # biotisan-euromarec:
+    #   enabled: true
+    # als-tree-ind:
+    #   enabled: true
+    # homeros-seismology:
+    #   enabled: true
     geospatial-toolbox:
       enabled: true
-    bgis-urban-planning:
-      enabled: true
-    tempsed-wadden-sea:
-      enabled: true
-    et-zeeland:
-      enabled: true
-    nature-data-cube:
-      enabled: true
-    wad-emoaas:
-      enabled: true
-    sparc:
-      enabled: true
+    # bgis-urban-planning:
+    #   enabled: true
+    # tempsed-wadden-sea:
+    #   enabled: true
+    # et-zeeland:
+    #   enabled: true

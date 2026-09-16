@@ -22,6 +22,9 @@ global:
         {{- range .Values.global.secrets.keycloak.users }}
         - username: {{ .username }}
           password: {{ .password }}
+          firstName: {{ .firstName }}
+          lastName: {{ .lastName }}
+          email: {{ .email }}
         {{- end }}
       {{- else }}
       users: []

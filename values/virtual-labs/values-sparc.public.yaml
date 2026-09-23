@@ -18,4 +18,4 @@ jupyterhub:
         cell_github_url: https://github.com/NaaVRE/cells-vl-sparc
         registry_url: ghcr.io/naavre/cells-vl-sparc
         log_queries: true
-        splitter_max_branches: 32
+        splitter_max_branches: 74

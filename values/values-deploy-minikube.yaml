@@ -54,6 +54,7 @@ global:
         - name: naa-vre-user-data
           mountPath: /home/jovyan/Cloud Storage/naa-vre-user-data/
           subPath: '{unescaped_username}'
+      createExtraVolumes: true
 
 jupyterhub:
   vlabLabels:

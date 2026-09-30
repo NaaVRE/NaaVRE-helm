@@ -69,6 +69,10 @@ binderhub:
     password: fake-packages-github-token
 
 jupyterhub:
+  singleuser:
+    memory:
+      guarantee: .1G
+
   vlabLabels:
     sampleLabel:
       title: Sample Label

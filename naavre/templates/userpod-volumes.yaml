@@ -1,0 +1,27 @@
+{{- if .Values.global.common.userPods.createExtraVolumes }}
+{{- range .Values.global.common.userPods.extraVolumeMounts }}
+{{/*apiVersion: v1*/}}
+{{/*kind: PersistentVolume*/}}
+{{/*metadata:*/}}
+{{/*  name: {{ .name }}-{{ $.Release.Namespace }}*/}}
+{{/*spec:*/}}
+{{/*  accessModes:*/}}
+{{/*    - ReadWriteMany*/}}
+{{/*  capacity:*/}}
+{{/*    storage: 5Gi*/}}
+{{/*  hostPath:*/}}
+{{/*    path: /tmp/{{ .name }}*/}}
+{{/*---*/}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+{{- end }}
+{{- end }}

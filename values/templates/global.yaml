@@ -39,6 +39,14 @@ global:
         access_key: "{{ .Values.global.secrets.seaweedfs.argoBucket.access_key }}"
         secret_key: "{{ .Values.global.secrets.seaweedfs.argoBucket.secret_key }}"
 
+  common:
+    userPods:
+      {{- if .Values.global.common.userPods.extraVolumeMounts }}
+      extraVolumeMounts:
+        {{- .Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 8 }}
+      {{- end }}
+      createExtraVolumes: {{ .Values.global.common.userPods.createExtraVolumes }}
+
   keycloak:
     image: {{ .Values.keycloak.image }}
 

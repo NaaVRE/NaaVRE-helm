@@ -57,6 +57,16 @@ global:
         access_key:
         secret_key:
 
+  common:
+    userPods:
+      extraVolumeMounts: []
+        # - name: my-pvc
+        #   mountPath: /path/to/my-mount-point
+        #   readOnly: true  # optional
+        #   subPath: 'path/in/pv'  # optional
+        # allowedGroups: ['example_group']  # optional
+      createExtraVolumes: false
+
   keycloak:
     image:
 

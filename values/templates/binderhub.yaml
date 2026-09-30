@@ -163,7 +163,6 @@ binderhub:
                   spawner.environment['OAUTH_REFRESH_TOKEN'] = auth_state.get('refresh_token')
           c.JupyterHub.authenticator_class = GenericEnvOAuthenticator
 
-        # FIXME: assumes VirtualLab.binder_ref instead of .binder_environment (https://github.com/NaaVRE/NaaVRE-catalogue-service/pull/170)
         # language=python
         5-naavre-env.py: |
           import asyncio

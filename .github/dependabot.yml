@@ -14,3 +14,8 @@ updates:
       - dependency-name: "naavre-containerizer-service"
       - dependency-name: "naavre-workflow-service"
       - dependency-name: "naavre-paas-frontend"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

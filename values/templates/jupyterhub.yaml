@@ -255,31 +255,67 @@ jupyterhub:
                   - |
                     bash /opt/setup-scripts/setup_virtual_lab.sh "{{ .slug }}" "{{ .dirname }}"
                     echo '{"CondaKernelSpecManager": {"env_filter": "/opt/conda$", "conda_only": true}}' > /home/jovyan/.jupyter/jupyter_config.json
+                    update_mode_of_files_in_dir() {
+                      mode=$1
+                      dir=$2
+                      if [ -d "$dir" ]; then
+                        git -C "$dir" ls-tree -r --name-only HEAD \
+                          | xargs -I{} chmod "$mode" "$dir/{}"
+                      fi
+                    }
+                    pull_readonly_directory() {
+                      git_repo="$1"
+                      git_branch="$2"
+                      dir="$3"
+                      update_mode_of_files_in_dir +w "$dir"
+                      echo "Pulling $git_repo $git_branch to '$dir'..."
+                      gitpuller "$git_repo" "$git_branch" "$dir"
+                      update_mode_of_files_in_dir -w "$dir"
+                    }
+                    pull_git_public() {
+                      pull_readonly_directory "$git_public_repo" "$git_public_branch" "$git_public_dir"
+                    }
+                    pull_training_materials() {
+                      pull_readonly_directory "$git_training_materials_repo" "$git_training_materials_branch" "$git_training_materials_dir"
+                    }
+                    backup_local() {
+                      dir=$1
+                      mv "$dir" "$dir (backup $(date "+%Y-%m-%d %H:%M:%S"))"
+                    }
+                    handle_pull_error() {
+                      repo=$1
+                      branch=$2
+                      dir=$3
+                      echo "An unexpected error has occurred while pulling $repo to '$dir'. You can try removing or renaming the '$dir' folder (if it exists), and run the following command:\n\ngitpuller \"$repo\" \"$branch\" \"$dir\"\n" > "$dir error.txt"
+                    }
                     {{- if .configuration.git_public }}
+                    backup_local_git_public() {
+                      backup_local "$git_public_dir"
+                    }
+                    handle_git_public_pull_error() {
+                      handle_pull_error "$git_public_repo" "$git_public_branch" "$git_public_dir"
+                    }
+                                        backup_local_training_materials() {
+                      backup_local "$git_training_materials_dir"
+                    }
+                    handle_training_materials_pull_error() {
+                      handle_pull_error "$git_training_materials_repo" "$git_training_materials_branch" "$git_training_materials_dir"
+                    }
+                    
                     cd "Virtual Labs/{{ .dirname }}/"
                     git_public_repo="{{ .configuration.git_public.repo }}"
                     git_public_branch="{{ .configuration.git_public.branch }}"
                     git_public_dir="Git public"
-                    update_git_files_mode() {
-                      mode=$@
-                      if [ -d "${git_public_dir}" ]; then
-                        git -C "${git_public_dir}" ls-tree -r --name-only HEAD \
-                          | xargs -I{} chmod $mode "${git_public_dir}/{}"
-                      fi
-                    }
-                    pull_git_public() {
-                      update_git_files_mode +w
-                      gitpuller "$git_public_repo" "$git_public_branch" "$git_public_dir"
-                      update_git_files_mode -w
-                    }
-                    backup_local_git_public() {
-                      mv "$git_public_dir" "$git_public_dir (backup $(date "+%Y-%m-%d %H:%M:%S"))"
-                    }
-                    handle_error() {
-                      echo "An unexpected error has occurred while pulling $git_public_repo to '$git_public_dir'. You can try removing or renaming the '$git_public_dir' folder (if it exists), and run the following command:\n\ngitpuller \"$git_public_repo\" \"$git_public_branch\" \"$git_public_dir\"\n" > "$git_public_dir error.txt"
-                    }
-                    pull_git_public || backup_local_git_public && pull_git_public || handle_error
+                    pull_git_public || backup_local_git_public && pull_git_public || handle_git_public_pull_error 
+                    cd
                     {{- end }}
+
+                    git_training_materials_repo="{{ $.Values.jupyterhub.training_materials.repo }}"
+                    git_training_materials_branch="{{ $.Values.jupyterhub.training_materials.branch }}"
+                    git_training_materials_dir="Training materials"
+
+                    pull_training_materials || backup_local_training_materials && pull_training_materials || handle_training_materials_pull_error
+
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}
                     {{- end }}

@@ -230,6 +230,9 @@ jupyterhub:
       extraVolumeMounts:
         {{- .Values.global.common.userPods.extraVolumeMounts | toYaml | nindent 6 }}
       {{- end }}
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: {{ .Values.jupyterhub.singleuser.networkPolicy.egressAllowRules.privateIPs | default false }}
 
     extraEnv:
       NAAVRE_ALLOWED_DOMAINS: "{{ .Values.global.ingress.domain }}"

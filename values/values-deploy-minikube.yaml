@@ -59,7 +59,7 @@ global:
 jupyterhub:
   training_materials:
     repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
-    branch: 619-create-a-naavre-common-repo-that-is-cloned-for-every-virtual-lab
+    branch: main
 
   vlabLabels:
     sampleLabel:

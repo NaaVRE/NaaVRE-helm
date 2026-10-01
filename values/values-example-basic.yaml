@@ -18,9 +18,6 @@ global:
       users:
         - username: my-user
           password: <a random password>
-          firstName: My
-          lastName: User
-          email: user@example.org
       postgresql:
         password: <a random password>
     seaweedfs:

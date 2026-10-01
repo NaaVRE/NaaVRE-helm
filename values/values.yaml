@@ -186,8 +186,21 @@ jupyterhub:
       labels: []
       # labels: [myLabel]
       description: "Open experimentation with virtual labs"
+      # Virtual lab directory name
+      # NOTE: pending deprecation with binderhub
+      dirname: "Open Lab"
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
+      # Launch method for the virtual lab
+      #   'flavor': launch a NaaVRE flavor using JupyterHub profiles (default)
+      #   'binder': build and launch a repo using Binder
+      launch_method: flavor
+      # Flavor image (needed if launch_method=flavor)
+      # NOTE: pending deprecation with binderhub
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
+        tag: v0.3.23
+      # Binder ref (needed if launch_method=binder)
       binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json
@@ -197,7 +210,15 @@ jupyterhub:
         registry_url:
         # Optional token to pull images from private registries (leave out for public ones)
         # registry_token: "<username>:<token>"
+        # Whether to log queries from the NaaVRE-containerizer
+        # NOTE: pending deprecation with binderhub
+        log_queries: true
         splitter_max_branches: 32
+        git_public: {}
+          # Public git repo cloned when starting the lab
+          # NOTE: pending deprecation with binderhub
+          # repo: https://example.org/my/repo.git
+          # branch: main
         #
         # Optional file to open by default when starting the virtual lab (relative to /home/jovyan/)
         # default_file_path: tutorial/Your first workflow in Python.ipynb
@@ -217,6 +238,10 @@ jupyterhub:
           # k8sSecretCreator:
           #   url: nil
           #   token: nil
+      # Snippet run after starting pod
+      # NOTE: pending deprecation with binderhub
+      postStartShSnippet: |
+        echo "Do something"
 
 k8sSecretCreator:
   enabled: true

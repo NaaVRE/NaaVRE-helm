@@ -268,7 +268,6 @@ jupyterhub:
                       git_branch="$2"
                       dir="$3"
                       update_mode_of_files_in_dir +w "$dir"
-                      echo "Pulling $git_repo $git_branch to '$dir'..."
                       gitpuller "$git_repo" "$git_branch" "$dir"
                       update_mode_of_files_in_dir -w "$dir"
                     }
@@ -288,20 +287,20 @@ jupyterhub:
                       dir=$3
                       echo "An unexpected error has occurred while pulling $repo to '$dir'. You can try removing or renaming the '$dir' folder (if it exists), and run the following command:\n\ngitpuller \"$repo\" \"$branch\" \"$dir\"\n" > "$dir error.txt"
                     }
-                    {{- if .configuration.git_public }}
                     backup_local_git_public() {
                       backup_local "$git_public_dir"
                     }
                     handle_git_public_pull_error() {
                       handle_pull_error "$git_public_repo" "$git_public_branch" "$git_public_dir"
                     }
-                                        backup_local_training_materials() {
+                    backup_local_training_materials() {
                       backup_local "$git_training_materials_dir"
                     }
                     handle_training_materials_pull_error() {
                       handle_pull_error "$git_training_materials_repo" "$git_training_materials_branch" "$git_training_materials_dir"
                     }
                     
+                    {{- if .configuration.git_public }}
                     cd "Virtual Labs/{{ .dirname }}/"
                     git_public_repo="{{ .configuration.git_public.repo }}"
                     git_public_branch="{{ .configuration.git_public.branch }}"

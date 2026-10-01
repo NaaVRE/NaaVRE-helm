@@ -54,10 +54,6 @@ data:
 
     from base_assets.models import SharingScope
 
-    protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
-    host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
-    base_url = "{{ trimAll " / " .Values.binderhub.config.BinderHub.base_url }}"
-
 
     def create_or_update(model_class, search_field, object_dict):
         search_value = object_dict[search_field]
@@ -112,6 +108,7 @@ data:
                 # not including 'container_image' preserves the value in the db
                 })
         for vlab in vlabs.values()
+        if vlab['launch_method'] == 'binder'
         }
 
     vlab_label_objects = {
@@ -129,11 +126,21 @@ data:
                 path = url_quote(f'tree/{default_file_path}')
             else:
                 path = ''
-            urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}', safe='')
-            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binder_ref']}?urlpath={urlpath}"
+            if vlab['launch_method'] == 'flavor':
+                protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
+                host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
+                base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
+                vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
+            elif vlab['launch_method'] == 'binder':
+                protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
+                host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
+                base_url = "{{ trimAll " / " .Values.binderhub.config.BinderHub.base_url }}"
+                urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}', safe='')
+                vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binder_ref']}?urlpath={urlpath}"
             print(default_file_path)
             print(path)
             print(vlab['deployment_url'])
+            vlab['container_image'] = f"{vlab['image']['name']}:{vlab['image']['tag']}"
             vlab['image'] = vlab.get("icon", "").strip()
 
             obj = create_or_update(
@@ -144,7 +151,8 @@ data:
                     'title': vlab['title'],
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
-                    'binder_environment': str(binder_environment_objects[vlab['slug']].id),
+                    'container_image': vlab['container_image'],
+                    'binder_environment': str(binder_environment_objects[vlab['slug']].id) if vlab['launch_method'] == 'binder' else None,
                     'image': vlab['image'],
                     })
 

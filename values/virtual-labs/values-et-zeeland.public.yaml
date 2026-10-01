@@ -8,6 +8,11 @@ jupyterhub:
       labels: []
       description: |
         Combining observations of soil, plant and atmospheric properties with a number of coupled soil-land-atmosphere models to model evapotransportation and heat fluxes over different locations in Zeeland.
+      dirname: ET Zeeland
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-et-zeeland-jupyter
+        tag: v0.3.23
       # TODO: add environment to repo
       binder_ref: gh/NaaVRE/vl-ET-Zeeland/main
       configuration:
@@ -20,4 +25,4 @@ jupyterhub:
         git_public:
           repo: https://github.com/naavre/vl-et-zeeland.git
           branch: main
-        default_file_path: README.md
+        default_file_path: Virtual Labs/ET Zeeland/Git public/README.md

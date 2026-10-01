@@ -8,6 +8,11 @@ jupyterhub:
       labels: [tutorial, lter-life]
       description: |
         Simplifying the retrieval of relevant data for ecologists.
+      dirname: Nature data cube
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-nature-data-cube-r-jupyter
+        tag: v0.3.23
       # TODO: add environment to repo
       binder_ref: gh/NaaVRE/vl-nature-data-cube/main
       configuration:

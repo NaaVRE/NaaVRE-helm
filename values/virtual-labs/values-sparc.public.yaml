@@ -8,6 +8,11 @@ jupyterhub:
       labels: []
       description: |
         Elucidating biodiversity resilience across 800 globally representative cities.
+      dirname: SPARC
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-sparc-jupyter
+        tag: v0.3.23
       # TODO: add environment to repo
       binder_ref: gh/NaaVRE/vl-sparc/main
       configuration:

@@ -7,6 +7,11 @@ jupyterhub:
       communities: [naavre, lter-life]
       labels: [lter-life]
       description: Virtual lab supporting the search, downloading, and manipulation of geospatial data, such as satellite imagery, and extracting such data to inform ecological workflows.
+      dirname: GeoSpatial Toolbox
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-geospatial-toolbox-jupyter
+        tag: v0.3.23
       # TODO: add environment to repo
       binder_ref: gh/LTER-LIFE/vl-geospatial-toolbox/main
       configuration:
@@ -14,5 +19,9 @@ jupyterhub:
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-geospatial-toolbox
         registry_url: ghcr.io/naavre/cells-vl-geospatial-toolbox
+        log_queries: true
         splitter_max_branches: 32
-        default_file_path: README.md
+        git_public:
+          repo: https://github.com/LTER-LIFE/vl-geospatial-toolbox.git
+          branch: main
+        default_file_path: Virtual Labs/GeoSpatial Toolbox/Git public/README.md

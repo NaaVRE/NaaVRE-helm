@@ -8,6 +8,11 @@ jupyterhub:
       labels: [lter-life]
       description: |
         Processing four dimensional ecosystem model output for the western Dutch Wadden Sea.
+      dirname: Wad EMOaaS
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-wad-emoaas-jupyter
+        tag: v0.3.23
       # TODO: create repo and environment
       binder_ref: gh/NaaVRE/vl-wad-eomass/HEAD
       configuration:

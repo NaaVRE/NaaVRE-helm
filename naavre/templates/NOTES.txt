@@ -9,6 +9,13 @@ http{{ if $argoIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $path }}/
 {{- end }}
 {{- end }}
 
+{{- if .Values.jupyterhub.enabled }}
+{{- $jupyterIngress := .Values.jupyterhub.ingress }}
+{{- range $host := $jupyterIngress.hosts }}
+http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $.Values.jupyterhub.hub.baseUrl }}/
+{{- end }}
+{{- end }}
+
 {{- if .Values.binderhubEnabled }}
 {{- $jupyterIngress := .Values.binderhub.jupyterhub.ingress }}
 {{- range $host := $jupyterIngress.hosts }}

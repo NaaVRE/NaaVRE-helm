@@ -7,6 +7,11 @@ jupyterhub:
       communities: [naavre]
       labels: []
       description: Identifying individual trees from airborne laser scanning data
+      dirname: ALS Tree Individualization
+      launch_method: flavor
+      image:
+        name: ghcr.io/naavre/flavors/naavre-fl-als-tree-ind-jupyter
+        tag: v0.3.23
       # TODO: add environment to repo
       binder_ref: gh/NaaVRE/ALSTreeInd-virtual-lab/HEAD
       configuration:
@@ -14,4 +19,5 @@ jupyterhub:
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
         cell_github_url: https://github.com/NaaVRE/cells-vl-als-tree-ind
         registry_url: ghcr.io/naavre/cells-vl-als-tree-ind
+        log_queries: true
         splitter_max_branches: 32

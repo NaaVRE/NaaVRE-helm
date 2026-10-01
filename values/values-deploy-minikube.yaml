@@ -89,6 +89,3 @@ jupyterhub:
         cell_github_url: https://github.com/user/repo
         cell_github_token: fake-cell-github-token
         registry_url: ghcr.io/user/repo
-        git_public:
-          repo: https://github.com/NaaVRE/vl-openlab.git
-          branch: main

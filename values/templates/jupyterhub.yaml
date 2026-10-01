@@ -309,12 +309,13 @@ jupyterhub:
                     cd
                     {{- end }}
 
+                    {{- if $.Values.jupyterhub.training_materials }}
                     git_training_materials_repo="{{ $.Values.jupyterhub.training_materials.repo }}"
                     git_training_materials_branch="{{ $.Values.jupyterhub.training_materials.branch }}"
                     git_training_materials_dir="Training materials"
-
                     pull_training_materials || backup_local_training_materials && pull_training_materials || handle_training_materials_pull_error
-
+                    {{- end }}
+                    
                     {{- if .postStartShSnippet }}
                     {{- .postStartShSnippet | nindent 20 }}
                     {{- end }}

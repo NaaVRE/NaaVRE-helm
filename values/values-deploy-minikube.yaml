@@ -57,6 +57,11 @@ global:
       createExtraVolumes: true
 
 jupyterhub:
+  singleuser:
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: true
+
   vlabLabels:
     sampleLabel:
       title: Sample Label

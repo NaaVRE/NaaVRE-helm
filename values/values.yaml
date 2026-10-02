@@ -139,6 +139,9 @@ jupyterhub:
     storage:
       capacity: 10Gi
       dynamic: {}
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: false
 
   communities: {}
   # myCommunity:

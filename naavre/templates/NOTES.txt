@@ -54,6 +54,15 @@ http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "
 {{- end }}
 {{- end }}
 
+{{- if index .Values "naavre-environment-service" "enabled" }}
+{{- $naavreEnvSvcIngress := index .Values "naavre-environment-service" "ingress" }}
+{{- range $host := $naavreEnvSvcIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavreEnvSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/docs/
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- if index .Values "naavre-workflow-service" "enabled" }}
 {{- $naavreWfSvcIngress := index .Values "naavre-workflow-service" "ingress" }}
 {{- range $host := $naavreWfSvcIngress.hosts }}

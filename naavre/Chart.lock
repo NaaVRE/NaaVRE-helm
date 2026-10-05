@@ -23,6 +23,9 @@ dependencies:
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.4.7
+- name: naavre-environment-service
+  repository: oci://ghcr.io/naavre/charts
+  version: v0.1.0
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.4.0

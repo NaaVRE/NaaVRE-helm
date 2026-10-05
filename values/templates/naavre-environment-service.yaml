@@ -1,0 +1,38 @@
+naavre-environment-service:
+  enabled: {{ .Values.naavreEnvironmentService.enabled }}
+  fullnameOverride: "{{ include "values.fullname" . }}-naavre-environment-service"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}/"
+            pathType: Prefix
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  conf:
+    # TODO
+    rootPath: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}"
+
+  env:
+    {{- if .Values.global.insecureSkipVerifySSL }}
+    VERIFY_SSL: "false"
+    {{- end }}
+    BINDER_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}
+    BINDER_API_TOKEN: "{{ .Values.global.secrets.naavreEnvironmentService.jupyterhubApiToken }}"
+    CATALOGUE_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}
+    CATALOGUE_API_TOKEN: "{{ .Values.global.secrets.naavreCatalogueService.auth.naavreEnvironmentSaToken }}"
+
+  affinity:
+    {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

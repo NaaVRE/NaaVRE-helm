@@ -273,6 +273,11 @@ naavreContainerizerService:
   ingress:
     basePath: /naavre-containerizer-service
 
+naavreEnvironmentService:
+  enabled: true
+  ingress:
+    basePath: /naavre-environment-service
+
 naavreWorkflowService:
   enabled: true
   ingress:

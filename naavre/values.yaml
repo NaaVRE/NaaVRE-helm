@@ -27,6 +27,9 @@ naavre-catalogue-service:
 naavre-containerizer-service:
   enabled: true
 
+naavre-environment-service:
+  enabled: true
+
 naavre-workflow-service:
   enabled: true
 

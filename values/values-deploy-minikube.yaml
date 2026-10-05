@@ -24,6 +24,9 @@ global:
       users:
         - username: user
           password: user
+          firstName: User
+          lastName: User
+          email: user@example.org
       postgresql:
         password: fake-keycloak-postgresql-password
     seaweedfs:
@@ -57,6 +60,11 @@ global:
       createExtraVolumes: true
 
 jupyterhub:
+  singleuser:
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: true
+
   training_materials:
     repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
     branch: main
@@ -79,7 +87,7 @@ jupyterhub:
         tag: latest
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
-        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        module_mapping_url: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/module_mapping.json
         log_queries: true
         splitter_max_branches: 32
         # WARNING: with the values below, the deployment will work but containerizing cells won't.

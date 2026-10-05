@@ -48,6 +48,13 @@ global:
         naavreEnvironmentSaToken:
       postgresql:
         password:
+    naavreEnvironmentService:
+      auth:
+        users: []
+          # - id: example-user
+          #   auth:
+          #     - method: token
+          #       token: example-token
     naavrePaasFrontend:
       secretKey:
 
@@ -277,6 +284,10 @@ naavreEnvironmentService:
   enabled: true
   ingress:
     basePath: /naavre-environment-service
+  image_puller_cron:
+    enabled: false
+    schedule: "*/5 * * * *"
+
 
 naavreWorkflowService:
   enabled: true

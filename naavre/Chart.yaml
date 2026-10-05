@@ -58,7 +58,7 @@ dependencies:
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-containerizer-service.enabled
   - name: "naavre-environment-service"
-    version: "v0.1.0"
+    version: "v0.1.1"
     repository: "oci://ghcr.io/naavre/charts"
     condition: naavre-environment-service.enabled
   - name: "naavre-workflow-service"

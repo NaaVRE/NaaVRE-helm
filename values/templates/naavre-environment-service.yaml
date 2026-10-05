@@ -21,18 +21,27 @@ naavre-environment-service:
         secretName: "{{ .Values.global.ingress.domain }}-tls"
     {{- end }}
 
+  image_puller_cron:
+    enabled: {{ .Values.naavreEnvironmentService.image_puller_cron.enabled }}
+    schedule: "{{ .Values.naavreEnvironmentService.image_puller_cron.schedule }}"
+    nodeAffinity:
+      matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
+
   conf:
-    # TODO
     rootPath: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}"
+    {{- with .Values.global.secrets.naavreEnvironmentService.auth.users }}
+    configuration:
+      users:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
 
   env:
     {{- if .Values.global.insecureSkipVerifySSL }}
     VERIFY_SSL: "false"
     {{- end }}
-    BINDER_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}
-    BINDER_API_TOKEN: "{{ .Values.global.secrets.naavreEnvironmentService.jupyterhubApiToken }}"
+    BINDER_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.binderhub.ingress.basePath) }}
     BINDER_API_TOKEN: "{{ .Values.global.secrets.binderhub.jupyterhubApiToken }}"
-    CATALOGUE_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}
+    CATALOGUE_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}"
     CATALOGUE_API_TOKEN: "{{ .Values.global.secrets.naavreCatalogueService.auth.naavreEnvironmentSaToken }}"
 
   affinity:

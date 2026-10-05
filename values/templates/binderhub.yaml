@@ -118,7 +118,7 @@ binderhub:
           oauth_no_confirm: true
           oauth_redirect_uri: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}/oauth_callback
         environment-service:
-          apiToken: {{ .Values.global.secrets.naavreEnvironmentService.jupyterhubApiToken }}
+          apiToken: {{ .Values.global.secrets.binderhub.jupyterhubApiToken }}
       loadRoles:
         user:
           scopes:

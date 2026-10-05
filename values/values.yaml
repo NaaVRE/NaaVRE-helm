@@ -36,6 +36,8 @@ global:
       argoBucket:
         access_key:
         secret_key:
+    binderhub:
+      jupyterhubApiToken:
     naavreCatalogueService:
       secretKey:
       auth:
@@ -46,8 +48,6 @@ global:
         naavreEnvironmentSaToken:
       postgresql:
         password:
-    naavreEnvironmentService:
-      jupyterhubApiToken:
     naavrePaasFrontend:
       secretKey:
 

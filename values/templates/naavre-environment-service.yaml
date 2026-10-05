@@ -31,6 +31,7 @@ naavre-environment-service:
     {{- end }}
     BINDER_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}
     BINDER_API_TOKEN: "{{ .Values.global.secrets.naavreEnvironmentService.jupyterhubApiToken }}"
+    BINDER_API_TOKEN: "{{ .Values.global.secrets.binderhub.jupyterhubApiToken }}"
     CATALOGUE_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}
     CATALOGUE_API_TOKEN: "{{ .Values.global.secrets.naavreCatalogueService.auth.naavreEnvironmentSaToken }}"
 

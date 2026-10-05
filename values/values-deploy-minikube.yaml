@@ -33,6 +33,8 @@ global:
       argoBucket:
         access_key: fake-argo-s3-access-key
         secret_key: fake-argo-s3-secret-key
+    binderhub:
+      jupyterhubApiToken: fake-jupyterhub-api-token
     naavreCatalogueService:
       secretKey: fake-naavreCatalogueService-secretKey
       auth:
@@ -43,8 +45,6 @@ global:
         naavreEnvironmentSaToken: fake-naavreCatalogueService-token
       postgresql:
         password: fake-naavreCatalogueService-postgresql-password
-    naavreEnvironmentService:
-      jupyterhubApiToken: fake-jupyterhub-api-token
     naavrePaasFrontend:
       secretKey: fake-naavrePaasFrontend-secretKey
 

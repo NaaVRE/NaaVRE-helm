@@ -129,6 +129,12 @@ jupyterhub:
     initContainers: []
     extraVolumes: []
     extraVolumeMounts: []
+
+  training_materials: {}
+    # Training materials repo cloned when starting any virtual lab
+    # repo: https://example.org/my/repo.git
+    # branch: main
+
   singleuser:
     memory:
       limit: 4G

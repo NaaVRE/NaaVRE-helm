@@ -34,6 +34,7 @@ jupyterhub:
         admin_groups:
           - admins
         oauth_callback_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}/hub/oauth_callback"
+        logout_redirect_url: "https://{{ .Values.global.ingress.domain }}"
         {{- if .Values.global.externalServices.keycloak.useExternal }}
         client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
         client_secret: "{{ .Values.global.externalServices.keycloak.client_secret }}"

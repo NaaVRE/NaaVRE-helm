@@ -44,9 +44,6 @@ keycloak:
   image: ghcr.io/naavre/keycloak:26.4.2-v0.1.0
 
 jupyterhub:
-  training_materials:
-    repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
-    branch: main
 
   vlabs:
     openlab:

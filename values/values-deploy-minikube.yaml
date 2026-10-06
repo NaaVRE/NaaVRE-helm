@@ -65,10 +65,6 @@ jupyterhub:
       egressAllowRules:
         privateIPs: true
 
-  training_materials:
-    repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
-    branch: main
-
   vlabLabels:
     sampleLabel:
       title: Sample Label

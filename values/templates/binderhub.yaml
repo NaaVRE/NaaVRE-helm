@@ -27,6 +27,15 @@ binderhub:
       KubernetesBuildExecutor:
         build_image: quay.io/jupyterhub/repo2docker:2026.4.0
         sticky_builds: true
+        {{- if eq .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose "require" }}
+        node_selector:
+          hub.jupyter.org/node-purpose: "user"
+        {{- end }}
+      {{- if eq .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose "require" }}
+      # Although marked as deprecated, build_node_selector is still used for the DinD/PinK daemonset
+      build_node_selector:
+        hub.jupyter.org/node-purpose: "user"
+      {{- end }}
 
   service:
     type: ClusterIP

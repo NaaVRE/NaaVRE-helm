@@ -17,9 +17,9 @@ http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $.Values
 {{- end }}
 
 {{- if .Values.binderhubEnabled }}
-{{- $jupyterIngress := .Values.binderhub.jupyterhub.ingress }}
-{{- range $host := $jupyterIngress.hosts }}
-http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $.Values.binderhub.jupyterhub.hub.baseUrl }}/
+{{- $binderIngress := .Values.binderhub.ingress }}
+{{- range $host := $binderIngress.hosts }}
+http{{ if $binderIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $binderIngress.pathSuffix }}/
 {{- end }}
 {{- end }}
 

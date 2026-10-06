@@ -13,8 +13,8 @@ binderhub:
       use_registry: true
       image_prefix: {{ .Values.binderhub.registry.image_prefix }}
       base_url: /{{ trimAll "/" .Values.binderhub.ingress.basePath }}/
-      hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
-      hub_url_local: http://{{ include "values.fullname" . }}-jupyter-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}
+      hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh
+      hub_url_local: http://{{ include "values.fullname" . }}-binder-jh-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh
       auth_enabled: true
       BuildExecutor:
         # language=dockerfile
@@ -49,7 +49,8 @@ binderhub:
     {{- end }}
 
   jupyterhub:
-    fullnameOverride: "{{ include "values.fullname" . }}-jupyter"
+    nameOverride: "binder-jh"
+    fullnameOverride: "{{ include "values.fullname" . }}-binder-jh"
 
     scheduling:
       userPods:
@@ -72,7 +73,7 @@ binderhub:
       activeServerLimit: {{ .Values.jupyterhub.hub.activeServerLimit }}
       namedServerLimitPerUser: {{ .Values.jupyterhub.hub.namedServerLimitPerUser }}
       shutdownOnLogout: true
-      baseUrl: "/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}"
+      baseUrl: "/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh"
       {{- if .Values.global.insecureSkipVerifySSL }}
       extraEnv:
         OAUTH_TLS_VERIFY: "0"
@@ -92,7 +93,7 @@ binderhub:
             - users
           admin_groups:
             - admins
-          oauth_callback_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.jupyterhub.ingress.basePath }}/hub/oauth_callback"
+          oauth_callback_url: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh/hub/oauth_callback"
           {{- if .Values.global.externalServices.keycloak.useExternal }}
           client_id: "{{ .Values.global.externalServices.keycloak.client_id }}"
           client_secret: "{{ .Values.global.externalServices.keycloak.client_secret }}"
@@ -320,7 +321,7 @@ binderhub:
         type: ClusterIP
 
     singleuser:
-      podNameTemplate: "jupyter-lab-{{ .slug }}-{user_server}"
+      podNameTemplate: "singleuser-{user_server}"
       defaultUrl: "/lab"
       startTimeout: 600
       extraAnnotations:

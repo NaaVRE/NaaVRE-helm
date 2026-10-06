@@ -43,6 +43,9 @@ global:
       secretKey: <a random secret>
 
 jupyterhub:
+  training_materials:
+    repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
+    branch: main
   vlabs:
     openlab:
       slug: openlab

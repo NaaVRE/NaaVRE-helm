@@ -93,6 +93,10 @@ seaweedfs:
   enabled: false
 
 jupyterhub:
+  training_materials:
+    repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
+    branch: main
+
   scheduling:
     userPods:
       nodeAffinity:

@@ -3,7 +3,7 @@
 # Deploy with:
 # ./deploy.sh --kube-context k8s-staging-1 -n binder-poc --use-vlic-secrets -f values/values-deploy-binder-poc.secrets.yaml -f values/values-deploy-binder-poc.public.yaml upgrade --install --timeout 30m
 
-nameOverride: "naavre-binder-poc"
+nameOverride: "binder"
 
 global:
   namespace: binder-poc
@@ -66,7 +66,6 @@ global:
       useExternal: true
       catalogueBucket:
         endpoint_url: "https://scruffy.lab.uvalight.net:9000"
-        # TODO: configure bucket
         bucket_name: "naavre-catalogue-binderhub-poc"
 
 argoWorkflows:
@@ -80,6 +79,10 @@ keycloak:
 
 seaweedfs:
   enabled: false
+
+naavreEnvironmentService:
+  image_puller_cron:
+    enabled: true
 
 binderhub:
   registry:

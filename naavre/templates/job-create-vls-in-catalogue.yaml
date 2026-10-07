@@ -152,7 +152,7 @@ data:
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
                     'container_image': vlab['container_image'],
-                    'binder_environment': str(binder_environment_objects[vlab['slug']].id) if vlab['launch_method'] == 'binder' else None,
+                    'binder_environment_id': str(binder_environment_objects[vlab['slug']].id) if vlab['launch_method'] == 'binder' else None,
                     'image': vlab['image'],
                     })
 

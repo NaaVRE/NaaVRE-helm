@@ -12,7 +12,6 @@ jupyterhub:
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-geospatial-toolbox-jupyter
         tag: v0.3.23
-      # TODO: add environment to repo
       binder_ref: gh/LTER-LIFE/vl-geospatial-toolbox/main
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json

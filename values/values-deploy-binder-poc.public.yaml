@@ -170,7 +170,7 @@ jupyterhub:
     #   enabled: true
     ravl:
       enabled: true
-      launch_method: binder
+      launch_method: flavor
     # veluwe-proto-dt:
     #   enabled: true
     # waddenzee-proto-dt:

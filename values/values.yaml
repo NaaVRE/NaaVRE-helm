@@ -10,7 +10,9 @@ global:
   ingress:
     domain: example.org
     seaweedfsS3Domain: s3.example.org
-    commonAnnotations: {}
+    commonAnnotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     tls:
       enabled: false
     redirectDomainToPaasFrontend: false

@@ -40,7 +40,7 @@ jobs:
           python -c "import jwt; import os; token = os.getenv('AUTH_TOKEN'); decoded = jwt.decode(token, options={'verify_signature': False}); print(decoded)"
 
       - name: Run playwright tests
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
 

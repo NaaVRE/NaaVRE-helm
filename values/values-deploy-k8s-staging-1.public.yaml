@@ -53,6 +53,10 @@ global:
           mountPath: /home/jovyan/Cloud Storage/naa-vre-sparc/
           allowedGroups:
             - s3-naa-vre-sparc-users
+        - name: naa-vre-et-zeeland-pvc
+          mountPath: /home/jovyan/Cloud Storage/naa-vre-et-zeeland/
+          allowedGroups:
+            - s3-naa-vre-et-zeeland-users
 
   externalServices:
     argoWorkflows:
@@ -89,6 +93,10 @@ seaweedfs:
   enabled: false
 
 jupyterhub:
+  training_materials:
+    repo: https://github.com/NaaVRE/NaaVRE-training-materials.git
+    branch: main
+
   scheduling:
     userPods:
       nodeAffinity:

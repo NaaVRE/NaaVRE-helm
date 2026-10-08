@@ -129,6 +129,12 @@ jupyterhub:
     initContainers: []
     extraVolumes: []
     extraVolumeMounts: []
+
+  training_materials: {}
+    # Training materials repo cloned when starting any virtual lab
+    # repo: https://example.org/my/repo.git
+    # branch: main
+
   singleuser:
     memory:
       limit: 4G
@@ -139,6 +145,9 @@ jupyterhub:
     storage:
       capacity: 10Gi
       dynamic: {}
+    networkPolicy:
+      egressAllowRules:
+        privateIPs: false
 
   communities: {}
   # myCommunity:
@@ -167,7 +176,7 @@ jupyterhub:
         tag: v0.3.23
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json
-        module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
+        module_mapping_url: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/module_mapping.json
         cell_github_url:
         cell_github_token:
         registry_url:

@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: "helm"
+    directory: "/naavre"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-name: "naavre-catalogue-service"
+      - dependency-name: "jupyterhub"
+      - dependency-name: "argo-workflows"
+      - dependency-name: "seaweedfs"
+      - dependency-name: "k8s-secret-creator"
+      - dependency-name: "postgresql"
+      - dependency-name: "naavre-containerizer-service"
+      - dependency-name: "naavre-workflow-service"
+      - dependency-name: "naavre-paas-frontend"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

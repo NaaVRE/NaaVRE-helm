@@ -1,3 +1,6 @@
+nameOverride: {{ .Values.nameOverride }}
+fullnameOverride: {{ .Values.fullnameOverride }}
+
 global:
   ingress:
     domain: {{ .Values.global.ingress.domain }}

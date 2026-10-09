@@ -2,6 +2,9 @@ naavre-environment-service:
   enabled: {{ .Values.naavreEnvironmentService.enabled }}
   fullnameOverride: "{{ include "values.fullname" . }}-naavre-environment-service"
 
+  imagePullSecrets:
+    - name: "{{ include "values.fullname" $ }}-image-pull-secret-binder-registry"
+
   ingress:
     enabled: true
     className: "nginx"

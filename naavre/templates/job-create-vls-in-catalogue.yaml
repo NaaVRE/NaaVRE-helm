@@ -104,7 +104,6 @@ data:
             'binder_ref',
             {
                 'binder_ref': vlab['binder_ref'],
-                'pre_pull': False,
                 # not including 'container_image' preserves the value in the db
                 })
         for vlab in vlabs.values()

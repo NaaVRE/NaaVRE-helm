@@ -34,55 +34,55 @@ jobs:
           chmod +x sops-${{ env.SOPS_VERSION }}.linux.amd64
           sudo mv sops-${{ env.SOPS_VERSION }}.linux.amd64 /usr/local/bin/sops
 
-      - name: Install helm secrets
-        run: |
-          helm plugin install https://github.com/jkroepke/helm-secrets
-
-      - name: Open SSH tunnel
-        run: |
-          TUNNEL_LOCAL_ADDRESS=127.0.0.1
-          TUNNEL_PORT=6443
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.SSH_PRIV_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          echo "${{ vars.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          cmd="ssh -fNL $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
-          echo "running: $cmd"
-          $cmd
-          echo "done"
-          echo "sleeping"
-          sleep 2
-          echo "done"
-          echo "getting pid"
-          SSH_TUNNEL_PID=$(pgrep -f "$cmd")
-          echo "done"
-          echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
-          echo "$TUNNEL_LOCAL_ADDRESS ${{ vars.KUBE_CONTEXT }}" | sudo tee -a /etc/hosts
-
-      - name: Setup Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          chmod 700 ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      - name: Deploy NaaVRE
-        run: |
-          ./deploy.sh repo-add
-          ./deploy.sh \
-            --kube-context ${{ vars.KUBE_CONTEXT }} \
-            -n ${{ vars.K8S_NAMESPACE }} \
-            --use-vlic-secrets \
-            -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.secrets.yaml \
-            -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.public.yaml \
-            upgrade --install \
-            --timeout 75m
-
-      - name: Close SSH tunnel
-        if: always()
-        shell: bash
-        run: |
-          if [ ! -z "$SSH_TUNNEL_PID" ]; then
-            kill $SSH_TUNNEL_PID 2>/dev/null || true
-          fi
+#      - name: Install helm secrets
+#        run: |
+#          helm plugin install https://github.com/jkroepke/helm-secrets
+#
+#      - name: Open SSH tunnel
+#        run: |
+#          TUNNEL_LOCAL_ADDRESS=127.0.0.1
+#          TUNNEL_PORT=6443
+#          mkdir -p ~/.ssh
+#          chmod 700 ~/.ssh
+#          echo "${{ secrets.SSH_PRIV_KEY }}" > ~/.ssh/id_rsa
+#          chmod 600 ~/.ssh/id_rsa
+#          echo "${{ vars.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+#          cmd="ssh -fNL $TUNNEL_LOCAL_ADDRESS:$TUNNEL_PORT:localhost:$TUNNEL_PORT ${{ vars.SSH_USERNAME }}@${{ vars.SSH_HOST }}"
+#          echo "running: $cmd"
+#          $cmd
+#          echo "done"
+#          echo "sleeping"
+#          sleep 2
+#          echo "done"
+#          echo "getting pid"
+#          SSH_TUNNEL_PID=$(pgrep -f "$cmd")
+#          echo "done"
+#          echo "SSH_TUNNEL_PID=$SSH_TUNNEL_PID" >> $GITHUB_ENV
+#          echo "$TUNNEL_LOCAL_ADDRESS ${{ vars.KUBE_CONTEXT }}" | sudo tee -a /etc/hosts
+#
+#      - name: Setup Kubeconfig
+#        run: |
+#          mkdir -p ~/.kube
+#          chmod 700 ~/.kube
+#          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+#          chmod 600 ~/.kube/config
+#
+#      - name: Deploy NaaVRE
+#        run: |
+#          ./deploy.sh repo-add
+#          ./deploy.sh \
+#            --kube-context ${{ vars.KUBE_CONTEXT }} \
+#            -n ${{ vars.K8S_NAMESPACE }} \
+#            --use-vlic-secrets \
+#            -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.secrets.yaml \
+#            -f values/values-deploy-${{ vars.KUBE_CONTEXT }}.public.yaml \
+#            upgrade --install \
+#            --timeout 75m
+#
+#      - name: Close SSH tunnel
+#        if: always()
+#        shell: bash
+#        run: |
+#          if [ ! -z "$SSH_TUNNEL_PID" ]; then
+#            kill $SSH_TUNNEL_PID 2>/dev/null || true
+#          fi

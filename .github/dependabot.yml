@@ -1,10 +1,17 @@
 version: 2
 
+registries:
+  seaweedfs:
+  type: helm-registry
+  url: https://seaweedfs.github.io/seaweedfs/helm
+
 updates:
   - package-ecosystem: helm
     directory: /naavre
     schedule:
       interval: weekly
+    allow:
+      - dependency-name: seaweedfs
 
   - package-ecosystem: github-actions
     directory: /

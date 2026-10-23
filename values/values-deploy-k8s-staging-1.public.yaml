@@ -1,7 +1,7 @@
 global:
   namespace: new-naavre
 
-  Evapotra:
+  ingress:
     domain: beta.naavre.net
     seaweedfsS3Domain: nil
     commonAnnotations:

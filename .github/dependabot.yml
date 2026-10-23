@@ -3,15 +3,15 @@ version: 2
 updates:
   - package-ecosystem: "helm"
     directory: "/naavre"
+    allow:
+      - dependency-name: seaweedfs
     schedule:
       interval: "weekly"
     registries:
-      - my-private-helm-repo
+      - seaweedfs-repo
 
 # 2. Define the authentication details for your private registries
 registries:
-  my-private-helm-repo:
+  seaweedfs-repo:
     type: helm-registry
-    url: https://charts.example.com/
-    username: ${{ secrets.HELM_REGISTRY_USERNAME }}
-    password: ${{ secrets.HELM_REGISTRY_PASSWORD }}
+    url: https://seaweedfs.github.io/seaweedfs/helm

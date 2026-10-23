@@ -1,7 +1,17 @@
 version: 2
+registries:
+  jupyterhub:
+    type: "helm-registry"
+    url: "https://jupyterhub.github.io/helm-chart/"
+  seaweedfs:
+    type: "helm-registry"
+    url: "https://seaweedfs.github.io/seaweedfs/helm"
 updates:
   - package-ecosystem: "helm"
     directory: "/naavre"
+    registries:
+      - jupyterhub
+      - seaweedfs
     schedule:
       interval: "weekly"
     allow:

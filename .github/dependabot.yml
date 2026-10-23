@@ -2,8 +2,8 @@ version: 2
 
 registries:
   seaweedfs:
-  type: helm-registry
-  url: https://seaweedfs.github.io/seaweedfs/helm
+    type: helm-registry
+    url: https://seaweedfs.github.io/seaweedfs/helm
 
 updates:
   - package-ecosystem: helm

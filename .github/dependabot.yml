@@ -1,18 +1,12 @@
 version: 2
-registries:
-  naavre-oci:
-    type: "docker-registry"
-    url: "oci://ghcr.io/naavre/charts"
 
 updates:
-  - package-ecosystem: "helm"
-    directory: "/naavre"
-    registries:
-      - "naavre-oci"
+  - package-ecosystem: helm
+    directory: /naavre
     schedule:
-      interval: "weekly"
+      interval: weekly
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly

@@ -8,10 +8,10 @@ updates:
     schedule:
       interval: "weekly"
     registries:
-      - seaweedfs-repo
+      - my-private-helm-repo
 
 # 2. Define the authentication details for your private registries
 registries:
-  seaweedfs-repo:
+  my-private-helm-repo:
     type: helm-registry
     url: https://seaweedfs.github.io/seaweedfs/helm

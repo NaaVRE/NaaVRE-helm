@@ -15,3 +15,5 @@ registries:
   my-private-helm-repo:
     type: helm-registry
     url: https://seaweedfs.github.io/seaweedfs/helm
+    username: ""
+    password: ""

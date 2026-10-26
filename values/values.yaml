@@ -139,7 +139,7 @@ jupyterhub:
 
   singleuser:
     memory:
-      limit: 4G
+      limit: 8G
       guarantee: 4G
     cpu:
       limit: 1.25

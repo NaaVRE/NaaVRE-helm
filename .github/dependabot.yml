@@ -5,6 +5,10 @@ updates:
     directory: "/naavre"
     allow:
       - dependency-name: naavre-containerizer-service
+      - dependency-name: naavre-paas-frontend
+      - dependency-name: naavre-workflow-service
+      - dependency-name: naavre-catalogue-service
+      - dependency-name: k8s-secret-creator
     ignore:
       - dependency-name: "argo-workflows"
         update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
@@ -13,14 +17,6 @@ updates:
       - dependency-name: "seaweedfs"
         update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
       - dependency-name: "postgresql"
-        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
-      - dependency-name: "naavre-catalogue-service"
-        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
-      - dependency-name: "naavre-workflow-service"
-        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
-      - dependency-name: "naavre-paas-frontend"
-        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
-      - dependency-name: "k8s-secret-creator"
         update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
     schedule:
       interval: "weekly"

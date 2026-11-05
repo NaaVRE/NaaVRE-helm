@@ -4,14 +4,39 @@ updates:
   - package-ecosystem: "helm"
     directory: "/naavre"
     allow:
-      - dependency-name: seaweedfs
+      - dependency-name: naavre-containerizer-service
+      - dependency-name: naavre-paas-frontend
+      - dependency-name: naavre-workflow-service
+      - dependency-name: naavre-catalogue-service
+      - dependency-name: k8s-secret-creator
+    ignore:
+      - dependency-name: "argo-workflows"
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "jupyterhub"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
+      - dependency-name: "seaweedfs"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
+      - dependency-name: "postgresql"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
     schedule:
-      interval: "weekly"
+      interval: "daily"
     registries:
+      - qcdis-helm-repo
       - seaweedfs-helm-repo
       - jupyterhub-helm-repo
 
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+
 registries:
+  qcdis-helm-repo:
+    type: helm-registry
+    url: oci://ghcr.io/qcdis/charts
+    username: ""
+    password: ""
   seaweedfs-helm-repo:
     type: helm-registry
     url: https://seaweedfs.github.io/seaweedfs/helm
@@ -19,6 +44,6 @@ registries:
     password: ""
   jupyterhub-helm-repo:
     type: helm-registry
-    url: https://jupyterhub.github.io/helm-chart/helm
+    url: https://jupyterhub.github.io/helm-chart/index.yaml
     username: ""
     password: ""

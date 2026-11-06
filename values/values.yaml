@@ -246,6 +246,8 @@ naavreWorkflowService:
   enabled: true
   ingress:
     basePath: /naavre-workflow-service
+  conf:
+    fdoValidVizKindsUrl: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/fdo_valid_viz_kinds.json
 
 naavrePaasFrontend:
   enabled: true

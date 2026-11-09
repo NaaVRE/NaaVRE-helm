@@ -44,6 +44,7 @@ jobs:
             "naavre-naavre-workflow-service"
             "naavre-k8s-secret-creator"
           )
+          kubectl get pod -n "$NAMESPACE"
           for SERVICE in "${SERVICES[@]}"; do
             if ! kubectl wait --for=condition=ready pod -l "app.kubernetes.io/name=$SERVICE" -n "$NAMESPACE" --timeout=600s; then
               echo "Pods for '$SERVICE' did not become ready in namespace '$NAMESPACE'."

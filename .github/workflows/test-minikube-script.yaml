@@ -34,6 +34,24 @@ jobs:
           chmod +x ./minikube_tests/setup-tests.sh 
           ./minikube_tests/setup-tests.sh -f values/values-deploy-minikube.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
 
+      - name: Verify NaaVRE services are started
+        run: |
+          set -euo pipefail
+          NAMESPACE="naavre"
+          SERVICES=(
+            "naavre-naavre-catalogue-service"
+            "naavre-containerizer-service"
+            "naavre-workflow-service"
+            "k8s-secret-creator"
+          )
+          kubectl get pod -n "$NAMESPACE"
+          for SERVICE in "${SERVICES[@]}"; do
+            if ! kubectl wait --for=condition=ready pod -l "app.kubernetes.io/name=$SERVICE" -n "$NAMESPACE" --timeout=600s; then
+              echo "Pods for '$SERVICE' did not become ready in namespace '$NAMESPACE'."
+              exit 1
+            fi
+          done
+
       - name: Test auth token with python jwt library
         run: |
           pip install pyjwt

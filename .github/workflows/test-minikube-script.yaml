@@ -39,9 +39,9 @@ jobs:
           set -euo pipefail
           NAMESPACE="naavre"
           SERVICES=(
-            "naavre-catalogue-service"
-            "naavre-containerizer-service"
-            "naavre-workflow-service"
+            "naavre-naavre-catalogue-service"
+            "naavre-naavre-containerizer-service"
+            "naavre-naavre-workflow-service"
             "naavre-k8s-secret-creator"
           )
           for SERVICE in "${SERVICES[@]}"; do

@@ -26,7 +26,6 @@ naavre-workflow-service:
     virtual_labs_configuration:
       {{- define "workflow_service_vl_configuration" }}
       fdo_valid_viz_kinds_url: "{{ .Values.naavreWorkflowService.conf.fdoValidVizKindsUrl }}"
-      built_in_function_url: "{{ .Values.naavreContainerizerService.conf.built_in_function_url }}"
       vl_configurations:
         {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
         {{- if $vlab.enabled }}

@@ -40,9 +40,9 @@ jobs:
           NAMESPACE="naavre"
           SERVICES=(
             "naavre-naavre-catalogue-service"
-            "naavre-naavre-containerizer-service"
-            "naavre-naavre-workflow-service"
-            "naavre-k8s-secret-creator"
+            "naavre-containerizer-service"
+            "naavre-workflow-service"
+            "k8s-secret-creator"
           )
           kubectl get pod -n "$NAMESPACE"
           for SERVICE in "${SERVICES[@]}"; do

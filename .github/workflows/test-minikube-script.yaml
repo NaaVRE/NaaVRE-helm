@@ -34,6 +34,36 @@ jobs:
           chmod +x ./minikube_tests/setup-tests.sh 
           ./minikube_tests/setup-tests.sh -f values/values-deploy-minikube.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
 
+      - name: Verify NaaVRE workflow service is started
+        run: |
+          set -euo pipefail
+          NAMESPACE="naavre"
+          WORKFLOW_DEPLOYMENT="$(kubectl get deployments -n "$NAMESPACE" -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep 'naavre-workflow-service' | head -n1)"
+
+          if [ -z "$WORKFLOW_DEPLOYMENT" ]; then
+            echo "Could not find a deployment matching 'naavre-workflow-service' in namespace '$NAMESPACE'."
+            kubectl get deployments -n "$NAMESPACE"
+            exit 1
+          fi
+
+          kubectl rollout status "deployment/$WORKFLOW_DEPLOYMENT" -n "$NAMESPACE" --timeout=300s
+          kubectl wait --for=condition=ready "pod" -l "app.kubernetes.io/instance=naavre,app.kubernetes.io/component=naavre-workflow-service" -n "$NAMESPACE" --timeout=300s
+
+      - name: Verify NaaVRE containerizer service is started
+        run: |
+          set -euo pipefail
+          NAMESPACE="naavre"
+          CONTAINERIZER_DEPLOYMENT="$(kubectl get deployments -n "$NAMESPACE" -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep 'naavre-containerizer-service' | head -n1)"
+
+          if [ -z "$CONTAINERIZER_DEPLOYMENT" ]; then
+            echo "Could not find a deployment matching 'naavre-containerizer-service' in namespace '$NAMESPACE'."
+            kubectl get deployments -n "$NAMESPACE"
+            exit 1
+          fi
+
+          kubectl rollout status "deployment/$CONTAINERIZER_DEPLOYMENT" -n "$NAMESPACE" --timeout=300s
+          kubectl wait --for=condition=ready "pod" -l "app.kubernetes.io/instance=naavre,app.kubernetes.io/component=naavre-containerizer-service" -n "$NAMESPACE" --timeout=300s
+
       - name: Test auth token with python jwt library
         run: |
           pip install pyjwt

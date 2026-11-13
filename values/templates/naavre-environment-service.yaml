@@ -1,0 +1,51 @@
+naavre-environment-service:
+  enabled: {{ .Values.naavreEnvironmentService.enabled }}
+  fullnameOverride: "{{ include "values.fullname" . }}-naavre-environment-service"
+
+  imagePullSecrets:
+    - name: "{{ include "values.fullname" $ }}-image-pull-secret-binder-registry"
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    {{- with .Values.global.ingress.commonAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    hosts:
+      - host: "{{ .Values.global.ingress.domain }}"
+        paths:
+          - path: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}/"
+            pathType: Prefix
+    {{- if .Values.global.ingress.tls.enabled }}
+    tls:
+      - hosts:
+          - "{{ .Values.global.ingress.domain }}"
+        secretName: "{{ .Values.global.ingress.domain }}-tls"
+    {{- end }}
+
+  image_puller_cron:
+    enabled: {{ .Values.naavreEnvironmentService.image_puller_cron.enabled }}
+    schedule: "{{ .Values.naavreEnvironmentService.image_puller_cron.schedule }}"
+    nodeAffinity:
+      matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
+
+  conf:
+    rootPath: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}"
+    {{- with .Values.global.secrets.naavreEnvironmentService.auth.users }}
+    configuration:
+      users:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+
+  env:
+    {{- if .Values.global.insecureSkipVerifySSL }}
+    VERIFY_SSL: "false"
+    {{- end }}
+    BINDER_URL: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.binderhub.ingress.basePath) }}
+    BINDER_API_TOKEN: "{{ .Values.global.secrets.binderhub.jupyterhubApiToken }}"
+    CATALOGUE_URL: "https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" (.Values.naavreCatalogueService.ingress.basePath) }}"
+    CATALOGUE_API_TOKEN: "{{ .Values.global.secrets.naavreCatalogueService.auth.naavreEnvironmentSaToken }}"
+
+  affinity:
+    {{- toYaml .Values.global.common.corePods.affinity | nindent 4 }}

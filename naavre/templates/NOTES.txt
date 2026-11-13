@@ -16,6 +16,13 @@ http{{ if $jupyterIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $.Values
 {{- end }}
 {{- end }}
 
+{{- if .Values.binderhubEnabled }}
+{{- $binderIngress := .Values.binderhub.ingress }}
+{{- range $host := $binderIngress.hosts }}
+http{{ if $binderIngress.tls }}s{{ end }}://{{ $host }}/{{ trimAll "/" $binderIngress.pathSuffix }}/
+{{- end }}
+{{- end }}
+
 {{- if index .Values "k8s-secret-creator" "enabled" }}
 {{- $kscIngress := index .Values "k8s-secret-creator" "ingress" }}
 {{- range $host := $kscIngress.hosts }}
@@ -43,6 +50,15 @@ http{{ if $naavreCatSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/
 {{- range $host := $naavreContSvcIngress.hosts }}
 {{- range $path := $host.paths }}
 http{{ if $naavreContSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/docs/
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- if index .Values "naavre-environment-service" "enabled" }}
+{{- $naavreEnvSvcIngress := index .Values "naavre-environment-service" "ingress" }}
+{{- range $host := $naavreEnvSvcIngress.hosts }}
+{{- range $path := $host.paths }}
+http{{ if $naavreEnvSvcIngress.tls }}s{{ end }}://{{ $host.host }}/{{ trimAll "/" $path.path }}/docs/
 {{- end }}
 {{- end }}
 {{- end }}

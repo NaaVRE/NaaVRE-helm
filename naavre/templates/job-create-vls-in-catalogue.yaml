@@ -1,4 +1,4 @@
-{{- if and .Values.jupyterhub.enabled (index .Values "naavre-catalogue-service" "enabled") }}
+{{- if and .Values.binderhubEnabled (index .Values "naavre-catalogue-service" "enabled") }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -49,13 +49,10 @@ data:
     import json
     from urllib.parse import quote as url_quote
     from base_assets.models import SharingScope
+    from binder_environments.models import BinderEnvironment
     from virtual_labs.models import VirtualLabLabel, VirtualLab
 
     from base_assets.models import SharingScope
-
-    protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
-    host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
-    base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
 
 
     def create_or_update(model_class, search_field, object_dict):
@@ -101,6 +98,18 @@ data:
         for vlab in vlabs.values()
         }
 
+    binder_environment_objects = {
+        vlab['slug']: create_or_update(
+            BinderEnvironment,
+            'binder_ref',
+            {
+                'binder_ref': vlab['binder_ref'],
+                # not including 'container_image' preserves the value in the db
+                })
+        for vlab in vlabs.values()
+        if vlab.get('launch_method', 'flavor') == 'binder'
+        }
+
     vlab_label_objects = {
         key: create_or_update(
             VirtualLabLabel,
@@ -111,12 +120,23 @@ data:
 
     for vlab in vlabs.values():
         if vlab['enabled']:
+            launch_method = vlab.get('launch_method', 'flavor')
             default_file_path = vlab['configuration'].get('default_file_path')
             if default_file_path:
                 path = url_quote(f'tree/{default_file_path}')
             else:
                 path = ''
-            vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
+            if launch_method == 'flavor':
+                protocol = "http{{ if .Values.jupyterhub.ingress.tls }}s{{ end }}"
+                host = "{{ index .Values.jupyterhub.ingress.hosts 0 }}"
+                base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
+                vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
+            elif launch_method == 'binder':
+                protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
+                host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
+                base_url = "{{ trimAll " / " .Values.binderhub.config.BinderHub.base_url }}"
+                urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}', safe='')
+                vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binder_ref']}?urlpath={urlpath}"
             print(default_file_path)
             print(path)
             print(vlab['deployment_url'])
@@ -132,6 +152,7 @@ data:
                     'description': vlab['description'],
                     'deployment_url': vlab['deployment_url'],
                     'container_image': vlab['container_image'],
+                    'binder_environment_id': str(binder_environment_objects[vlab['slug']].id) if launch_method == 'binder' else None,
                     'image': vlab['image'],
                     })
 

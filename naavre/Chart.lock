@@ -5,6 +5,9 @@ dependencies:
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart/
   version: 4.1.0
+- name: binderhub
+  repository: https://jupyterhub.github.io/helm-chart
+  version: 1.0.0-0.dev.git.3968.hfa645405
 - name: seaweedfs
   repository: https://seaweedfs.github.io/seaweedfs/helm
   version: 4.17.0
@@ -20,11 +23,14 @@ dependencies:
 - name: naavre-containerizer-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.4.7
+- name: naavre-environment-service
+  repository: oci://ghcr.io/naavre/charts
+  version: v0.1.3
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.5.0
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.6
-digest: sha256:bbb5bca0ba199ba33ba17633b555ff0c6a4179ef07adae86a6218681046e9bef
-generated: "2026-11-10T13:06:25.509554801Z"
+digest: sha256:4d9799a03539a73995a0aedfb7221ef1314be61cbfb07c27baeb61bb6570c89e
+generated: "2026-11-13T14:24:36.756172311+01:00"

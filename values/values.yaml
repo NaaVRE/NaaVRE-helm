@@ -240,7 +240,9 @@ naavreCatalogueService:
 naavreContainerizerService:
   enabled: true
   ingress:
-    basePath: /naavre-containerizer-service
+   basePath: /naavre-containerizer-service
+  conf:
+    built_in_function_url: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/built_in_function.json
 
 naavreWorkflowService:
   enabled: true

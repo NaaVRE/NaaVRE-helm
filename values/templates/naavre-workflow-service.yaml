@@ -24,8 +24,8 @@ naavre-workflow-service:
   conf:
     rootPath: "/{{ trimAll "/" (.Values.naavreWorkflowService.ingress.basePath) }}"
     virtual_labs_configuration:
-      {{- define "workflow_service_vl_configuration" -}}
-      fdo_valid_viz_kinds_url: {{ .Values.naavreWorkflowService.conf.fdoValidVizKindsUrl }}
+      {{- define "workflow_service_vl_configuration" }}
+      fdo_valid_viz_kinds_url: "{{ .Values.naavreWorkflowService.conf.fdoValidVizKindsUrl }}"
       vl_configurations:
         {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
         {{- if $vlab.enabled }}

@@ -9,7 +9,6 @@ jupyterhub:
       description: |
         A virtual lab to access ECVs. The workflows in the VLab were developed by ENVRI-Hub-NEXT project.
       dirname: ECVs
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-ecvs-jupyter
         tag: v0.3.27

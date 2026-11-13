@@ -10,7 +10,6 @@ jupyterhub:
         A virtual lab to compile estimates of blue carbon storage by using essential variables and 
         satellite remote sensing at regional scales within European coastal systems .
       dirname: Seagrass carbon stock model
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-blue-carbon-jupyter
         tag: v0.3.27

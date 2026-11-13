@@ -92,10 +92,6 @@ keycloak:
 seaweedfs:
   enabled: false
 
-binderhub:
-  registry:
-    image_prefix: ghcr.io/naavre/binder-builds/
-
 jupyterhub:
   training_materials:
     repo: https://github.com/NaaVRE/NaaVRE-training-materials.git

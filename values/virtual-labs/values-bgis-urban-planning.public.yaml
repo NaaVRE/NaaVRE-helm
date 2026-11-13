@@ -9,7 +9,6 @@ jupyterhub:
       description: |
         Migrating a legacy urban planning application into a reusable Cloud Virtual Lab.
       dirname: BGIs Urban Planning
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-bgis-urban-planning-jupyter
         tag: v0.3.27

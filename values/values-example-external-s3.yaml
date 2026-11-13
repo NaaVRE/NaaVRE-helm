@@ -59,12 +59,6 @@ global:
 seaweedfs:
   enabled: false
 
-binderhub:
-  registry:
-    image_prefix: ghcr.io/<org>/<prefix>/
-    username: <username>
-    password: <access token>
-
 jupyterhub:
   vlabs:
     openlab:
@@ -73,8 +67,6 @@ jupyterhub:
       labels: []
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
-      launch_method: flavor
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27
@@ -91,8 +83,6 @@ jupyterhub:
       labels: []
       description: "Another virtual lab to demonstrate that we support several"
       dirname: "Another Lab"
-      launch_method: flavor
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27

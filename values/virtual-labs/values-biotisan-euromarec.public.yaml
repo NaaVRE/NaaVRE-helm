@@ -11,7 +11,6 @@ jupyterhub:
         and disentangle the major patterns and drivers of long-term biodiversity trends using various taxonomic 
         and functional diversity metrics, species traits, and environmental variables.
       dirname: Biodiversity Time Series Analyses
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-biotisan-euromarec-jupyter
         tag: v0.3.27

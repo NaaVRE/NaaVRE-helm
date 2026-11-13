@@ -8,7 +8,6 @@ jupyterhub:
       labels: [lter-life]
       description:  Waddenzee Digital Twin prototype for LTER-LIFE
       dirname: Waddenzee proto DT
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-lter-life-wadden-jupyter
         tag: v0.3.27

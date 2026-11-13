@@ -8,7 +8,6 @@ jupyterhub:
       labels: []
       description:  Phytoplankton traits computation
       dirname: Phytoplankton traits
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-phytoplankton-jupyter
         tag: v0.3.27

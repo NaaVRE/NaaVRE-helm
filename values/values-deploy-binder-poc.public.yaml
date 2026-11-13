@@ -81,10 +81,12 @@ seaweedfs:
   enabled: false
 
 naavreEnvironmentService:
+  enabled: true
   image_puller_cron:
     enabled: true
 
 binderhub:
+  enabled: true
   registry:
     image_prefix: ghcr.io/naavre/binder-builds/
 
@@ -142,6 +144,7 @@ jupyterhub:
     openlab:
       enabled: true
       launch_method: binder
+      binder_ref: gh/NaaVRE/vl-openlab/latest
     # laserfarm:
     #   enabled: true
     # aneris:
@@ -186,6 +189,7 @@ jupyterhub:
     geospatial-toolbox:
       enabled: true
       launch_method: binder
+      binder_ref: gh/LTER-LIFE/vl-geospatial-toolbox/main
     # bgis-urban-planning:
     #   enabled: true
     # tempsed-wadden-sea:

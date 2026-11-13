@@ -8,7 +8,6 @@ jupyterhub:
       labels: []
       description:  CNR Phytoplankton virtual lab
       dirname: CNR Phytoplankton
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27

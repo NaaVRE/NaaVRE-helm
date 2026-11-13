@@ -9,7 +9,6 @@ jupyterhub:
       description: |
         Combining observations of soil, plant and atmospheric properties with a number of coupled soil-land-atmosphere models to model evapotransportation and heat fluxes over different locations in Zeeland.
       dirname: ET Zeeland
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-et-zeeland-jupyter
         tag: v0.3.27

@@ -8,7 +8,6 @@ jupyterhub:
       labels: []
       description: Sustainable regeneration of agriculture in territories affected by Xylella Fastidiosa
       dirname: DAJS
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27

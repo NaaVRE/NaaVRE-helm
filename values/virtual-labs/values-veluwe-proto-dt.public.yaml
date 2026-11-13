@@ -8,7 +8,6 @@ jupyterhub:
       labels: [lter-life, historical_archive]
       description:  Veluwe Digital Twin prototype for LTER-LIFE
       dirname: Veluwe proto DT
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-lter-life-veluwe-jupyter
         tag: v0.3.27

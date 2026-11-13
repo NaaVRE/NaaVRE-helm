@@ -8,7 +8,6 @@ jupyterhub:
       labels: []
       description: Creating and visualizing earthquake catalogs using machine-learning tools and algorithms for small (or larger) datasets.
       dirname: Homeros-Seismology
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-homeros-seismology-jupyter
         tag: v0.3.27

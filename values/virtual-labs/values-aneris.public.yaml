@@ -9,7 +9,6 @@ jupyterhub:
       description: |
         A virtual lab to access ANERIS.
       dirname: ANERIS
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-aneris-jupyter
         tag: v0.3.27

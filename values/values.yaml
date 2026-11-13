@@ -125,7 +125,7 @@ argoWorkflows:
     basePath: /argowf
 
 binderhub:
-  enabled: true
+  enabled: false
   ingress:
     basePath: /binderhub
   registry:
@@ -210,13 +210,13 @@ jupyterhub:
       # Optional icon (URL or base64 data: "data:image/svg+xml;base64,[...]")
       # icon:
       # Launch method for the virtual lab
-      #   'flavor': launch a NaaVRE flavor using JupyterHub profiles (default)
+      #   'flavor': launch a NaaVRE flavor using JupyterHub profiles (default if unset)
       #   'binder': build and launch a repo using Binder
-      launch_method: flavor
+      # launch_method: binder
       # Flavor image (needed if launch_method=flavor)
       # NOTE: pending deprecation with binderhub
       # Binder ref (needed if launch_method=binder)
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
+      # binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27
@@ -292,7 +292,7 @@ naavreContainerizerService:
     basePath: /naavre-containerizer-service
 
 naavreEnvironmentService:
-  enabled: true
+  enabled: false
   ingress:
     basePath: /naavre-environment-service
   image_puller_cron:

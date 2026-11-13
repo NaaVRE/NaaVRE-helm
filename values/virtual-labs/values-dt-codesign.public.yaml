@@ -8,7 +8,6 @@ jupyterhub:
       labels: [lter-life]
       description:  Co-design digital twins virtual lab
       dirname: DT Co-Design
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27

@@ -8,7 +8,6 @@ jupyterhub:
       labels: [tutorial]
       description:  Vertical profiling of biological scatterers
       dirname: RAVL
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-ravl-jupyter
         tag: v0.3.27

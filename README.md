@@ -196,9 +196,9 @@ This is an example of how to add a MinIO mount to the user's home directory:
 
 ### Run a command after starting Jupyter Lab
 
-To run a script after starting a user's Jupyter Lab instance in the singleuser pod, add it to the virtual lab repository in `.binder/start`. See the [repo2docker documentation](https://repo2docker.readthedocs.io/en/latest/configuration/actions/#start-run-code-before-the-user-sessions-starts) for details.
+This shows how to run a command after starting a user's Jupyter Lab instance in the singleuser pod.
 
-For virtual labs built from flavors (pending deprecation), you can provide a snippet that will be executed by `sh -c` in Kubernetes' `postStart` hook.
+**For virtual launched from a flavor (pending deprecation)**, you can provide a snippet that will be executed by `sh -c` in Kubernetes' `postStart` hook. This is useful to, e.g., clone a Git repository.
 
 ```yaml
 jupyterhub:
@@ -210,6 +210,9 @@ jupyterhub:
         echo "Pulling some data"
         gitpuller https://github.com/user/repo.git main folder
 ```
+
+**For virtual labs launched with binder** To run a script after starting a user's Jupyter Lab instance in the singleuser pod, add it to the virtual lab repository in `.binder/start`. See the [repo2docker documentation](https://repo2docker.readthedocs.io/en/latest/configuration/actions/#start-run-code-before-the-user-sessions-starts) for details.
+
 
 ### TLS certificates with cert-manager
 

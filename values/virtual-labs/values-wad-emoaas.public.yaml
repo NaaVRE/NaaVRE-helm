@@ -9,7 +9,6 @@ jupyterhub:
       description: |
         Processing four dimensional ecosystem model output for the western Dutch Wadden Sea.
       dirname: Wad EMOaaS
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-wad-emoaas-jupyter
         tag: v0.3.27

@@ -8,7 +8,6 @@ jupyterhub:
       labels: []
       description: CNR Biomass virtual lab
       dirname: CNR Biomass
-      launch_method: flavor
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.27

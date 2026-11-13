@@ -68,10 +68,10 @@ jupyterhub:
       description: "Open experimentation with virtual labs"
       dirname: "Open Lab"
       launch_method: flavor
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.23
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json
@@ -86,10 +86,10 @@ jupyterhub:
       description: "Another virtual lab to demonstrate that we support several"
       dirname: "Another Lab"
       launch_method: flavor
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.23
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

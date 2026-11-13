@@ -204,11 +204,11 @@ jupyterhub:
       launch_method: flavor
       # Flavor image (needed if launch_method=flavor)
       # NOTE: pending deprecation with binderhub
+      # Binder ref (needed if launch_method=binder)
+      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: v0.3.23
-      # Binder ref (needed if launch_method=binder)
-      binder_ref: gh/NaaVRE/vl-openlab/HEAD
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/download/v0.3.23/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

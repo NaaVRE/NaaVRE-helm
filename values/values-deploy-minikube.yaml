@@ -80,10 +80,10 @@ jupyterhub:
       description: Open experimentation with virtual labs
       dirname: Open Lab
       launch_method: flavor
+      binder_ref: gh/NaaVRE/vl-openlab/add_binderhub
       image:
         name: ghcr.io/naavre/flavors/naavre-fl-vanilla-jupyter
         tag: latest
-      binder_ref: gh/NaaVRE/vl-openlab/add_binderhub
       configuration:
         base_image_tags_url: https://github.com/NaaVRE/flavors/releases/latest/download/base_image_tags.json
         module_mapping_url: https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/module_mapping.json

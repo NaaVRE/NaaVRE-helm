@@ -119,6 +119,9 @@ spec:
           {{- range .Values.global.secrets.keycloak.users }}
       - username: "{{ .username }}"
         enabled: true
+        firstName: "{{ .firstName }}"
+        lastName: "{{ .lastName }}"
+        email: "{{ .email }}"
         credentials:
           - type: password
             value: "{{ .password }}"

@@ -241,11 +241,14 @@ naavreContainerizerService:
   enabled: true
   ingress:
     basePath: /naavre-containerizer-service
+  conf:
+    fdoValidVizKindsUrl: https://raw.githubusercontent.com/NaaVRE/NaaVRE-conf/main/fdo_valid_viz_kinds.json
 
 naavreWorkflowService:
   enabled: true
   ingress:
     basePath: /naavre-workflow-service
+
 
 naavrePaasFrontend:
   enabled: true

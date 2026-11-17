@@ -46,7 +46,7 @@ jobs:
           )
           kubectl get pod -n "$NAMESPACE"
           for SERVICE in "${SERVICES[@]}"; do
-            if ! kubectl wait --for=condition=ready pod -l "app.kubernetes.io/name=$SERVICE" -n "$NAMESPACE" --timeout=600s; then
+            if ! kubectl wait --for=condition=ready pod -l "app.kubernetes.io/name=$SERVICE" -n "$NAMESPACE" --timeout=100s; then
               echo "Pods for '$SERVICE' did not become ready in namespace '$NAMESPACE'."
               # Print logs for the pods of the service to help with debugging
               kubectl logs -l "app.kubernetes.io/name=$SERVICE" -n "$NAMESPACE" --all-containers=true || true

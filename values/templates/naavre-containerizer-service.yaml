@@ -27,7 +27,8 @@ naavre-containerizer-service:
   conf:
     rootPath: "/{{ trimAll "/" (.Values.naavreContainerizerService.ingress.basePath) }}"
     virtual_labs_configuration:
-      {{- define "containerizer_service_vl_configuration" -}}
+      {{- define "containerizer_service_vl_configuration" }}
+      built_in_function_url: "{{ .Values.naavreContainerizerService.conf.built_in_function_url }}"
       vl_configurations:
         {{- range $index, $vlab := .Values.jupyterhub.vlabs }}
         {{- if $vlab.enabled }}

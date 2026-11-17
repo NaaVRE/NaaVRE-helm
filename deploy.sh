@@ -37,6 +37,7 @@ Actions:
       --format text|md      output format (default: text)
       --keep                keep diff-tmp/
       --reuse               reuse diff-tmp/ if present
+      --show-values-chart   compare the values/ chart rendered manifests
 
 Action options:
   Passed to \`helm <action>\`
@@ -54,6 +55,7 @@ g_dry_run=0
 g_diff_format="text"
 g_diff_keep=0
 g_diff_reuse=0
+g_diff_show_value_chart=0
 g_diff_base=""
 g_diff_head=""
 g_diff_tmp=""
@@ -440,6 +442,9 @@ diff_main() {
       --reuse)
         g_diff_reuse=1
         ;;
+      --show-values-chart)
+        g_diff_show_value_chart=1
+        ;;
       --format)
         g_diff_format="$2"
         shift
@@ -496,7 +501,9 @@ diff_main() {
   diff_print_heading 1 "Diff $g_diff_base..${g_diff_head:-(working tree)} with ${g_value_files[*]}"
   diff_dependencies
   diff_rendered_dir show base head values/ "naavre/ chart rendered manifests"
-  diff_rendered_dir show base head naavre/ "values/ chart rendered manifests"
+  if [[ "$g_diff_show_value_chart" -eq 1 ]]; then
+    diff_rendered_dir show base head naavre/ "values/ chart rendered manifests"
+  fi
 
   if [[ "$g_diff_keep" -ne 1 ]]; then
     diff_cleanup

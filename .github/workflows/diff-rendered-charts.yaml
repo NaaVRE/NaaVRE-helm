@@ -1,0 +1,57 @@
+name: Diff rendered charts
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  diff:
+    name: Diff rendered charts
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        env:
+          DYFF_VERSION: 1.12.0
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/homeport/dyff/releases/download/v${DYFF_VERSION}/dyff_${DYFF_VERSION}_linux_amd64.tar.gz" | sudo tar -xz -C /usr/local/bin dyff
+
+      - name: Compare rendered charts
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: ./.github/scripts/diff-rendered-charts-compare.sh
+
+      - name: Assemble report
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: ./.github/scripts/diff-rendered-charts-report.sh
+
+      - name: Upload diffs
+        uses: actions/upload-artifact@v7
+        with:
+          name: rendered-chart-diff
+          path: |
+            diffs/
+            report.md
+
+      - name: Post comment
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 #v3.0.5
+        with:
+          header: rendered-chart-diff
+          path: comment.md
+
+      - name: Check for render errors
+        run: |
+          if grep -q ' failed$' diffs/status; then
+            echo "Rendering failed for some values files, see the report"
+            exit 1
+          fi

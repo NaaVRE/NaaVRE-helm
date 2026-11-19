@@ -36,6 +36,14 @@ spec:
   additionalOptions:
     - name: http-relative-path
       value: {{ .Values.global.ingress.basePaths.keycloak }}
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - name: keycloak
+            env:
+              - name: JAVA_OPTS_APPEND
+                value: "-XX:-UseBASE64Intrinsics"
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

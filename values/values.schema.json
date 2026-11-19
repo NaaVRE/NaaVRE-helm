@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/notNull",
+  "$defs": {
+    "notNull": {
+      "not": {"type": "null"},
+      "additionalProperties": {"$ref": "#/$defs/notNull"},
+      "items": {"$ref": "#/$defs/notNull"},
+      "$comment": "Check that all values are filled. This ensures that all values left empty in values.yaml are provided. See values-example-basic.yaml"
+    }
+  }
+}

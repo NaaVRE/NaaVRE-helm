@@ -39,7 +39,7 @@ global:
         access_key:
         secret_key:
     binderhub:
-      jupyterhubApiToken:
+      jupyterhubApiToken: nil
     naavreCatalogueService:
       secretKey:
       auth:
@@ -47,7 +47,7 @@ global:
           email: "admin@example.org"
           username: admin
           password:
-        naavreEnvironmentSaToken:
+        naavreEnvironmentSaToken: nil
       postgresql:
         password:
     naavreEnvironmentService:
@@ -133,8 +133,8 @@ binderhub:
     # (only tested with ghcr.io)
     url: ghcr.io
     image_prefix: ghcr.io/<org>/<prefix>/
-    username:
-    password:
+    username: nil
+    password: nil
   builder:
     naavre_requirements:
       - NaaVRE-catalogue-jupyterlab==0.2.0

@@ -22,11 +22,11 @@ updates:
       interval: "daily"
     cooldown:
       exclude:
-        - dependency-name: naavre-containerizer-service
-        - dependency-name: naavre-paas-frontend
-        - dependency-name: naavre-workflow-service
-        - dependency-name: naavre-catalogue-service
-        - dependency-name: k8s-secret-creator
+        - naavre-containerizer-service
+        - naavre-paas-frontend
+        - naavre-workflow-service
+        - naavre-catalogue-service
+        - k8s-secret-creator
     registries:
       - qcdis-helm-repo
       - seaweedfs-helm-repo

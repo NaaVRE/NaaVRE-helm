@@ -500,9 +500,9 @@ diff_main() {
 
   diff_print_heading 1 "Diff $g_diff_base..${g_diff_head:-(working tree)} with ${g_value_files[*]}"
   diff_dependencies
-  diff_rendered_dir show base head values/ "naavre/ chart rendered manifests"
+  diff_rendered_dir show base head naavre/ "naavre/ chart rendered manifests"
   if [[ "$g_diff_show_value_chart" -eq 1 ]]; then
-    diff_rendered_dir show base head naavre/ "values/ chart rendered manifests"
+    diff_rendered_dir show base head values/ "values/ chart rendered manifests"
   fi
 
   if [[ "$g_diff_keep" -ne 1 ]]; then

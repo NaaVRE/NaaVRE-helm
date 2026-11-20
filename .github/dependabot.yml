@@ -20,6 +20,13 @@ updates:
         update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
     schedule:
       interval: "daily"
+    cooldown:
+      exclude:
+        - naavre-containerizer-service
+        - naavre-paas-frontend
+        - naavre-workflow-service
+        - naavre-catalogue-service
+        - k8s-secret-creator
     registries:
       - qcdis-helm-repo
       - seaweedfs-helm-repo

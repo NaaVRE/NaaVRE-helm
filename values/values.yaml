@@ -55,8 +55,7 @@ global:
         users: []
           # - id: example-user
           #   auth:
-          #     - method: token
-          #       token: example-token
+          #     - token: example-token
     naavrePaasFrontend:
       secretKey:
 

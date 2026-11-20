@@ -38,8 +38,11 @@ global:
       argoBucket:
         access_key:
         secret_key:
-    binderhub:
-      jupyterhubApiToken: nil
+    binderhub: {}
+      # jupyterhubApiToken:
+      # registry:
+      #   username:
+      #   password:
     naavreCatalogueService:
       secretKey:
       auth:
@@ -47,15 +50,15 @@ global:
           email: "admin@example.org"
           username: admin
           password:
-        naavreEnvironmentSaToken: nil
       postgresql:
         password:
-    naavreEnvironmentService:
-      auth:
-        users: []
-          # - id: example-user
-          #   auth:
-          #     - token: example-token
+    naavreEnvironmentService: {}
+      # naavreCatalogueSaToken:
+      # auth:
+      #   users: []
+      #     # - id: example-user
+      #     #   auth:
+      #     #     - token: example-token
     naavrePaasFrontend:
       secretKey:
 
@@ -132,8 +135,6 @@ binderhub:
     # (only tested with ghcr.io)
     url: ghcr.io
     image_prefix: ghcr.io/<org>/<prefix>/
-    username: nil
-    password: nil
   builder:
     naavre_requirements:
       - NaaVRE-catalogue-jupyterlab==0.2.0

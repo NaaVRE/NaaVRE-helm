@@ -1,4 +1,4 @@
-{{- if and .Values.binderhubEnabled (index .Values "naavre-catalogue-service" "enabled") }}
+{{- if or .Values.jupyterhub.enabled (and .Values.binderhubEnabled (index .Values "naavre-catalogue-service" "enabled")) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -132,11 +132,15 @@ data:
                 base_url = "{{ trimAll " / " .Values.jupyterhub.hub.baseUrl }}"
                 vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/user-redirect/lab/workspaces/{vlab['slug']}/{path}?profile={vlab['slug']}"
             elif launch_method == 'binder':
+                {{- if .Values.binderhubEnabled }}
                 protocol = "http{{ if .Values.binderhub.jupyterhub.ingress.tls }}s{{ end }}"
                 host = "{{ index .Values.binderhub.jupyterhub.ingress.hosts 0 }}"
                 base_url = "{{ trimAll " / " .Values.binderhub.config.BinderHub.base_url }}"
                 urlpath = url_quote(f'lab/workspaces/{vlab['slug']}/{path}', safe='')
                 vlab['deployment_url'] = f"{protocol}://{host}/{base_url}/v2/{vlab['binder_ref']}?urlpath={urlpath}"
+                {{- else }}
+                raise ValueError("launch_method='binderhub' is not allowed because BinderHub is not enabled.")
+                {{- end }}
             print(default_file_path)
             print(path)
             print(vlab['deployment_url'])

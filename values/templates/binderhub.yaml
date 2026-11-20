@@ -1,10 +1,11 @@
 binderhubEnabled: {{ .Values.binderhub.enabled }}
+{{- if .Values.binderhub.enabled }}
 binderhub:
 
   registry:
     url: {{ .Values.binderhub.registry.url }}
-    username: {{ .Values.binderhub.registry.username }}
-    password: {{ .Values.binderhub.registry.password }}
+    username: {{ required "required: global.secrets.binderhub.registry.username" .Values.global.secrets.binderhub.registry.username }}
+    password: {{ required "required: global.secrets.binderhub.registry.password" .Values.global.secrets.binderhub.registry.password }}
 
   imageBuilderType: dind
 
@@ -75,8 +76,8 @@ binderhub:
     imagePullSecret:
       create: true
       registry: {{ .Values.binderhub.registry.url }}
-      username: {{ .Values.binderhub.registry.username }}
-      password: {{ .Values.binderhub.registry.password }}
+      username: {{ required "required: global.secrets.binderhub.registry.username" .Values.global.secrets.binderhub.registry.username }}
+      password: {{ required "required: global.secrets.binderhub.registry.password" .Values.global.secrets.binderhub.registry.password }}
 
     hub:
       concurrentSpawnLimit: {{ .Values.jupyterhub.hub.concurrentSpawnLimit }}
@@ -130,7 +131,7 @@ binderhub:
           oauth_no_confirm: true
           oauth_redirect_uri: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}/oauth_callback
         environment-service:
-          apiToken: {{ .Values.global.secrets.binderhub.jupyterhubApiToken }}
+          apiToken: {{ required "global.secrets.binderhub.jupyterhubApiToken" .Values.global.secrets.binderhub.jupyterhubApiToken }}
       loadRoles:
         user:
           scopes:
@@ -431,3 +432,4 @@ binderhub:
             command:
               - bash
               - /opt/setup-scripts/setup_virtual_lab.sh
+{{- end }}

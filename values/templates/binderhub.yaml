@@ -12,7 +12,7 @@ binderhub:
   config:
     BinderHub:
       use_registry: true
-      image_prefix: {{ .Values.binderhub.registry.image_prefix }}{{ .Values.binderhub.builder.naavre_requirements | toJson | sha256sum | trunc 8 }}/
+      image_prefix: {{ .Values.binderhub.registry.image_prefix }}{{ include "naavre_requirements_hash" . }}/
       base_url: /{{ trimAll "/" .Values.binderhub.ingress.basePath }}/
       hub_url: https://{{ .Values.global.ingress.domain }}/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh
       hub_url_local: http://{{ include "values.fullname" . }}-binder-jh-hub.{{ $.Values.global.namespace }}.svc:8081/{{ trimAll "/" .Values.binderhub.ingress.basePath }}-jh

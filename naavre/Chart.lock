@@ -25,12 +25,12 @@ dependencies:
   version: v0.4.13
 - name: naavre-environment-service
   repository: oci://ghcr.io/naavre/charts
-  version: v0.1.4
+  version: v0.1.5
 - name: naavre-workflow-service
   repository: oci://ghcr.io/naavre/charts
   version: v0.5.2
 - name: naavre-paas-frontend
   repository: oci://ghcr.io/naavre/charts
   version: v0.2.6
-digest: sha256:aa9410b7ba65297b3e410f7f13161aed1030f27a3bc94ae432e3b5ed51667482
-generated: "2026-11-20T16:06:16.516977584+01:00"
+digest: sha256:7df09da7842a7eee432cd68b790bac6b3063c00105a2a39e62b607819398250a
+generated: "2026-11-24T14:04:09.786827939+01:00"

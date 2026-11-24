@@ -22,3 +22,7 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "naavre_requirements_hash" }}
+{{- printf "%s" (.Values.binderhub.builder.naavre_requirements | toJson | sha256sum | trunc 8) }}
+{{- end }}

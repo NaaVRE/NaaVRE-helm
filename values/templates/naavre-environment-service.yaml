@@ -31,6 +31,10 @@ naavre-environment-service:
     nodeAffinity:
       matchNodePurpose: "{{ .Values.jupyterhub.scheduling.userPods.nodeAffinity.matchNodePurpose }}"
 
+  image_rebuilder_hook:
+    enabled: true
+    key: {{ include "naavre_requirements_hash" . }}
+
   conf:
     rootPath: "/{{ trimAll "/" (.Values.naavreEnvironmentService.ingress.basePath) }}"
     {{- with .Values.global.secrets.naavreEnvironmentService.auth.users }}

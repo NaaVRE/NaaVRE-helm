@@ -173,7 +173,8 @@ jupyterhub:
     #   enabled: true
     ravl:
       enabled: true
-      launch_method: flavor
+      launch_method: binder
+      binder_ref: gh/NaaVRE/RAVL-virtual-lab/72-add-binder-environment-for-ravl-virtual-lab
     # veluwe-proto-dt:
     #   enabled: true
     # waddenzee-proto-dt:

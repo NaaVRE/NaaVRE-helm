@@ -261,9 +261,12 @@ binderhub:
                   self.pod_name = self._expand_user_properties(self.pod_name_template)
                   return super().get_pvc_manifest()
               async def get_pod_manifest(self):
+                  volume_mounts = self.volume_mounts
+                  if isinstance(volume_mounts, dict):
+                      volume_mounts = volume_mounts.values()
                   self.volume_mounts = [
                       {k: v for k, v in volume_mount.items() if k != 'allowedGroups'}
-                      for volume_mount in self.volume_mounts.values()
+                      for volume_mount in volume_mounts
                       if (
                           ('allowedGroups' not in volume_mount)
                           or (

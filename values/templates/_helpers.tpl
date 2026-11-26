@@ -61,8 +61,8 @@ def binder_refs_match(ref_a, ref_b):
     # 'gh/<user>/<repo>/<commit-sha-or-tag-or-branch>'.
     # Match based on user and repo, regardless of the
     # commit-sha-or-tag-or-branch.
-    user_repo_a, _ = spec_a.rsplit('/', 1)
-    user_repo_b, _ = spec_b.rsplit('/', 1)
+    user_repo_a = spec_a.split('/')[:2]
+    user_repo_b = spec_b.split('/')[:2]
     return user_repo_a == user_repo_b
   else:
     # For other providers, match based on the full spec

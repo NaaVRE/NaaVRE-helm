@@ -145,6 +145,8 @@ jupyterhub:
       enabled: true
       launch_method: binder
       binder_ref: gh/NaaVRE/vl-openlab/latest
+      configuration:
+        default_file_path: README.md
     # laserfarm:
     #   enabled: true
     # aneris:
@@ -175,6 +177,8 @@ jupyterhub:
       enabled: true
       launch_method: binder
       binder_ref: gh/NaaVRE/RAVL-virtual-lab/72-add-binder-environment-for-ravl-virtual-lab
+      configuration:
+        default_file_path: README.md
     # veluwe-proto-dt:
     #   enabled: true
     # waddenzee-proto-dt:
@@ -191,6 +195,8 @@ jupyterhub:
       enabled: true
       launch_method: binder
       binder_ref: gh/LTER-LIFE/vl-geospatial-toolbox/main
+      configuration:
+        default_file_path: README.md
     # bgis-urban-planning:
     #   enabled: true
     # tempsed-wadden-sea:

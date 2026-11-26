@@ -1,0 +1,31 @@
+{{- if and .Values.binderhubEnabled .Values.binderhub.ingress.enabled }}
+# Block public access to unauthenticated BinderHub endpoints
+{{- $basePath := printf "/%s" (trimAll "/" .Values.binderhub.ingress.pathSuffix) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ include "naavre.fullname" . }}-binderhub-restrict-api"
+  annotations:
+    nginx.ingress.kubernetes.io/denylist-source-range: "0.0.0.0/0,::/0"
+spec:
+  ingressClassName: {{ .Values.binderhub.ingress.ingressClassName | quote }}
+  rules:
+    {{- range $host := .Values.binderhub.ingress.hosts }}
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          {{- range $endpoint := list "metrics" "versions" "health" "api/repoproviders" }}
+          - path: "{{ $basePath }}/{{ $endpoint }}"
+            pathType: Exact
+            backend:
+              service:
+                name: binder
+                port:
+                  number: 80
+          {{- end }}
+    {{- end }}
+  {{- with .Values.binderhub.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

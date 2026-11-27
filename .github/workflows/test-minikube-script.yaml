@@ -32,7 +32,7 @@ jobs:
         shell: bash -l {0}
         run: |
           chmod +x ./minikube_tests/setup-tests.sh 
-          ./minikube_tests/setup-tests.sh -f values/values-deploy-minikube.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
+          ./minikube_tests/setup-tests.sh -f values/values-deploy-minikube-all.yaml -d -n -u -p -v -c "${{ matrix.chart }}"
 
       - uses: actions/setup-python@v5
         with:

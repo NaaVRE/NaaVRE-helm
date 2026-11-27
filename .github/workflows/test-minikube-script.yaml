@@ -46,7 +46,6 @@ jobs:
       - name: Install Python e2e test dependencies
         run: |
           python -m pip install -r tests/requirements.txt
-#          python -m playwright install chromium
           python -m playwright install --with-deps chromium
 
       - name: Run Python e2e tests

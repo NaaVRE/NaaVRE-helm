@@ -197,8 +197,9 @@ deploy_naavre(){
   # Read CELL_GITHUB_TOKEN from dev.env if it exists
   if [ -f "../dev.env" ]; then
     source ../dev.env
+  elif [ -f "dev.env" ]; then
+    source dev.env
   fi
-
 
   #Reaplce cell_github_token in the values file with the value from the environment variable CELL_GITHUB_TOKEN if it exists
   if [ -n "$CELL_GITHUB_TOKEN" ]; then

@@ -9,8 +9,9 @@ npm install
 ## Running Tests
 
 The Python tests in `e2e/e2e-test.py` record browser videos in `videos/`
-relative to the working directory. Videos are saved when each test's browser
-context closes and may contain sensitive information.
+relative to the working directory. Videos are named after their test function;
+tests that record multiple pages add a `-page-N` suffix. Videos are saved when
+each test's browser context closes and may contain sensitive information.
 
 Run the Python notebook tests from the repository root with:
 
